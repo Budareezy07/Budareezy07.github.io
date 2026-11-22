@@ -155,7 +155,7 @@ button{cursor:pointer;border:none}
 .avapick button{font-size:34px;width:62px;height:62px;border-radius:18px;background:#f3f6fb;border:3px solid transparent}.avapick button.sel{border-color:var(--gold);background:#fff7d6}
 .name{width:100%;font-size:18px;padding:12px 14px;border-radius:14px;border:3px solid #dbe3ef;font-weight:700;background:#fff}
 .lbl{display:block;font-size:13px;font-weight:800;color:var(--muted);margin:12px 0 4px}
-.scrollx{overflow-x:auto}
+.scrollx{overflow-x:auto;flex-shrink:0}
 table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:7px 5px;border-bottom:1px solid #e6ebf3;text-align:left;vertical-align:top}
 th{font-size:12px;color:var(--muted);text-transform:uppercase}
 .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-weight:800;font-size:12px}
@@ -452,7 +452,7 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .bookbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.bookbadges span{padding:6px 10px;border-radius:12px;background:#eef2f8;font-weight:800}.bookbadges span.on{background:#facc15}
 .chk{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #eef2f8}.chk input{width:22px;height:22px}
 .tsv{width:100%;font-family:ui-monospace,monospace;font-size:12px}
-table.mini{border-collapse:collapse;font-size:13px}table.mini td,table.mini th{padding:4px 6px;border-bottom:1px solid #eef2f8;text-align:left}
+table.mtable{border-collapse:collapse;font-size:13px;width:auto;min-width:100%}table.mtable td,table.mtable th{white-space:nowrap}table.mtable td,table.mtable th{padding:4px 6px;border-bottom:1px solid #eef2f8;text-align:left}
 .logincard.parent{background:linear-gradient(135deg,#0f766e,#14a38f);box-shadow:0 4px 0 #0b5249}
 .parenthead{background:linear-gradient(135deg,#0f766e,#14a38f);color:#fff;border-radius:18px;padding:16px}
 .parenthead h2{margin:4px 0}.parenthead small{opacity:.9}
@@ -6448,7 +6448,7 @@ function screenTrackerExport(term){
    <div class="card"><div class="seg2">${[1,2,3].map(t=>`<button class="${t===term?'on':''}" data-t="${t}">Term ${t}</button>`).join('')}</div>
      <label class="lbl">Class name in the tracker</label><input class="name" id="lbl" value="${escH(classLabel())}" maxlength="10">
      <p class="small muted">Reading & Viewing and Language come from this term's big tests (first attempt). Writing & Presenting is the average of the writing you marked from this term's tasks. Listening & Speaking is half listening tasks (first try) and half marked orals and read-alouds. Reading adds Think deeper marks; Writing adds paragraph marks.</p></div>
-   <div class="card mt scrollx"><table class="mini"><tr><th>Learner</th><th>Speaking</th><th>Reading</th><th>Writing</th><th>Language</th><th>From</th></tr>
+   <div class="card mt scrollx"><table class="mtable"><tr><th>Learner</th><th>Speaking</th><th>Reading</th><th>Writing</th><th>Language</th><th>From</th></tr>
      ${rows.map(r=>`<tr><td>${escH(r.name)}</td><td>${r.ls===''?'–':r.ls+'%'}</td><td>${r.rv===''?'–':r.rv+'%'}</td><td>${r.wp===''?'–':r.wp+'%'}</td><td>${r.lang===''?'–':r.lang+'%'}</td><td><small class="muted">${r.tests} test${r.tests===1?'':'s'}, ${r.pieces} writing, ${r.deep} deeper reading, ${r.talks} talks</small></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No learners yet.</td></tr>'}</table></div>
    <button class="btn gold w100 mt" id="cp">📋 Copy for the tracker</button>
    <p class="small muted mt8">In the tracker, open the <b>App marks</b> tab and paste into the first empty row of column A. The Skills tab fills in by itself. A mark you type in the Skills tab yourself always wins.</p>`;
