@@ -425,6 +425,13 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .hltip{display:none;margin-top:8px;padding:8px 10px;border-radius:12px;background:#1f2756;color:#fff;font-size:14px}.hltip.show{display:block}
 .coachsum{background:#f6f8fc;border-radius:10px;padding:6px 10px;margin:6px 0;color:var(--muted)}
 .draftno{color:#5b3cc4}
+.sharedtag{display:inline-block;margin:2px 6px 0 0;color:#0f766e}
+.logincard.parent{background:linear-gradient(135deg,#0f766e,#14a38f);box-shadow:0 4px 0 #0b5249}
+.parenthead{background:linear-gradient(135deg,#0f766e,#14a38f);color:#fff;border-radius:18px;padding:16px}
+.parenthead h2{margin:4px 0}.parenthead small{opacity:.9}
+.magpiece{border-left:5px solid #14a38f}
+.magpiece h3{margin:2px 0 6px}
+@media print{ .noprint{display:none!important} .wpiece{break-inside:avoid} }
 .tfb{border:2px solid #f0c64a;background:#fffaf0;border-radius:14px;padding:10px 12px;margin:8px 0}
 .tfgrid{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;margin-top:6px}
 .tfgrid .dots{color:#d99a00;letter-spacing:2px}.tfgrid .dots .dim{color:#e6dcc0}
@@ -4917,6 +4924,7 @@ function screenProfiles(){
   app.innerHTML = `
    <div class="hero">${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div></div>
    <button class="logincard mt" id="clogin"><span class="mic">🔐</span><span class="grow"><b>Class login</b><small>Use your class code and PIN to save your progress online</small></span>▶</button>
+   <button class="logincard parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>Parent view</b><small>Read your child's shared writing and the class magazine</small></span>▶</button>
    ${names.length?`<div class="card mt"><h3>Who's playing?</h3><div class="plist mt8">${names.map(n=>{const p=DB.profiles[n];return `
       <button class="pcard" data-n="${escH(n)}">${heronSVG(p.look,'h56')}<b>${escH(n)}</b><small>Level ${level(p.xp)} · ${totalStars(p)}★</small></button>`}).join('')}</div></div>`:''}
    <div class="card mt"><h3>${names.length?'New player':'Welcome, word hero! Who are you?'}</h3>
@@ -4932,6 +4940,7 @@ function screenProfiles(){
   $$('[data-pn]').forEach(b=>b.onclick=()=>{ pickName=b.dataset.pn; $$('[data-pn]').forEach(x=>x.classList.toggle('sel',x===b)); });
   $('#tc').onclick=()=>screenTeacherGate();
   $('#clogin').onclick=()=>screenClassLogin();
+  $('#plogin').onclick=()=>screenClassLogin('', 'parent');
   $('#go').onclick=()=>{
     const typed = $('#nm') ? $('#nm').value.trim().replace(/\s+/g,' ') : '';
     const n = typed || pickName;
@@ -5840,7 +5849,7 @@ function screenWritingBook(){
   app.innerHTML = backTitle('📒 My Writing Book')+(p.writing.length?`<div class="list">${p.writing.map((w,i)=>`
     <div class="wpiece"><div class="row"><small class="muted b grow">${escH(w.kind)} · ${new Date(w.d+'T12:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'short'})}</small>
       <span class="stars">${'★'.repeat(Math.round(w.score/w.max*3))}<span class="dim">${'★'.repeat(3-Math.round(w.score/w.max*3))}</span></span></div>
-      ${w.v>1?`<small class="b draftno">Draft ${w.v}</small>`:''}<p class="pre">${escH(w.text)}</p>
+      ${w.v>1?`<small class="b draftno">Draft ${w.v}</small>`:''}${w.pub&&w.pub.mag?'<small class="b sharedtag">📰 In the class magazine</small>':''}${w.pub&&w.pub.par?'<small class="b sharedtag">👪 Shared with your family</small>':''}<p class="pre">${escH(w.text)}</p>
       ${w.coach?`<div class="small coachsum">${w.coach.stars&&w.coach.stars[0]?`⭐ ${escH(w.coach.stars[0])}<br>`:''}🎯 ${escH(w.coach.wish||'')}${w.coach.fix?` · 🔧 ${w.coach.fix} fix-it${w.coach.fix===1?'':'s'}`:''}</div>`:''}
       ${teacherFeedbackHTML(w)}
       <div class="row">${canSpeak?`<button class="btn small ghost" data-say="${i}">🔊</button>`:''}${wordsOf(w.text).length>=15?`<button class="btn small ${w.tm&&w.tm.redraft?'gold':'ghost'}" data-imp="${i}">✏️ Improve it</button>`:''}<span class="grow"></span><button class="btn small ghost" data-del="${i}">🗑️</button></div></div>`).join('')}</div>`
@@ -6015,9 +6024,26 @@ function screenMarkPiece(name, idx, back){
      <div class="hltext big" id="hltext">${highlightHTML(w.text, a.issues)}</div><div class="hltip" id="hltip"></div>
      <p class="small muted mt8">${a.wc} words · ${a.sents} sentences · ${a.paras} paragraphs · coach found ${a.fixCount} fix-it${a.fixCount===1?'':'s'} and ${a.styleCount} style point${a.styleCount===1?'':'s'}</p>
      ${w.prev?`<details class="mt8"><summary class="b">See the previous draft</summary><p class="pre small">${escH(w.prev)}</p></details>`:''}</div>
-   <div class="card mt">${markFormHTML(w)}</div>`;
+   <div class="card mt">${markFormHTML(w)}</div>
+   <div class="card mt" id="sharecard">${shareFormHTML(w)}</div>`;
   wireCoach(a); $('#bk').onclick=()=>back();
-  wireMarkForm(w, ()=>back());
+  wireMarkForm(w, ()=>back()); wireShareForm(w, ()=>screenMarkPiece(name, idx, back));
+}
+function shareFormHTML(w){
+  if (!isCloudTeacher()) return `<b>👪 Share this piece</b><p class="small muted">Sharing with parents and the class magazine works in an online class. Open your class from ☁️ Online class first.</p>`;
+  const s=w.pub||{}, stale=w.pub && (s.text!==w.text || (s.tm?JSON.stringify(s.tm):'')!==(w.tm?JSON.stringify(w.tm):''));
+  return `<b>👪 Share this piece</b>
+    <label class="toggle mt8"><span class="grow"><b>Show it to this learner's parents</b><br><small class="muted">Parents see the writing, your rubric marks and your comment. Nobody else's child can see it.</small></span><input type="checkbox" id="shpar" ${s.par?'checked':''}><i></i></label>
+    <label class="toggle"><span class="grow"><b>Put it in the class magazine</b><br><small class="muted">Every family in this class can read it, with the learner's first name. Marks and comments are not shown.</small></span><input type="checkbox" id="shmag" ${s.mag?'checked':''}><i></i></label>
+    ${stale?`<p class="small b redraft mt8">The learner has changed this piece, or you changed the mark, since you shared it. Parents still see the version from ${escH(s.at||'')}. Save sharing to show the newest version.</p>`:''}
+    ${w.pub?`<small class="muted">Shared on ${escH(s.at||'')}</small>`:''}
+    <div class="row mt8"><span class="grow"></span><button class="btn" id="shsave">Save sharing</button></div>`;
+}
+function wireShareForm(w, redraw){
+  const b=$('#shsave'); if (!b) return;
+  b.onclick=()=>{ const par=$('#shpar').checked, mag=$('#shmag').checked;
+    if (!par && !mag){ if (w.pub){ delete w.pub; save(); toast('This piece is no longer shared'); } else toast('Tick at least one box to share it'); return redraw(); }
+    w.pub=pubSnap(w, par, mag); save(); toast(mag&&par?'✅ Shared with the parents and the class magazine':mag?'✅ Added to the class magazine':'✅ Shared with the parents'); redraw(); };
 }
 function unmarkedWriting(){
   const out=[]; Object.values(DB.profiles).forEach(p=>(p.writing||[]).forEach((w,i)=>{ if (!w.tm && (w.text||'').split(/\s+/).length>=25) out.push({p, w, i}); }));
@@ -6029,6 +6055,21 @@ function screenWritingInbox(){
    <div class="list mt8">${list.map(({p,w,i})=>`<button class="item" data-mk="${escH(p.name)}|${i}"><span class="em">✍️</span><span class="grow"><b>${escH(p.name)}</b> · ${escH(w.kind)}<br><small class="muted">${w.d} · ${wordsOf(w.text).length} words${w.v>1?` · Draft ${w.v}`:''}</small></span>▶</button>`).join('')||'<div class="card center"><div class="f40">🎉</div><p>All caught up!</p></div>'}</div>`;
   $('#bk').onclick=()=>screenTeacher();
   $$('[data-mk]').forEach(b=>b.onclick=()=>{ const [n,i]=b.dataset.mk.split('|'); screenMarkPiece(n, +i, ()=>screenWritingInbox()); });
+}
+
+function screenSharedWriting(){
+  stopTimers(); const list=[], all=[];
+  Object.values(DB.profiles).forEach(p=>(p.writing||[]).forEach((w,i)=>{ all.push({p,w,i}); if (w.pub) list.push({p,w,i}); }));
+  list.sort((a,b)=>String(b.w.pub.at).localeCompare(String(a.w.pub.at)));
+  const marked=all.filter(x=>x.w.tm && !x.w.pub).sort((a,b)=>String(b.w.tm.d).localeCompare(String(a.w.tm.d))).slice(0,30);
+  const row=({p,w,i})=>`<button class="item" data-sh="${escH(p.name)}|${i}"><span class="em">${w.pub&&w.pub.mag?'📰':w.pub?'👪':'✍️'}</span><span class="grow"><b>${escH(p.name)}</b> · ${escH(w.kind)}<br><small class="muted">${w.pub?`${w.pub.par?'Parents':''}${w.pub.par&&w.pub.mag?' and ':''}${w.pub.mag?'class magazine':''} · shared ${escH(w.pub.at)}`:`Marked ${escH(w.tm.d)} · not shared`}</small></span>▶</button>`;
+  app.innerHTML = backTitle('📰 Shared writing')+`
+   ${isCloudTeacher()?'':'<div class="fb"><p>Sharing works in an online class. Open your class from ☁️ Online class first.</p></div>'}
+   <div class="card"><p class="small">Parents open <b>👪 Parent view</b> on the app's first screen. They type the class code, tap their child's name and enter the child's PIN. They see only their own child's shared pieces, plus the class magazine.</p></div>
+   <div class="card mt"><b>Shared (${list.length})</b><div class="list mt8">${list.map(row).join('')||'<p class="muted small">Nothing shared yet. Open a piece and use "Share this piece".</p>'}</div></div>
+   ${marked.length?`<div class="card mt"><b>Marked but not shared</b><div class="list mt8">${marked.map(row).join('')}</div></div>`:''}`;
+  $('#bk').onclick=()=>screenTeacher();
+  $$('[data-sh]').forEach(b=>b.onclick=()=>{ const [n,i]=b.dataset.sh.split('|'); screenMarkPiece(n, +i, ()=>screenSharedWriting()); });
 }
 
 /* ----- Learner: redraft a piece ----- */
@@ -6456,7 +6497,8 @@ function screenTeacher(){
      <button class="tool" id="picker"><span>🎲</span><b>Name Picker</b><small>Randomly choose a learner</small></button>
      <button class="tool" id="tres"><span>📝</span><b>Test results</b><small>Marks, CAPS levels and what to reteach</small></button>
      <button class="tool" id="mmap"><span>🗺️</span><b>Mastery map</b><small>Every learner, every skill, at a glance</small></button>
-     <button class="tool" id="winbox"><span>📥</span><b>Writing to mark${unmarkedWriting().length?` (${unmarkedWriting().length})`:''}</b><small>Rubric, comments and redraft requests</small></button></div>
+     <button class="tool" id="winbox"><span>📥</span><b>Writing to mark${unmarkedWriting().length?` (${unmarkedWriting().length})`:''}</b><small>Rubric, comments and redraft requests</small></button>
+     <button class="tool" id="shared"><span>📰</span><b>Shared writing</b><small>What parents and the class magazine can see</small></button></div>
    <div class="card mt scrollx"><div class="row"><b class="grow">${isCloudTeacher()?"Class progress (online class)":"Class progress on this device"}</b><button class="btn small ghost" id="csv">📋 Copy report</button></div>
      <p class="muted small"><b>This week (Term ${YEAR[curWeek()-1].term}, Week ${YEAR[curWeek()-1].tw}: ${escH(YEAR[curWeek()-1].theme)})</b>: 🔤 spelling test, 📖 reading score, 🧩 quiz, tasks done. Test column shows the latest big test (official mark). Accuracy per world. Green 80%+, amber 60–79%, red below 60%. Tap a name for detail and writing. "Copy report" pastes straight into Excel or Google Sheets.</p>
      <table><tr><th>Player</th><th>Lvl</th><th>★</th><th>🪶</th>${WORLDS.map(w=>`<th title="${w.name}">${w.icon}</th>`).join('')}<th>Needs work</th><th>Wk ${YEAR[curWeek()-1].tw}</th><th>Test</th></tr>
@@ -6494,7 +6536,7 @@ function screenTeacher(){
      <li>Set a focus world each week to match what you are teaching.</li>
      <li>Use Class Starter at the start of a lesson for a quick 5-question warm-up.</li></ul></div>`;
   $('#bk').onclick=()=>teacherBack();
-  wireCloudBar(); $('#starter').onclick=()=>screenStarterSetup(); $('#picker').onclick=()=>screenPicker(); $('#tres').onclick=()=>screenTestResults(); $('#mmap').onclick=()=>screenMasteryMap(); $('#winbox').onclick=()=>screenWritingInbox();
+  wireCloudBar(); $('#starter').onclick=()=>screenStarterSetup(); $('#picker').onclick=()=>screenPicker(); $('#tres').onclick=()=>screenTestResults(); $('#mmap').onclick=()=>screenMasteryMap(); $('#winbox').onclick=()=>screenWritingInbox(); $('#shared').onclick=()=>screenSharedWriting();
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#sv').onclick=()=>{ DB.teacher=$('#tn').value.trim()||'Mr Radloff'; DB.focus=$('#fw').value||null;
@@ -6516,7 +6558,7 @@ function screenPlayerDetail(n){
        return `<div class="item"><span class="grow"><b>${x.title}</b><br><small class="muted">Spelling ${f.A}/${f.nA} · Language ${f.B}/${f.nB} · Reading ${f.C}/${f.nC} · ${f.date}</small></span><span class="right2"><b>${f.score}/${f.total}</b><br><small>${pc}% · L${capsLevel(pc)[1]}</small>${r.tries>1?`<br><small class="muted">Best ${pctOf(r.best)}%</small>`:''}</span></div>`; }).join('')}</div>`:'<p class="muted small">No big tests written yet.</p>'}</div>
    <div class="card mt"><b>🧩 Weekly quizzes</b><div class="pool l mt8">${Object.entries(p.yr).filter(([,v])=>v.quiz!=null).sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).map(([k,v])=>`<span class="chip static">Wk ${YEAR[+k.slice(1)-1].tw} T${YEAR[+k.slice(1)-1].term}: <b>${v.quiz}/10</b></span>`).join('')||'<span class="muted">No quizzes yet.</span>'}</div></div>
    <div class="card mt"><b>✍️ Writing Book</b> <small class="muted">(${p.writing.length} pieces)</small>
-     ${p.writing.length?p.writing.slice(0,12).map((w,i)=>`<div class="wpiece flat"><div class="row"><small class="muted b grow">${escH(w.kind)} · ${w.d} · checklist ${w.score}/${w.max}${w.v>1?` · Draft ${w.v}`:''}${w.coach?` · coach: ${w.coach.fix} fix-its`:''}</small><button class="btn small ${w.tm?'ghost':''}" data-mkp="${i}">${w.tm?'Edit mark':'Mark'}</button></div><p class="pre">${escH(w.text)}</p>${teacherFeedbackHTML(w,true)}</div>`).join(''):'<p class="muted">Nothing saved yet.</p>'}</div>
+     ${p.writing.length?p.writing.slice(0,12).map((w,i)=>`<div class="wpiece flat"><div class="row"><small class="muted b grow">${escH(w.kind)} · ${w.d} · checklist ${w.score}/${w.max}${w.v>1?` · Draft ${w.v}`:''}${w.coach?` · coach: ${w.coach.fix} fix-its`:''}${w.pub&&w.pub.par?' · 👪 parents':''}${w.pub&&w.pub.mag?' · 📰 magazine':''}</small><button class="btn small ${w.tm?'ghost':''}" data-mkp="${i}">${w.tm?'Edit mark':'Mark'}</button></div><p class="pre">${escH(w.text)}</p>${teacherFeedbackHTML(w,true)}</div>`).join(''):'<p class="muted">Nothing saved yet.</p>'}</div>
    ${WORLDS.map(w=>`<div class="card mt"><b>${w.icon} ${w.name}</b>${p.bosses[w.id]?' 🪶':''}<table class="mt8">${w.skills.map(k=>`<tr><td>${k.name}</td><td class="medals">${medalStr(p.best[k.id])}</td><td>${accCell(p.stats,[k.id])}</td></tr>`).join('')}</table></div>`).join('')}
    <div class="card mt"><p class="small muted">🩹 ${p.mistakes.length} mistakes waiting for review · 🔥 best streak ${p.bestStreak} · 🏁 race best ${p.races.best} · last active ${p.lastDay||'never'}</p>
      <button class="btn ghost" id="del">Remove this player</button></div>`;
@@ -6702,6 +6744,8 @@ const pieceKey = w => w.id || (w.id = 'h'+hashStr((w.d||'')+'|'+(w.kind||'')+'|'
 function applyTeacherFields(p, d){
   const marks=(d&&d.marks)||{}; let fresh=0;
   (p.writing||[]).forEach(w=>{ const m=marks[pieceKey(w)]; if (m){ if (!w.tm || JSON.stringify(w.tm)!==JSON.stringify(m)) fresh++; w.tm=m; } });
+  if (d && d.published && typeof d.published==='object'){ const pub=d.published;
+    (p.writing||[]).forEach(w=>{ const s=pub[pieceKey(w)]; if (s && (s.par || s.mag)) w.pub=s; else delete w.pub; }); }
   if (d && d.teacher){ p.reader=!!d.teacher.reader; if (p.reader) p.prefs.autoRead=true; }
   return fresh;
 }
@@ -6728,10 +6772,10 @@ function setSync(s){ CL.state=s; const el=$('#syncdot'); if (el){ el.className='
 document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState==='hidden' && isCloudLearner()) cloudPush(); });
 
 /* ---------- Learner: class code → name → PIN ---------- */
-function screenClassLogin(code){
-  stopTimers();
-  app.innerHTML = backTitle('🔐 Class login')+`
-   <div class="card center"><div class="f60">🏫</div><h2>Enter your class code</h2><p class="muted">Your teacher will give you a code with 6 letters and numbers.</p>
+function screenClassLogin(code, mode){
+  stopTimers(); const par=mode==='parent';
+  app.innerHTML = backTitle(par?'👪 Parent view':'🔐 Class login')+`
+   <div class="card center"><div class="f60">${par?'👪':'🏫'}</div><h2>${par?"Enter your child's class code":'Enter your class code'}</h2><p class="muted">${par?"It is the 6-letter code on your child's login card.":'Your teacher will give you a code with 6 letters and numbers.'}</p>
      <input class="name codein" id="cc" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" value="${escH(code||DB.lastCode||'')}">
      <button class="btn gold w100 mt8" id="go">Next ▶</button><p class="small muted mt8" id="msg"></p></div>`;
   $('#bk').onclick=()=>screenProfiles();
@@ -6740,28 +6784,28 @@ function screenClassLogin(code){
     $('#msg').textContent='Looking for your class…'; $('#go').disabled=true;
     try { await cloudInit(); const r=await CL.db.doc(`rosters/${c}`).get({source:'server'});
       if (!r.exists){ $('#msg').textContent='No class has that code. Check it and try again.'; $('#go').disabled=false; return; }
-      DB.lastCode=c; save(); screenPickName(c, r.data());
+      if (!par){ DB.lastCode=c; save(); } screenPickName(c, r.data(), mode);
     } catch(e){ if ($('#msg')){ $('#msg').textContent=cloudErr(e); $('#go').disabled=false; } } };
   $('#go').onclick=go; $('#cc').onkeydown=e=>{ if (e.key==='Enter') go(); };
   setTimeout(()=>{ const el=$('#cc'); if (el && !el.value) el.focus(); }, 80);
 }
-function screenPickName(code, roster){
-  stopTimers(); const names=(roster.names||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));
-  app.innerHTML = backTitle('🔐 '+escH(roster.className||'Your class'))+`
-   <div class="card"><h3>Tap your name</h3><div class="plist mt8">${names.map((n,i)=>`<button class="pcard" data-i="${i}">${heronSVG({col:n.col||'grey',hat:'cap'},'h56')}<b>${escH(n.name)}</b></button>`).join('')||'<p class="muted">Your teacher has not added any learners yet.</p>'}</div></div>`;
-  $('#bk').onclick=()=>screenClassLogin(code);
-  $$('[data-i]').forEach(b=>b.onclick=()=>screenPinPad(code, roster, names[+b.dataset.i]));
+function screenPickName(code, roster, mode){
+  stopTimers(); const names=(roster.names||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)), par=mode==='parent';
+  app.innerHTML = backTitle((par?'👪 ':'🔐 ')+escH(roster.className||'Your class'))+`
+   <div class="card"><h3>${par?"Tap your child's name":'Tap your name'}</h3><div class="plist mt8">${names.map((n,i)=>`<button class="pcard" data-i="${i}">${heronSVG({col:n.col||'grey',hat:'cap'},'h56')}<b>${escH(n.name)}</b></button>`).join('')||'<p class="muted">Your teacher has not added any learners yet.</p>'}</div></div>`;
+  $('#bk').onclick=()=>screenClassLogin(code, mode);
+  $$('[data-i]').forEach(b=>b.onclick=()=>screenPinPad(code, roster, names[+b.dataset.i], mode));
 }
-function screenPinPad(code, roster, entry){
-  stopTimers(); let pin='';
-  app.innerHTML = backTitle('🔐 Hello, '+escH(entry.name)+'!')+`
-   <div class="card center">${heronSVG({col:entry.col||'grey',hat:'cap'},'h90')}<h3>Type your 4-digit PIN</h3>
-     <div class="pindots" id="pd">${'<i></i>'.repeat(4)}</div><p class="small muted" id="msg">Your PIN is on the card your teacher gave you.</p>
+function screenPinPad(code, roster, entry, mode){
+  stopTimers(); let pin=''; const par=mode==='parent';
+  app.innerHTML = backTitle(par?'👪 '+escH(entry.name)+"'s writing":'🔐 Hello, '+escH(entry.name)+'!')+`
+   <div class="card center">${heronSVG({col:entry.col||'grey',hat:'cap'},'h90')}<h3>${par?"Type your child's 4-digit PIN":'Type your 4-digit PIN'}</h3>
+     <div class="pindots" id="pd">${'<i></i>'.repeat(4)}</div><p class="small muted" id="msg">${par?"The PIN is on your child's login card.":'Your PIN is on the card your teacher gave you.'}</p>
      <div class="pinpad">${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button class="pk" data-k="${k}">${k}</button>`).join('')}</div></div>`;
-  $('#bk').onclick=()=>screenPickName(code, roster);
+  $('#bk').onclick=()=>screenPickName(code, roster, mode);
   const draw=()=>$$('#pd i').forEach((d,i)=>d.classList.toggle('on', i<pin.length));
   const press=k=>{ if (k==='⌫') pin=pin.slice(0,-1); else if (pin.length<4) pin+=k; draw(); try{ sfx.tap(); }catch(e){}
-    if (pin.length===4){ const tryPin=pin; setTimeout(async()=>{ try { await learnerSignIn(code, entry, tryPin); } catch(e){ busy(); if ($('#msg')){ $('#msg').textContent=cloudErr(e); $('#pd').classList.add('shake'); setTimeout(()=>{ if ($('#pd')) $('#pd').classList.remove('shake'); },500); } pin=''; draw(); } }, 120); } };
+    if (pin.length===4){ const tryPin=pin; setTimeout(async()=>{ try { if (par) await parentSignIn(code, entry, tryPin); else await learnerSignIn(code, entry, tryPin); } catch(e){ busy(); if ($('#msg')){ $('#msg').textContent=cloudErr(e); $('#pd').classList.add('shake'); setTimeout(()=>{ if ($('#pd')) $('#pd').classList.remove('shake'); },500); } pin=''; draw(); } }, 120); } };
   $$('.pk').forEach(b=>b.onclick=()=>press(b.dataset.k));
   document.onkeydown=e=>{ if (!$('.pinpad')){ document.onkeydown=null; return; } if (/^[0-9]$/.test(e.key)) press(e.key); else if (e.key==='Backspace') press('⌫'); };
 }
@@ -6784,6 +6828,55 @@ async function learnerSignIn(code, entry, pin){
   CL.lastJson=''; save(); await cloudPush(true); learnerListen(); busy(); document.onkeydown=null; applyPrefs();
   toast(`👋 Welcome, ${name}! Your progress is saved online.`);
   if (!p.rounds && !p.xp) screenStory(true); else screenHome();
+}
+/* ---------- Parent view: read-only, on its own login, signed out as soon as the writing is loaded ---------- */
+async function parentApp(){
+  await cloudInit();
+  const a=firebase.apps.find(x=>x.name==='hwq-parent')||firebase.initializeApp(FB_CONFIG,'hwq-parent'), auth=a.auth();
+  try { await auth.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch(e){}
+  return {auth, db:a.firestore()};
+}
+async function parentSignIn(code, entry, pin){
+  busy('Opening the writing…'); const {auth, db}=await parentApp();
+  let out=null;
+  try { const cred=await auth.signInWithEmailAndPassword(learnerEmail(code, entry.login), learnerPass(code, pin)), uid=cred.user.uid;
+    const [ld, cd]=await Promise.all([db.doc(`classes/${code}/learners/${uid}`).get(), db.doc(`classes/${code}`).get()]);
+    const c=cd.exists?cd.data():{}, pub=(ld.exists&&ld.data().published)||{};
+    let mag=[], magOk=true; try { const qs=await db.collection(`classes/${code}/magazine`).get(); qs.forEach(m=>mag.push(m.data())); } catch(e){ magOk=false; }
+    const byNew=(a,b)=>String(b.at||b.d).localeCompare(String(a.at||a.d));
+    out={child:entry.name, col:entry.col, cls:c.name||'', teacher:c.teacherName||'Your teacher',
+      mine:Object.values(pub).filter(x=>x&&x.par).sort(byNew), mag:mag.sort(byNew), magOk};
+  } finally { try { await auth.signOut(); } catch(e){} busy(); }
+  document.onkeydown=null; screenParent(out, 'mine');
+}
+const parentDate = d => { try { return new Date(String(d).slice(0,10)+'T12:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}); } catch(e){ return d||''; } };
+function parentFeedbackHTML(tm, teacher){
+  if (!tm || !tm.r) return '';
+  const tot=tmTotal(tm);
+  return `<div class="tfb"><div class="row"><b class="grow">📝 ${escH(teacher)}'s feedback</b><b>${tot}/25</b></div>
+    <div class="tfgrid">${RUBRIC.map(([k,n])=>`<span>${n}</span><span class="dots">${'●'.repeat(+tm.r[k]||0)}<span class="dim">${'●'.repeat(5-(+tm.r[k]||0))}</span></span>`).join('')}</div>
+    ${tm.c?`<p class="tfc">"${escH(tm.c)}"</p>`:''}<small class="muted">1 Not yet · 2 Developing · 3 Achieved · 4 Good · 5 Excellent</small></div>`;
+}
+function screenParent(v, tab){
+  stopTimers();
+  const piece=(x, forMag)=>`<div class="wpiece ${forMag?'magpiece':''} mt8">
+      ${forMag?`<h3>${escH(x.kind)} by ${escH(x.name)}</h3>`:`<small class="muted b">${escH(x.kind)}</small>`}
+      <small class="muted">${escH(parentDate(x.d||x.at))}</small>
+      ${x.prompt?`<p class="small"><b>Task:</b> ${escH(x.prompt)}</p>`:''}
+      <p class="pre">${escH(x.text)}</p>${forMag?'':parentFeedbackHTML(x.tm, v.teacher)}</div>`;
+  const mine=v.mine.length?v.mine.map(x=>piece(x,false)).join('')
+    :`<div class="card center"><div class="f40">✍️</div><p>${escH(v.teacher)} has not shared any of ${escH(v.child)}'s writing yet. Check back after the next writing task.</p></div>`;
+  const mag=!v.magOk?'<div class="card center"><p>The class magazine could not be opened right now. Please try again later.</p></div>'
+    : v.mag.length?`<div class="card center"><h2>📰 ${escH(v.cls||'Class')} Magazine</h2><small class="muted">The best writing from the class, chosen by ${escH(v.teacher)}</small></div>${v.mag.map(x=>piece(x,true)).join('')}`
+    :'<div class="card center"><div class="f40">📰</div><p>The class magazine is empty for now. The first pieces will appear here soon.</p></div>';
+  app.innerHTML = `<div class="parenthead"><small>👪 Parent view · ${escH(v.cls)}</small><h2>${escH(v.child)}'s writing</h2><small>Shared by ${escH(v.teacher)}</small></div>
+   <div class="seg2 mt noprint"><button class="${tab==='mine'?'on':''}" id="tmine">${escH(v.child)} (${v.mine.length})</button><button class="${tab==='mag'?'on':''}" id="tmag">Class magazine (${v.mag.length})</button></div>
+   <div class="mt">${tab==='mag'?mag:mine}</div>
+   <div class="row mt noprint"><button class="btn ghost grow" id="pprint">🖨️ Print</button><button class="btn grow" id="pclose">Close parent view</button></div>
+   <p class="small muted mt8 noprint">You opened this with ${escH(v.child)}'s class code and PIN. Only ${escH(v.child)}'s family can see the pieces on the first tab. You are already logged out, so nothing stays on this device after you close it.</p>`;
+  $('#tmine').onclick=()=>screenParent(v,'mine'); $('#tmag').onclick=()=>screenParent(v,'mag');
+  $('#pprint').onclick=()=>{ try { window.print(); } catch(e){ toast('Printing is not available here'); } };
+  $('#pclose').onclick=()=>screenProfiles();
 }
 function learnerListen(){
   CL.unsubs.forEach(u=>{ try{u();}catch(e){} }); CL.unsubs=[]; if (!isCloudLearner()) return;
@@ -6869,7 +6962,12 @@ async function teacherOpenClass(code, isNew){
     DB.current=null; applyClassSettings(c); await teacherPull(); busy(); screenCloudClass(isNew);
   } catch(e){ busy(); toast(cloudErr(e)); }
 }
-const teacherSigOf = p => { const marks={}; (p.writing||[]).forEach(w=>{ if (w.tm) marks[pieceKey(w)]=w.tm; }); return {marks, teacher:{reader:!!p.reader}}; };
+const teacherSigOf = p => { const marks={}, published={}; (p.writing||[]).forEach(w=>{ if (w.tm) marks[pieceKey(w)]=w.tm; if (w.pub && (w.pub.par || w.pub.mag)) published[pieceKey(w)]=w.pub; }); return {marks, teacher:{reader:!!p.reader}, published}; };
+/* ---------- Sharing: parent view and class magazine ---------- */
+const magId = (uid, key) => `${uid}_${key}`;
+const magDoc = (name, s) => ({name, kind:s.kind||'', prompt:s.prompt||'', text:s.text||'', d:s.d||'', at:s.at||''});
+function magWanted(){ const out={}; Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>(p.writing||[]).forEach(w=>{ if (w.pub && w.pub.mag) out[magId(p._uid, pieceKey(w))]=magDoc(p.name, w.pub); })); return out; }
+function pubSnap(w, par, mag){ return {par:!!par, mag:!!mag, at:today(), kind:w.kind||'', prompt:w.prompt||'', text:w.text||'', d:w.d||'', v:w.v||1, tm:w.tm||null}; }
 const settingsSig = () => JSON.stringify({week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName()});
 async function teacherPull(){
   const code=DB.cloud.code;
@@ -6878,10 +6976,12 @@ async function teacherPull(){
   const c=cd.data(); CL.cls=c; const out={}, pushed={_s:settingsSig()};
   qs.forEach(doc=>{ const d=doc.data(), info=(c.learners||{})[doc.id]; if (!info) return;
     let p; try { p=migrate(JSON.parse(d.profile||'null')||newProfile(info.name, info.col||'grey')); } catch(e){ p=newProfile(info.name, info.col||'grey'); }
-    p.name=info.name; p._uid=doc.id; applyTeacherFields(p, d); out[info.name]=p; pushed[doc.id]=JSON.stringify(teacherSigOf(p)); });
+    p.name=info.name; p._uid=doc.id; (p.writing||[]).forEach(w=>{ delete w.pub; }); applyTeacherFields(p, d); out[info.name]=p; pushed[doc.id]=JSON.stringify(teacherSigOf(p)); });
   Object.entries(c.learners||{}).forEach(([uid,info])=>{ if (!out[info.name]){ const p=newProfile(info.name, info.col||'grey'); p._uid=uid; out[info.name]=p; pushed[uid]=JSON.stringify(teacherSigOf(p)); } });
   Object.keys(DB.profiles).forEach(n=>{ if (DB.profiles[n]._uid) delete DB.profiles[n]; });
   Object.assign(DB.profiles, out); DB.classList=Object.values(c.learners||{}).map(x=>x.name).sort();
+  try { const ms=await CL.db.collection(`classes/${code}/magazine`).get({source:'server'}); pushed._mag={};
+    ms.forEach(m=>{ const x=m.data(); pushed._mag[m.id]=JSON.stringify(magDoc(x.name, x)); }); } catch(e){ pushed._mag=null; }
   CL.pushed=pushed; DB.cloud.synced=Date.now(); save();
 }
 function scheduleTeacherPush(){ clearTimeout(CL.tpT); CL.tpT=setTimeout(()=>teacherPush().catch(()=>setSync('off')), 1200); }
@@ -6889,9 +6989,19 @@ async function teacherPush(){
   if (!isCloudTeacher() || !CL.pushed) return; await cloudInit();
   const code=DB.cloud.code, batch=CL.db.batch(); let n=0;
   Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>{ const sig=teacherSigOf(p), js=JSON.stringify(sig);
-    if (CL.pushed[p._uid]!==js){ batch.set(CL.db.doc(`classes/${code}/learners/${p._uid}`), sig, {merge:true}); CL.pushed[p._uid]=js; n++; } });
+    if (CL.pushed[p._uid]!==js){ const ref=CL.db.doc(`classes/${code}/learners/${p._uid}`);
+      batch.set(ref, {marks:sig.marks, teacher:sig.teacher}, {merge:true}); batch.set(ref, {published:sig.published}, {mergeFields:['published']}); CL.pushed[p._uid]=js; n++; } });
   const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on'}, teacherName:teacherName()}); CL.pushed._s=ss; n++; }
   if (n){ setSync('busy'); await batch.commit(); setSync('ok'); }
+  await magazinePush();
+}
+async function magazinePush(){
+  if (!isCloudTeacher() || !CL.pushed || !CL.pushed._mag) return;
+  const code=DB.cloud.code, have=CL.pushed._mag, want=magWanted(), batch=CL.db.batch(), next={}; let n=0;
+  Object.entries(want).forEach(([id,d])=>{ const js=JSON.stringify(d); next[id]=js; if (have[id]!==js){ batch.set(CL.db.doc(`classes/${code}/magazine/${id}`), d); n++; } });
+  Object.keys(have).forEach(id=>{ if (!want[id]){ batch.delete(CL.db.doc(`classes/${code}/magazine/${id}`)); n++; } });
+  if (!n) return;
+  try { await batch.commit(); CL.pushed._mag=next; } catch(e){ toast('The class magazine could not be updated: '+cloudErr(e)); }
 }
 async function teacherPins(){ const s=await CL.db.doc(`teachers/${CL.user.uid}`).get({source:'server'}); return ((s.exists&&s.data().pins)||{})[DB.cloud.code]||{}; }
 function secondaryAuth(){ const sec=firebase.apps.find(a=>a.name==='hwq-sec')||firebase.initializeApp(FB_CONFIG,'hwq-sec'); return sec.auth(); }
