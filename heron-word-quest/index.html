@@ -427,6 +427,19 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .coachsum{background:#f6f8fc;border-radius:10px;padding:6px 10px;margin:6px 0;color:var(--muted)}
 .draftno{color:#5b3cc4}
 .sharedtag{display:inline-block;margin:2px 6px 0 0;color:#0f766e}
+.cta.studio{background:linear-gradient(135deg,#b45309,#f59e0b)}
+.studiogrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.studiocard{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px;border-radius:16px;border:2px solid #e6ecf5;background:#fff;text-align:left;color:var(--ink)}
+.studiocard .sic{font-size:28px}.studiocard small{color:#64748b}
+.recbox{display:flex;flex-direction:column;gap:8px;align-items:stretch}.rectime{font-size:28px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums}
+.btn.rec{background:#dc2626}.btn.rec.live{background:#111827;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.7}}
+.excerpt{font-size:19px;line-height:1.6}.excerpt.small{font-size:15px}
+.scorepill{display:inline-block;background:#1f2756;color:#fff;border-radius:999px;padding:2px 10px;font-weight:900;font-size:14px}
+.rrow{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #eef2f8}.rb{width:38px;height:38px;border-radius:10px;border:2px solid #dbe3ef;background:#fff;font-weight:900}.rb.on{background:#facc15;border-color:#f59e0b}
+.checklist div{padding:2px 0;color:#64748b}.checklist div.ok{color:#15803d;font-weight:700}
+.peerrev{background:#f0fdf9;border-radius:12px;padding:10px;margin-top:8px}
+.item.placed{background:#ecfdf5}.chip.sel{background:#facc15}
+.model h3{margin-top:0}
 .cta.books{background:linear-gradient(135deg,#0f766e,#14a38f)}.cta.tquiz{background:linear-gradient(135deg,#7c3aed,#a855f7)}
 .setwork{border:2px solid #f59e0b;background:#fffbeb;border-radius:18px;padding:12px}
 .setwork .item{background:#fff}
@@ -4832,8 +4845,8 @@ function migrate(p){
   if (!p.look) p.look = {col:'grey', hat:'cap', eyes:null, extra:null};
   if (!Array.isArray(p.owned) || !p.owned.some(o=>String(o).includes(':'))) p.owned = [...START_OWNED];
   START_OWNED.forEach(o=>{ if (!p.owned.includes(o)) p.owned.push(o); });
-  ['stats','best','bosses','learned','arcade','prefs','lvl','yr','drafts','spellTests','tests','mast','asg','cq'].forEach(k=>{ if (!p[k] || typeof p[k]!=='object') p[k]={}; });
-  ['mistakes','writing','badges','books'].forEach(k=>{ if (!Array.isArray(p[k])) p[k]=[]; });
+  ['stats','best','bosses','learned','arcade','prefs','lvl','yr','drafts','spellTests','tests','mast','asg','cq','deep','peer','models','paraOrder','oralPlans'].forEach(k=>{ if (!p[k] || typeof p[k]!=='object') p[k]={}; });
+  ['mistakes','writing','badges','books','fluency','orals','paras','qw'].forEach(k=>{ if (!Array.isArray(p[k])) p[k]=[]; });
   if (typeof pieceKey==='function') p.writing.forEach(pieceKey);
   if (!p.races) p.races={played:0,won:0,best:0};
   ['xp','coins','rounds','bestStreak','dayStreak','todayRounds','dailyCount','fixed'].forEach(k=>{ if (typeof p[k]!=='number') p[k]=0; });
@@ -5008,6 +5021,7 @@ function recommend(p){
 /* ---------- Timers / cleanup ---------- */
 let raceTimer=null, botTimer=null, starterTimer=null, rafId=null;
 function stopTimers(){
+  try { stopRec(); } catch(e){}
   clearInterval(raceTimer); clearInterval(botTimer); clearInterval(starterTimer); raceTimer=botTimer=starterTimer=null;
   if (rafId) cancelAnimationFrame(rafId); rafId=null; if (typeof A!=='undefined' && A) A.over=true;
   window.onkeydown=null; document.body.classList.remove('wide');
@@ -5101,6 +5115,7 @@ function screenHome(){
      <button class="cta race" id="race"><span class="ic">🏁</span><span><b>Heron Race</b>60 seconds. Beat the birds!</span></button>
      <button class="cta rain" id="rain"><span class="ic">🌧️</span><span><b>Word Rain</b>Arcade: catch the right words!</span></button>
      <button class="cta write" id="write"><span class="ic">✍️</span><span><b>Writer's Workshop</b>Build super sentences</span></button>
+     <button class="cta studio" id="hstudio"><span class="ic">🎙️</span><span><b>Studio</b>Read aloud, speak, think deeper and write</span></button>
      <button class="cta books" id="hbooks"><span class="ic">📚</span><span><b>Reading Challenge</b>${(p.books||[]).filter(b=>b.ok).length} books checked · ${bookBadge(p).now||'start your first badge'}</span></button>
      <button class="cta tquiz" id="hquiz"><span class="ic">✏️</span><span><b>${escH(teacherName())}'s quizzes</b>${(DB.quizzes||[]).length?`${(DB.quizzes||[]).filter(q=>!p.cq[q.id]).length} new to try`:'None yet'}</span></button>
    </div>
@@ -5128,7 +5143,7 @@ function screenHome(){
   if ($('#review')) $('#review').onclick=()=>startReview();
   $('#daily').onclick=()=>{ if (dailyDone){ toast("You already did today's challenge! 🎉"); return; } startDaily(); };
   $('#race').onclick=()=>startRace(); $('#rain').onclick=()=>screenArcade(); $('#write').onclick=()=>screenWorkshop();
-  $('#hbooks').onclick=()=>screenBooks(); $('#hquiz').onclick=()=>screenMyQuizzes();
+  $('#hbooks').onclick=()=>screenBooks(); $('#hstudio').onclick=()=>screenStudio(); $('#hquiz').onclick=()=>screenMyQuizzes();
   $$('[data-asg]').forEach(b=>b.onclick=()=>{ const a=(DB.assign||[]).find(x=>x.id===b.dataset.asg); if (!a || !SK(a.sk)) return toast('That task is no longer set');
     if (!p.learned[a.sk]) { p.learned[a.sk]=true; save(); } startRound(a.sk, a.lv, ()=>screenHome()); R.asg=a.id; });
   $$('[data-w]').forEach(b=>b.onclick=()=>screenWorld(b.dataset.w));
@@ -5404,6 +5419,7 @@ function endRound(){
   if (R.mode==='daily'){ p.dailyDone=today(); p.dailyCount++; }
   let asgDone=false;
   if (R.asg){ const prev=p.asg[R.asg]; if (pc>=.6 && !prev){ p.asg[R.asg]={pc:Math.round(pc*100), d:today()}; asgDone=true; } else if (prev && Math.round(pc*100)>prev.pc) prev.pc=Math.round(pc*100); }
+  if (R.model){ const prev=p.models[R.model], sc=Math.round(pc*100); p.models[R.model]={first:prev?prev.first:sc, best:Math.max(prev?prev.best:0, sc), d:today()}; }
   if (R.cq){ const prev=p.cq[R.cq], sc=Math.round(pc*100); p.cq[R.cq]={first:prev?prev.first:sc, best:Math.max(prev?prev.best:0, sc), tries:(prev?prev.tries:0)+1, d:today()}; }
   if (R.week){ const y=p.yr['w'+R.week]||(p.yr['w'+R.week]={});
     if (R.mode==='spell' && pc>=.7) y.spell=true;
@@ -5415,7 +5431,7 @@ function endRound(){
   if (mastered) stampCert(p,'master:'+w.id);
   const fresh=checkBadges(); save();
   const lvUp=level(p.xp)>oldLv;
-  const title = {cquiz:'Quiz done!', daily:'Daily challenge complete!', mend:`${R.correct} mistake${R.correct===1?'':'s'} fixed!`, spelltest:'Spelling test done!', spell:'Spelling practice done!', read:'Reading done!', quiz:'Weekly quiz done!', smart:'Smart practice done!', review:'Review done!'}[R.mode]
+  const title = {model:'Feature spotter done!', cquiz:'Quiz done!', daily:'Daily challenge complete!', mend:`${R.correct} mistake${R.correct===1?'':'s'} fixed!`, spelltest:'Spelling test done!', spell:'Spelling practice done!', read:'Reading done!', quiz:'Weekly quiz done!', smart:'Smart practice done!', review:'Review done!'}[R.mode]
     || (medalNew?`${LVN[medalNew-1]} medal!`:passed?'Great work!':pc>=.4?'Good effort!':'Keep practising!');
   const results = R.mode==='spelltest' ? `<div class="list left mt8">${R.qs.map(q=>`<div class="item ${q.ok?'':'wrongrow'}"><span class="em">${q.ok?'✅':'❌'}</span><span class="grow">${q.ok?`<b>${escH(q.answer)}</b>`:(d=>`You wrote <b>${d.ga||'(nothing)'}</b><br>Correct: <b>${d.cb}</b>`)(diffHTML(q.given||'',q.answer))}</span></div>`).join('')}</div>` : '';
   app.innerHTML = `<div class="card center">${heronSVG(p.look,'h110 bounce')}<h2>${title}</h2>
@@ -5984,7 +6000,7 @@ function screenWritingBook(){
   app.innerHTML = backTitle('📒 My Writing Book')+(p.writing.length?`<div class="list">${p.writing.map((w,i)=>`
     <div class="wpiece"><div class="row"><small class="muted b grow">${escH(w.kind)} · ${new Date(w.d+'T12:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'short'})}</small>
       <span class="stars">${'★'.repeat(Math.round(w.score/w.max*3))}<span class="dim">${'★'.repeat(3-Math.round(w.score/w.max*3))}</span></span></div>
-      ${w.v>1?`<small class="b draftno">Draft ${w.v}</small>`:''}${w.pub&&w.pub.mag?'<small class="b sharedtag">📰 In the class magazine</small>':''}${w.pub&&w.pub.par?'<small class="b sharedtag">👪 Shared with your family</small>':''}<p class="pre">${escH(w.text)}</p>
+      ${w.v>1?`<small class="b draftno">Draft ${w.v}</small>`:''}${w.pub&&w.pub.mag?'<small class="b sharedtag">📰 In the class magazine</small>':''}${w.pub&&w.pub.par?'<small class="b sharedtag">👪 Shared with your family</small>':''}<p class="pre">${escH(w.text)}</p>${(w.pf||[]).length?`<div class="peerrev"><b>🤝 Feedback from classmates</b>${w.pf.map(f=>`<p>⭐ ${escH(f.stars.join(' and '))}: ${escH(f.st)}<br>🌱 ${escH(f.wish)}: ${escH(f.wt)}</p>`).join('')}</div>`:''}
       ${w.coach?`<div class="small coachsum">${w.coach.stars&&w.coach.stars[0]?`⭐ ${escH(w.coach.stars[0])}<br>`:''}🎯 ${escH(w.coach.wish||'')}${w.coach.fix?` · 🔧 ${w.coach.fix} fix-it${w.coach.fix===1?'':'s'}`:''}</div>`:''}
       ${teacherFeedbackHTML(w)}
       <div class="row">${canSpeak?`<button class="btn small ghost" data-say="${i}">🔊</button>`:''}${wordsOf(w.text).length>=15?`<button class="btn small ${w.tm&&w.tm.redraft?'gold':'ghost'}" data-imp="${i}">✏️ Improve it</button>`:''}<span class="grow"></span><button class="btn small ghost" data-del="${i}">🗑️</button></div></div>`).join('')}</div>`
@@ -6160,23 +6176,28 @@ function screenMarkPiece(name, idx, back){
      <p class="small muted mt8">${a.wc} words · ${a.sents} sentences · ${a.paras} paragraphs · coach found ${a.fixCount} fix-it${a.fixCount===1?'':'s'} and ${a.styleCount} style point${a.styleCount===1?'':'s'}</p>
      ${w.prev?`<details class="mt8"><summary class="b">See the previous draft</summary><p class="pre small">${escH(w.prev)}</p></details>`:''}</div>
    <div class="card mt">${markFormHTML(w)}</div>
-   <div class="card mt" id="sharecard">${shareFormHTML(w)}</div>`;
+   <div class="card mt" id="sharecard">${shareFormHTML(w, name)}</div>`;
   wireCoach(a); $('#bk').onclick=()=>back();
-  wireMarkForm(w, ()=>back()); wireShareForm(w, ()=>screenMarkPiece(name, idx, back));
+  wireMarkForm(w, ()=>back()); wireShareForm(w, ()=>screenMarkPiece(name, idx, back), name);
 }
-function shareFormHTML(w){
+const peerIdOf = (name, w) => Object.keys(peerMap()).find(k=>peerMap()[k].name===name && peerMap()[k].key===pieceKey(w) && (DB.peerItems||[]).some(x=>x.id===k));
+function shareFormHTML(w, name){
   if (!isCloudTeacher()) return `<b>👪 Share this piece</b><p class="small muted">Sharing with parents and the class magazine works in an online class. Open your class from ☁️ Online class first.</p>`;
   const s=w.pub||{}, stale=w.pub && (s.text!==w.text || (s.tm?JSON.stringify(s.tm):'')!==(w.tm?JSON.stringify(w.tm):''));
   return `<b>👪 Share this piece</b>
     <label class="toggle mt8"><span class="grow"><b>Show it to this learner's parents</b><br><small class="muted">Parents see the writing, your rubric marks and your comment. Nobody else's child can see it.</small></span><input type="checkbox" id="shpar" ${s.par?'checked':''}><i></i></label>
+    <label class="toggle"><span class="grow"><b>Use for peer review</b><br><small class="muted">Classmates see it with no name, and give two stars and a wish in the Studio.</small></span><input type="checkbox" id="shpeer" ${peerIdOf(name,w)?'checked':''}><i></i></label>
     <label class="toggle"><span class="grow"><b>Put it in the class magazine</b><br><small class="muted">Every family in this class can read it, with the learner's first name. Marks and comments are not shown.</small></span><input type="checkbox" id="shmag" ${s.mag?'checked':''}><i></i></label>
     ${stale?`<p class="small b redraft mt8">The learner has changed this piece, or you changed the mark, since you shared it. Parents still see the version from ${escH(s.at||'')}. Save sharing to show the newest version.</p>`:''}
     ${w.pub?`<small class="muted">Shared on ${escH(s.at||'')}</small>`:''}
     <div class="row mt8"><span class="grow"></span><button class="btn" id="shsave">Save sharing</button></div>`;
 }
-function wireShareForm(w, redraw){
+function wireShareForm(w, redraw, name){
   const b=$('#shsave'); if (!b) return;
-  b.onclick=()=>{ const par=$('#shpar').checked, mag=$('#shmag').checked;
+  b.onclick=()=>{ const par=$('#shpar').checked, mag=$('#shmag').checked, peer=$('#shpeer').checked, had=peerIdOf(name, w);
+    if (peer && !had){ const id='pr'+uid36(); DB.peerItems=(DB.peerItems||[]).concat([{id, kind:w.kind||'', prompt:w.prompt||'', text:w.text||'', d:today()}]).slice(-20); peerMap()[id]={name, key:pieceKey(w)}; savePeerMap(); toast('🤝 Shared for peer review'); }
+    if (!peer && had){ DB.peerItems=(DB.peerItems||[]).filter(x=>x.id!==had); delete peerMap()[had]; savePeerMap(); }
+    if (peer!==!!had && !par && !mag && !w.pub){ save(); return redraw(); }
     if (!par && !mag){ if (w.pub){ delete w.pub; save(); toast('This piece is no longer shared'); } else toast('Tick at least one box to share it'); return redraw(); }
     w.pub=pubSnap(w, par, mag); save(); toast(mag&&par?'✅ Shared with the parents and the class magazine':mag?'✅ Added to the class magazine':'✅ Shared with the parents'); redraw(); };
 }
@@ -6408,8 +6429,12 @@ function termMarks(p, term){
   const rv=ts.length&&sum('nC')?Math.round(sum('C')/sum('nC')*100):'';
   const lang=ts.length&&(sum('nA')+sum('nB'))?Math.round((sum('A')+sum('B'))/(sum('nA')+sum('nB'))*100):'';
   const ws=(p.writing||[]).filter(w=>w.tm && w.tm.r && termOfPiece(w)===term).map(w=>tmTotal(w.tm)/25*100);
-  const wp=ws.length?Math.round(ws.reduce((a,b)=>a+b,0)/ws.length):'';
-  return {rv, wp, lang, tests:ts.length, pieces:ws.length};
+  const wpW=ws.length?Math.round(ws.reduce((a,b)=>a+b,0)/ws.length):'';
+  const inT=x=>x.term===term;
+  const paraP=(p.paras||[]).filter(x=>x.tm&&inT(x)).map(x=>paraScore(x.tm)/10*100);
+  const deepP=Object.values(p.deep||{}).filter(x=>x.tm&&inT(x)).map(x=>deepScore(x.tm)/9*100);
+  const lsP=[...(p.orals||[]).filter(x=>x.tm&&inT(x)).map(x=>oralScore(x.tm)/20*100), ...(p.fluency||[]).filter(x=>x.tm&&inT(x)).map(x=>fluScore(x.tm)/10*100)];
+  return {rv:avgOf([rv, avgOf(deepP)]), wp:avgOf([wpW, avgOf(paraP)]), lang, ls:avgOf(lsP), tests:ts.length, pieces:ws.length+paraP.length, deep:deepP.length, talks:lsP.length};
 }
 function screenTrackerExport(term){
   stopTimers(); term=term||YEAR[curWeek()-1].term; const ps=Object.values(DB.profiles).sort((a,b)=>a.name.localeCompare(b.name));
@@ -6417,15 +6442,443 @@ function screenTrackerExport(term){
   app.innerHTML = backTitle('📊 Marks for tracker')+`
    <div class="card"><div class="seg2">${[1,2,3].map(t=>`<button class="${t===term?'on':''}" data-t="${t}">Term ${t}</button>`).join('')}</div>
      <label class="lbl">Class name in the tracker</label><input class="name" id="lbl" value="${escH(classLabel())}" maxlength="10">
-     <p class="small muted">Reading & Viewing and Language come from this term's big tests (first attempt). Writing & Presenting is the average of the writing you marked from this term's tasks. Listening & Speaking is yours to enter in the tracker.</p></div>
-   <div class="card mt scrollx"><table class="mini"><tr><th>Learner</th><th>Reading</th><th>Writing</th><th>Language</th><th>From</th></tr>
-     ${rows.map(r=>`<tr><td>${escH(r.name)}</td><td>${r.rv===''?'–':r.rv+'%'}</td><td>${r.wp===''?'–':r.wp+'%'}</td><td>${r.lang===''?'–':r.lang+'%'}</td><td><small class="muted">${r.tests} test${r.tests===1?'':'s'}, ${r.pieces} piece${r.pieces===1?'':'s'}</small></td></tr>`).join('')||'<tr><td colspan="5" class="muted">No learners yet.</td></tr>'}</table></div>
+     <p class="small muted">Reading & Viewing and Language come from this term's big tests (first attempt). Writing & Presenting is the average of the writing you marked from this term's tasks. Speaking comes from marked orals and read-alouds. Reading adds Think deeper marks; Writing adds paragraph marks.</p></div>
+   <div class="card mt scrollx"><table class="mini"><tr><th>Learner</th><th>Speaking</th><th>Reading</th><th>Writing</th><th>Language</th><th>From</th></tr>
+     ${rows.map(r=>`<tr><td>${escH(r.name)}</td><td>${r.ls===''?'–':r.ls+'%'}</td><td>${r.rv===''?'–':r.rv+'%'}</td><td>${r.wp===''?'–':r.wp+'%'}</td><td>${r.lang===''?'–':r.lang+'%'}</td><td><small class="muted">${r.tests} test${r.tests===1?'':'s'}, ${r.pieces} writing, ${r.deep} deeper reading, ${r.talks} talks</small></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No learners yet.</td></tr>'}</table></div>
    <button class="btn gold w100 mt" id="cp">📋 Copy for the tracker</button>
    <p class="small muted mt8">In the tracker, open the <b>App marks</b> tab and paste into the first empty row of column A. The Skills tab fills in by itself. A mark you type in the Skills tab yourself always wins.</p>`;
   $('#bk').onclick=()=>screenTeacher();
   $$('[data-t]').forEach(b=>b.onclick=()=>screenTrackerExport(+b.dataset.t));
-  $('#cp').onclick=()=>{ const L=$('#lbl').value.trim()||classLabel(); copyText(tsv(rows.map(r=>[L, r.name, term, r.rv, r.wp, r.lang])), `Term ${term} marks copied. Paste into the App marks tab`); };
+  $('#cp').onclick=()=>{ const L=$('#lbl').value.trim()||classLabel(); copyText(tsv(rows.map(r=>[L, r.name, term, r.rv, r.wp, r.lang, r.ls])), `Term ${term} marks copied. Paste into the App marks tab`); };
 }
+
+/* ================= STUDIO CONTENT: speaking, reading and writing ================= */
+const ORALS = [
+ {id:'o-me', title:'All about me', icon:'🙋', term:1, brief:'Introduce yourself to the class in about one minute.', plan:['Hello! My name is… (and one fun fact)','Three interesting things about me','Something I want to get better at this year','My closing line']},
+ {id:'o-book', title:'Book talk', icon:'📚', term:1, brief:'Tell the class about a book you have read and loved, without giving away the ending.', plan:['Title, author and type of book','What happens (no spoilers!)','My favourite part and why','Who should read it, and my rating']},
+ {id:'o-news', title:'News report', icon:'📰', term:1, brief:'Present a real or school news story like a TV reporter.', plan:['Headline','Who, what, where and when','Why it matters','Sign-off: "Reporting for Heron News, I am…"']},
+ {id:'o-how', title:'How to…', icon:'🛠️', term:1, brief:'Explain how to do something you are good at, step by step.', plan:['What I will teach you','Steps 1, 2 and 3 (use first, next, then)','A helpful tip or warning','Closing: what you will be able to do']},
+ {id:'o-tale', title:'Tell a folktale', icon:'🔥', term:2, brief:'Retell a folktale or legend you know, as if sitting around a fire.', plan:['Characters and setting','The problem','What happens (beginning, middle, end)','The lesson of the story']},
+ {id:'o-persuade', title:'Persuade us!', icon:'📣', term:2, brief:'Give a short speech to convince the class of your opinion.', plan:['My opinion in one sentence','Reason 1 with an example','Reason 2 with an example','My call to action']},
+ {id:'o-place', title:'Describe a place', icon:'🏞️', term:2, brief:'Describe a place you love so we can picture it.', plan:['Where it is','What you see','What you hear, smell and feel','Why it is special to you']},
+ {id:'o-interview', title:'Interview report', icon:'🎙️', term:2, brief:'Interview a family member about their childhood, then report back.', plan:['Who I interviewed','Question 1 and their answer','Question 2 and their answer','What surprised me']},
+ {id:'o-hero', title:'My hero', icon:'🦸', term:3, brief:'Talk about a real person you admire.', plan:['Who they are','What they did','Two of their qualities, with examples','Why they inspire me']},
+ {id:'o-advert', title:'Advert pitch', icon:'🛍️', term:3, brief:'Invent a product and pitch it like a radio advert.', plan:['Product name and slogan','Who it is for','Three selling points','A special offer to end']},
+ {id:'o-poem', title:'Poem performance', icon:'🎭', term:3, brief:'Perform a short poem with expression, then say why you chose it.', plan:['Title and poet','Where I will pause and get louder or softer','Perform the poem','My favourite line and why']},
+ {id:'o-debate', title:'Debate: one side', icon:'⚖️', term:3, brief:'Argue one side of a debate topic, such as "Learners should not have homework".', plan:['The topic and my side','Argument 1','Argument 2','What the other side says, and my answer']}
+];
+const ORAL_RUBRIC = [['content','Content and ideas'],['org','Beginning, middle and end'],['voice','Voice: volume, pace, expression'],['lang','Vocabulary and sentences']];
+const FLUENCY_TARGET = [110,140];
+const DEEP_Q = {
+ story:["How does the main character change from the beginning to the end? Use details from the text.","What would you have done differently in the main character's place? Why?","What is the message or lesson of this text? Explain how you know."],
+ info:["What is the most interesting thing you learned? Why does it interest you?","Why do you think the writer wrote this text, and who is it for?","Write one question you still have about this topic, and say how you could find the answer."],
+ poem:["What picture does this poem create in your mind? Quote two words that help to create it.","How do you think the poet feels about the topic? How can you tell?","Which line do you like best? Explain why."],
+ personal:["How does the writer feel about what happened? Find two clues in the text.","Has something like this ever happened to you? Compare it with the text.","If you could ask the writer one question, what would it be, and why?"],
+ purpose:["What does this text want the reader to do or think? How do you know?","Which part of the text is the most convincing or useful? Why?","Do you agree with the writer? Give two reasons for your answer."]
+};
+const DEEP_KIND = t => /narrative|folktale|legend|play/.test(t)?'story' : /poem/.test(t)?'poem' : /letter|diary|postcard|recount/.test(t)?'personal' : /persuasive|discussion|review|recipe|instruction/.test(t)?'purpose' : 'info';
+const PARAS = [
+ {id:'pa1', t:'Dogs as pets', s:["Dogs make wonderful pets for families.","Firstly, they are loyal and always happy to see you.","Secondly, they keep you fit because they need daily walks.","Lastly, some dogs can be trained to guard the house.","For these reasons, a dog can be a true member of the family."], prompt:'Write a paragraph about the best pet to have.'},
+ {id:'pa2', t:'School uniforms', s:["Wearing a school uniform has many benefits.","Firstly, it makes every learner look neat and equal.","Secondly, families save time because nobody has to choose clothes each morning.","Lastly, a uniform helps everyone feel part of the school.","That is why I think uniforms are a good idea."], prompt:'Write a paragraph about a school rule you agree with.'},
+ {id:'pa3', t:'Making toast', s:["Making toast is easy if you follow these steps.","First, put two slices of bread into the toaster.","Next, push the lever down and wait for about two minutes.","Then, carefully take the toast out when it pops up.","Finally, spread butter on top and enjoy your breakfast!"], prompt:'Write a paragraph explaining how to make a sandwich.'},
+ {id:'pa4', t:'Elephants', s:["African elephants are the largest land animals on Earth.","Firstly, an adult can weigh as much as six cars.","Secondly, they use their trunks to drink, smell and pick up food.","Thirdly, they live in family groups led by the oldest female.","Elephants truly are amazing animals."], prompt:'Write an information paragraph about an animal you know well.'},
+ {id:'pa5', t:'A day at the beach', s:["Last Saturday was the best day of my holiday.","In the morning, we drove to the beach in Durban.","After lunch, my cousins and I built a giant sandcastle.","In the evening, we ate fish and chips while the sun set.","I will never forget that wonderful day."], prompt:'Write a paragraph about a day you will never forget.'},
+ {id:'pa6', t:'Why read?', s:["Reading every day makes you smarter.","Firstly, it teaches you new words.","Secondly, it helps you to spell better.","Finally, it takes you on adventures without leaving your chair.","So pick up a book today!"], prompt:'Write a paragraph persuading a friend to try a hobby you love.'},
+ {id:'pa7', t:'Saving water', s:["There are simple ways to save water at home.","First, turn off the tap while you brush your teeth.","Second, take a short shower instead of a bath.","Third, collect rainwater in a bucket for the garden.","If everyone does this, we can protect our precious water."], prompt:'Write a paragraph about how to look after the environment.'},
+ {id:'pa8', t:'Highveld winter', s:["Winter on the Highveld is cold and dry.","In the early morning, frost covers the grass.","By midday, the sun shines brightly but the air stays cool.","At night, the temperature can drop below zero.","Everyone looks forward to the warm days of spring."], prompt:'Write a paragraph describing your favourite season.'},
+ {id:'pa9', t:'My gogo', s:["My grandmother is the kindest person I know.","Firstly, she always makes time to listen to my stories.","Secondly, she cooks the most delicious pap and stew on Sundays.","Lastly, she taught me to knit when I was seven.","I am lucky to have such a special gogo."], prompt:'Write a paragraph about a person who is special to you.'},
+ {id:'pa10', t:'What plants need', s:["Plants need several things to grow well.","First, they need sunlight to make their food.","Second, they need water, which they take in through their roots.","Third, they need air and nutrients from the soil.","Without these things, a plant will wilt and die."], prompt:'Write a paragraph explaining what a pet needs to stay healthy.'},
+ {id:'pa11', t:'Stop bullying', s:["Everyone can help to stop bullying at school.","Firstly, never join in when someone is being teased.","Secondly, stand next to the person who is being picked on.","Thirdly, tell a teacher what you saw.","Together, we can make our school a safe place."], prompt:'Write a paragraph about how to be a good friend.'},
+ {id:'pa12', t:'A frog grows up', s:["A frog goes through amazing changes in its life.","First, it hatches from an egg as a tiny tadpole.","Next, the tadpole grows back legs and then front legs.","After that, its tail gets shorter and shorter.","Finally, it hops out of the water as a young frog."], prompt:'Write a paragraph explaining the life cycle of a butterfly.'},
+ {id:'pa13', t:'Sports day', s:["Our sports day was full of excitement.","In the morning, the Grade 4s ran the 100 m race.","Later, the Grade 5s competed in the relay.","At the end of the day, the principal handed out the medals.","Blue House won the trophy for the first time in five years!"], prompt:'Write a paragraph about an exciting event at your school.'},
+ {id:'pa14', t:'Phones for learners', s:["Cell phones can be useful for learners.","Firstly, learners can call their parents in an emergency.","Secondly, they can look up information for projects.","However, phones should be switched off during lessons.","Used wisely, a phone is a helpful tool."], prompt:'Write a paragraph about whether learners should have homework.'},
+ {id:'pa15', t:'Table Mountain', s:["Table Mountain is one of South Africa's most famous landmarks.","Firstly, it is more than 1 000 metres tall.","Secondly, visitors can ride a cable car to the top.","Thirdly, it is home to thousands of unique plants.","It is no surprise that tourists from all over the world visit it."], prompt:'Write a paragraph about a place in South Africa you would like to visit.'},
+ {id:'pa16', t:'A healthy lunch', s:["A healthy lunch gives you energy for the afternoon.","To begin with, include a sandwich made with brown bread.","Then, add a piece of fruit such as an apple or a banana.","Lastly, pack a bottle of water instead of a fizzy drink.","With a lunch like this, you will be ready to learn!"], prompt:'Write a paragraph about your perfect breakfast.'}
+];
+const PARA_RUBRIC = [['topic','Topic sentence tells the main idea',3],['support','Supporting details (at least 3)',3],['link','Linking words (firstly, next, also…)',2],['close','Closing sentence',2]];
+const QW = ["If you could have any superpower for one day, what would you do?","Describe the best meal you have ever eaten.","Write about a time you were really brave.","What would you do if you found a talking heron?","Describe your bedroom to someone who has never seen it.","If you were the principal for a day, what would you change?","Write a letter to your future self in ten years.","What is the funniest thing that has ever happened to you?","Describe a storm using all five senses.","Invent a new sport and explain the rules.","What makes a good friend?","Write the first paragraph of a mystery story.","If animals could talk, which animal would be the rudest? Why?","Describe your perfect weekend.","Write about a time you learned something the hard way.","You wake up and you are ten centimetres tall. What happens next?","What is one thing you would like to invent?","Describe a market or shop you know, as busy as it can be.","Write a thank-you note to someone who helped you.","What would you pack for a trip to the moon, and why?","Write about your favourite place to sit and think.","If you could meet any person from history, who would it be?","Describe the sound of rain on a tin roof.","Write a conversation between a cat and a dog.","What is the hardest thing about being in Grade 5?","Describe someone you love without using their name.","Write about a dream you remember.","Your school gets a robot helper. What does it do all day?","What would you do with R1 000 to help your community?","Describe a sunrise or sunset you have seen.","Write a story that begins: 'The door creaked open…'","What is your favourite song or game, and why?","Write a poem about your favourite food.","If you could live in any book, which one would it be?","Describe the inside of a taxi or bus on a busy morning.","What would you say to a new learner on their first day?","Write about a time you felt proud of yourself.","Invent a new holiday. What do people do on that day?","Describe a game you play at break.","What would happen if it never stopped raining?","Write a short advert for your school.","Describe an animal you have seen in the wild or at a zoo.","What is something you are really good at? Explain how you learned it.","Write a story about a lost shoe.","If you could change one rule at home, what would it be?","Describe the smell of a braai.","Write about a journey you have taken.","What do you think school will be like in 100 years?","Write a diary entry for a hadeda.","What makes you laugh?","Describe a very old object and imagine its story.","Write instructions for brushing your teeth, for an alien.","Who is the funniest person you know? Prove it!","Describe what you can see out of the nearest window.","Write the ending of a story where the hero saves the day.","What would you do if you were invisible for an hour?","Describe your favourite season in South Africa.","Write about a time you helped someone.","If you could speak any language instantly, which would you choose?","Write a story in exactly 50 words."];
+const MODELS = [
+ {id:'m-story', kind:'story', title:'Narrative story', text:["The Night of the Missing Torch","Lindo had never been afraid of the dark, until the night the power went off at Gogo's farm.","He felt his way to the kitchen, but the torch was not in its drawer. Outside, something scratched at the door. Scratch. Scratch. Lindo's heart thumped like a drum.","Taking a deep breath, he opened the door a crack. Two bright eyes stared back at him. It was Biscuit, the farm dog, holding the torch in her mouth!","Lindo laughed so loudly that Gogo woke up. From that night on, Biscuit was known as the bravest torch-finder in KwaZulu-Natal."], notes:[["Title","Hooks the reader and hints at the problem."],["Orientation","Paragraph 1 tells us who, where and when."],["Complication","Paragraph 2 builds tension with a problem and sound words (Scratch. Scratch.)."],["Simile","'thumped like a drum' helps us feel his fear."],["Resolution","The problem is solved with a surprise twist."],["Ending","The last line wraps up the story with a smile."]],
+  qs:["Which paragraph tells us WHO, WHERE and WHEN?|Paragraph 1|Paragraph 2|Paragraph 3|The title","What is the problem (complication) in the story?|The torch is missing and something is at the door|Gogo wakes up|Biscuit is lost|Lindo is hungry","Which is a SIMILE?|thumped like a drum|Scratch. Scratch.|Two bright eyes|the bravest torch-finder","How does the story end?|The mystery is solved and everyone laughs|Lindo runs away|The power never comes back|Gogo finds the torch"]},
+ {id:'m-letter', kind:'letter', title:'Friendly letter', text:["12 Baobab Street","Polokwane","0699","3 March 2027","Dear Thandi","I hope you and your family are well. I miss you so much since you moved to Cape Town!","Guess what? Our class went to the science centre last week. I touched a real snake skin and watched a rocket launch on a giant screen. You would have loved it.","Please write back and tell me all about your new school. Do you have a beach nearby?","Your friend always","Naledi"], notes:[["Address and date","Top right: the writer's address, then the date."],["Greeting","'Dear Thandi' on its own line."],["Opening","A friendly first paragraph that asks about the reader."],["Body","News, told with details and feelings."],["Closing paragraph","Asks the reader to write back."],["Sign-off","A friendly ending such as 'Your friend always' and the writer's name."]],
+  qs:["Where does the date go in a friendly letter?|Under the writer's address|At the very bottom|After the greeting|It is not needed","What is the purpose of the first paragraph?|To greet the reader and ask how they are|To give the main news|To say goodbye|To give the address","Which is a good friendly sign-off?|Your friend always|Yours faithfully|To whom it may concern|Dear Thandi","What does the body of the letter contain?|The writer's news, with details|Only the address|A list of instructions|The reader's name only"]},
+ {id:'m-persuade', kind:'persuade', title:'Persuasive text', text:["Every School Needs a Vegetable Garden","Every school in South Africa should have its own vegetable garden.","Firstly, a garden teaches learners where food comes from. Children who grow spinach are far more likely to eat it!","Secondly, fresh vegetables can be used in the school kitchen, saving money and keeping learners healthy.","Some people say gardens take too much time. However, just twenty minutes a week per class is enough to keep a garden growing.","Surely every child deserves the chance to grow their own food. Let's grab our spades and start digging today!"], notes:[["Title","States the writer's opinion clearly."],["Opinion","The first line says exactly what the writer believes."],["Reasons","'Firstly' and 'Secondly' introduce reasons with examples."],["Counter-argument","'Some people say… However…' answers the other side."],["Persuasive language","'Surely', 'every child deserves' make the reader agree."],["Call to action","The ending tells the reader what to do."]],
+  qs:["What does the first sentence do?|States the writer's opinion|Tells a story|Gives instructions|Describes a garden","Which words introduce the reasons?|Firstly and Secondly|However and Surely|Every and today|Some people say","Why does the writer include 'Some people say…'?|To answer the other side's argument|To agree that gardens are bad|To end the text|To give a fact about spinach","What is the 'call to action'?|Let's grab our spades and start digging today!|Every school should have a garden.|Children like spinach.|Twenty minutes a week is enough."]},
+ {id:'m-report', kind:'report', title:'Information report', text:["The Hadeda Ibis","Introduction: The hadeda ibis is a large grey-brown bird found all over South Africa. It is famous for its loud 'ha-ha-hadeda' call.","Appearance: Hadedas are about 76 cm long. Their feathers shine green and purple in the sun, and they have a long, curved beak.","Habitat: They live in grasslands, parks and gardens, often close to people.","Diet: Hadedas push their beaks into soft soil to find worms, insects and snails.","Conclusion: Although they are noisy, hadedas help gardeners by eating many pests."], notes:[["Title","Names the topic."],["Introduction","A general statement about what the report is about."],["Sub-headings","Appearance, Habitat and Diet organise the facts."],["Facts, not opinions","Measurements such as 76 cm show this is factual."],["Present tense","'Hadedas live…' because the facts are always true."],["Conclusion","Sums up with one last interesting point."]],
+  qs:["What is the purpose of the sub-headings?|To organise the facts into sections|To tell a story|To show the writer's opinion|To make it rhyme","Which tense is mostly used in a report?|Present tense|Past tense|Future tense|No tense","Which sentence is a FACT?|Hadedas are about 76 cm long.|Hadedas are annoying.|Hadedas are the best birds.|Hadedas sing beautifully.","What does the introduction do?|Gives a general statement about the topic|Lists the diet|Ends the report|Gives the writer's address"]},
+ {id:'m-describe', kind:'describe', title:'Descriptive text', text:["The Morning Market","The morning market wakes up before the sun.","Rows of bright tomatoes glow like red marbles, and mountains of oranges smell sweet and fresh.","Traders call out prices in loud, cheerful voices, while taxis hoot impatiently on the road nearby.","The dusty ground is cool under my feet, and the smoky smell of roasting mielies drifts through the air.","By eight o'clock, the market is a buzzing beehive of colour and noise."], notes:[["Senses","Sight, sound, smell and touch help the reader picture the scene."],["Adjectives","bright, sweet, dusty, smoky add detail."],["Simile","'glow like red marbles' compares using like."],["Metaphor","'a buzzing beehive' compares without like or as."],["Strong verbs","glow, drifts, hoot are more vivid than 'is'."],["Order","Moves from early morning to eight o'clock."]],
+  qs:["Which sense is used in 'the smoky smell of roasting mielies'?|smell|sight|touch|taste","Which is a METAPHOR?|a buzzing beehive of colour and noise|glow like red marbles|taxis hoot impatiently|The dusty ground is cool","Why does the writer use many adjectives?|To help the reader picture the market|To give instructions|To persuade the reader|To ask questions","Which verb is the most vivid?|drifts|is|was|are"]},
+ {id:'m-instr', kind:'instr', title:'Instructions', text:["How to Make a Paper Boat","You will need: one rectangular sheet of paper (A4 works well).","Method:","1. Fold the paper in half from top to bottom.","2. Fold the top corners down to the middle to make a triangle.","3. Fold the bottom strips up on both sides.","4. Open the middle and press it flat into a square.","5. Gently pull the sides apart to make your boat.","Tip: Test your boat in a basin of water before you race it!"], notes:[["Goal","The title says what you will make."],["Requirements","'You will need' lists everything first."],["Numbered steps","Steps are in order and numbered."],["Command verbs","Each step starts with a verb: Fold, Open, Pull."],["Short sentences","One action per step."],["Tip","A helpful extra at the end."]],
+  qs:["What comes first in instructions?|What you will need|The tip|Step 5|The ending","How do most steps begin?|With a command verb|With a question|With a name|With 'Once upon a time'","Why are the steps numbered?|So you do them in the right order|To make it rhyme|To make it longer|To persuade you","Which is a command verb from the text?|Fold|Paper|Boat|Rectangular"]},
+ {id:'m-recount', kind:'recount', title:'Recount', text:["Our Trip to the Planetarium","On Friday 9 May, the Grade 5 class went to the planetarium in Johannesburg.","First, we travelled by bus and sang songs all the way there.","When we arrived, a guide showed us a model of the solar system. I was amazed to learn that Jupiter is bigger than all the other planets put together!","After that, we lay back in soft chairs and watched the stars move across the dome.","Finally, we ate our lunch on the lawn before driving back to school.","It was the most interesting outing I have ever been on."], notes:[["Orientation","Who, what, where and when in the first sentence."],["Time order","Events are told in the order they happened."],["Time connectives","First, When, After that, Finally."],["Past tense","went, travelled, showed: it already happened."],["Personal comment","'I was amazed…' shows feelings."],["Closing","A final comment about the whole experience."]],
+  qs:["Which tense is a recount written in?|Past tense|Present tense|Future tense|Command form","Which words show time order?|First, After that, Finally|amazed, interesting|bus, lawn|Jupiter, planets","What does the first sentence tell us?|Who, what, where and when|The ending|How to get to the planetarium|The writer's opinion of Jupiter","Which part shows the writer's feelings?|I was amazed to learn…|we travelled by bus|we ate our lunch|On Friday 9 May"]},
+ {id:'m-poem', kind:'poem', title:'Poem', text:["Thunderstorm","The sky turns grey, the swallows fly,","the wind begins to moan and sigh.","Then BOOM! The thunder shakes the ground,","the rain comes rushing, round and round.","It drums upon the old tin roof,","rat-a-tat, a soldier's hoof.","And when it's gone, the world is new,","washed clean and shining, bright with dew."], notes:[["Rhyme","fly/sigh, ground/round, roof/hoof, new/dew."],["Rhythm","Each line has a steady beat."],["Onomatopoeia","BOOM and rat-a-tat sound like what they mean."],["Personification","The wind 'moans and sighs' like a person."],["Stanzas","Lines are grouped to show the storm starting, peaking and ending."],["Imagery","'washed clean and shining' creates a picture."]],
+  qs:["Which word is ONOMATOPOEIA?|BOOM|grey|new|ground","Which words RHYME?|roof and hoof|sky and wind|rain and drums|clean and bright","'The wind begins to moan and sigh' is an example of…|personification|a fact|a simile|an instruction","How does the poem end?|The storm is over and the world looks fresh|The storm gets worse|The roof breaks|It starts to snow"]},
+ {id:'m-diary', kind:'diary', title:'Diary entry', text:["Tuesday, 14 June","Dear Diary","Today was a disaster! I forgot my homework on the kitchen table, and Mrs Patel gave me that look. You know the one.","At break, it got worse. I tripped over my laces in front of the whole Grade 6 class. My cheeks went as red as a tomato.","But then something good happened. Sipho helped me up and shared his chips. Maybe tomorrow will be better.","Night night,","Ayanda"], notes:[["Date","Every entry starts with the date."],["Greeting","'Dear Diary' as if talking to a friend."],["First person","I, me and my: it is about the writer."],["Feelings","The writer tells us how they felt, not just what happened."],["Informal language","'You know the one.' sounds like real speech."],["Sign-off","Ends with a friendly goodbye and the name."]],
+  qs:["Which person is a diary written in?|First person (I, me, my)|Third person (he, she)|Second person only (you)|No person","What does a diary entry start with?|The date|The ending|A title in capitals|A list of materials","Why does the writer say 'My cheeks went as red as a tomato'?|To show how embarrassed she felt|To describe lunch|To give a fact about tomatoes|To persuade the reader","What kind of language is used in a diary?|Informal, like talking to a friend|Very formal|Only commands|Only questions"]},
+ {id:'m-review', kind:'review', title:'Book review', text:["Book review: The Lion Who Wanted to Fly","Author: K. Mokoena","Rating: 4 out of 5 stars","This funny picture book is about Leo, a young lion who dreams of flying with the eagles.","The best part is when Leo builds wings out of palm leaves and lands in the river with a huge SPLASH! The pictures are bright and full of detail.","I wish the story were a little longer, because the ending felt rushed.","I recommend this book to anyone aged 6 to 10 who enjoys silly animal stories."], notes:[["Title and author","Tells the reader which book it is."],["Rating","Gives a quick overall opinion."],["Summary","A short summary with no spoilers about the ending."],["Opinion with reasons","'The best part is… because…'"],["Balanced view","Mentions something that could be better."],["Recommendation","Says who would enjoy the book."]],
+  qs:["What should a review NOT do?|Give away the ending|Name the author|Give a rating|Recommend the book","Which sentence gives a balanced view?|I wish the story were a little longer…|Author: K. Mokoena|Rating: 4 out of 5 stars|This funny picture book is about Leo…","Who does the reviewer recommend the book to?|Children aged 6 to 10 who like silly animal stories|Adults only|Eagles|Nobody","Why does the reviewer give reasons?|To support their opinion|To make it longer|To tell the whole story|To give instructions"]}
+];
+const PEER_STARS = ['Exciting opening','Interesting vocabulary','Clear paragraphs','Good punctuation','Vivid description','Strong ending','Easy to follow','Good use of linking words'];
+const PEER_WISHES = ['Add more detail','Check capital letters','Check spelling','Use paragraphs','Use more interesting words','Add a stronger ending','Fix full stops and commas','Make the order clearer'];
+
+/* ================= STUDIO: helpers ================= */
+const termNow = () => YEAR[curWeek()-1].term;
+const uid36 = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const mmss = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+const avgOf = a => { const v=a.filter(x=>x!==''&&x!=null&&!isNaN(x)); return v.length?Math.round(v.reduce((x,y)=>x+ +y,0)/v.length):''; };
+const wordsIn = t => (String(t||'').trim().match(/\S+/g)||[]).length;
+const REC_MAX = 75;
+let REC=null;
+const canRecord = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+function stopRec(){ if (!REC) return; clearInterval(REC.iv); try { if (REC.mr && REC.mr.state!=='inactive'){ REC.cancel=true; REC.mr.stop(); } } catch(e){} try { REC.stream.getTracks().forEach(t=>t.stop()); } catch(e){} REC=null; }
+function recorderHTML(max){
+  return `<div class="recbox"><div class="rectime" id="rct">0:00 / ${mmss(max)}</div>
+    <button class="btn rec w100" id="rgo" ${canRecord()?'':'disabled'}>🎙️ Start recording</button>
+    <audio id="rplay" controls hidden></audio>
+    <small class="muted" id="rmsg">${canRecord()?'Record as many times as you like. Only send your best one.':'This browser cannot record. Open Heron Word Quest in Chrome or Safari on a phone or tablet.'}</small></div>`;
+}
+function wireRecorder(max, onDone){
+  const b=$('#rgo'); if (!b || !canRecord()) return;
+  b.onclick=async()=>{
+    if (REC && REC.live){ REC.mr.stop(); return; }
+    let stream; try { stream=await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){ $('#rmsg').textContent='Please allow the microphone, then try again.'; return; }
+    const mime=['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'].find(m=>MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m))||'';
+    let mr; try { mr=new MediaRecorder(stream, Object.assign({audioBitsPerSecond:32000}, mime?{mimeType:mime}:{})); } catch(e){ mr=new MediaRecorder(stream); }
+    const me={mr, stream, chunks:[], t0:Date.now(), live:true}; REC=me;
+    mr.ondataavailable=e=>{ if (e.data && e.data.size) me.chunks.push(e.data); };
+    mr.onstop=()=>{ clearInterval(me.iv); me.live=false; try { stream.getTracks().forEach(t=>t.stop()); } catch(e){}
+      if (me.cancel) return;
+      const secs=Math.max(1, Math.round((Date.now()-me.t0)/1000)), blob=new Blob(me.chunks, {type:mr.mimeType||mime||'audio/webm'});
+      const a=$('#rplay'); if (a){ a.src=URL.createObjectURL(blob); a.hidden=false; }
+      if ($('#rgo')){ $('#rgo').textContent='🔁 Record again'; $('#rgo').classList.remove('live'); }
+      onDone({blob, secs, mime:blob.type, capped:secs>=max}); };
+    mr.start(1000); b.textContent='⏹️ Stop'; b.classList.add('live'); if ($('#rplay')) $('#rplay').hidden=true;
+    me.iv=setInterval(()=>{ const s=(Date.now()-me.t0)/1000; if ($('#rct')) $('#rct').textContent=`${mmss(s)} / ${mmss(max)}`; if (s>=max && me.live) me.mr.stop(); },250);
+  };
+}
+const blobToData = b => new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(b); });
+async function saveAudio(kind, rec){
+  if (!isCloudLearner()) return null;
+  const data=await blobToData(rec.blob);
+  if (data.length>950000) throw new Error('That recording is too big to save. Please keep it a bit shorter.');
+  const aid=`${DB.cloud.uid}_${kind}_${uid36()}`;
+  await CL.db.doc(`classes/${DB.cloud.code}/audio/${aid}`).set({by:DB.cloud.uid, kind, data, secs:rec.secs, d:today()});
+  return aid;
+}
+// Keep space free: marked recordings beyond the newest 2, and anything beyond the newest 6, are removed.
+async function pruneAudio(list){
+  if (!isCloudLearner()) return;
+  const live=list.filter(x=>x.aid && !x.gone);
+  for (const [i,x] of live.entries()){ if ((i>=2 && x.tm) || i>=6){ try { await CL.db.doc(`classes/${DB.cloud.code}/audio/${x.aid}`).delete(); x.gone=true; } catch(e){} } }
+}
+function audioBtn(x){ return x && x.aid && !x.gone ? `<button class="btn small" data-aud="${x.aid}">▶ Play the recording</button><audio data-aa="${x.aid}" controls hidden></audio>` : '<small class="muted">No recording saved (practice device, or an older recording that was cleared to save space).</small>'; }
+function wireAudio(){
+  $$('[data-aud]').forEach(b=>b.onclick=async()=>{ b.disabled=true; b.textContent='Loading…';
+    try { const d=await CL.db.doc(`classes/${DB.cloud.code}/audio/${b.dataset.aud}`).get(); if (!d.exists) throw 0;
+      const a=document.querySelector(`[data-aa="${b.dataset.aud}"]`); a.src=d.data().data; a.hidden=false; a.play().catch(()=>{}); b.remove(); }
+    catch(e){ b.textContent='Recording not available'; } });
+}
+const scorePill = (got, max) => `<span class="scorepill">${got}/${max}</span>`;
+const fluScore = tm => tm ? (+tm.acc||0)+(+tm.expr||0) : null;
+const oralScore = tm => tm&&tm.r ? ORAL_RUBRIC.reduce((s,[k])=>s+(+tm.r[k]||0),0) : null;
+const paraScore = tm => tm&&tm.r ? PARA_RUBRIC.reduce((s,[k])=>s+(+tm.r[k]||0),0) : null;
+const deepScore = tm => tm&&tm.s ? tm.s.reduce((a,b)=>a+(+b||0),0) : null;
+function excerptOf(ps){ const out=[]; let n=0; for (const para of ps.text){ out.push(para); n+=wordsIn(para); if (n>=80 || out.length>=3) break; } return {text:out, words:n}; }
+function wpmBand(w){ return w==null?'' : w<90?'🌱 Keep practising: read a little every day.' : w<FLUENCY_TARGET[0]?'📈 Getting there!' : w<=FLUENCY_TARGET[1]?'🎯 On target for Grade 5!' : '🚀 Speedy! Make sure every word is clear.'; }
+function studioStreak(p){ const days=new Set((p.qw||[]).map(x=>x.d)); let n=0, d=new Date(); for(;;){ const k=d.toLocaleDateString('en-CA'); if (days.has(k)){ n++; d.setDate(d.getDate()-1); } else break; } return n; }
+
+/* ================= STUDIO: learner hub ================= */
+function screenStudio(){
+  stopTimers(); stopRec(); const p=P(); if (!p) return screenProfiles();
+  const w=curWeek(), dk=p.deep['w'+w], lastF=p.fluency[0], oDone=p.orals.length, myPeer=(DB.peerItems||[]).filter(x=>!p.peer[x.id]).length;
+  const card=(id,ic,t,sub)=>`<button class="studiocard" id="${id}"><span class="sic">${ic}</span><b>${t}</b><small>${sub}</small></button>`;
+  app.innerHTML = backTitle('🎙️ Studio')+`<p class="muted">Speak, read and write. ${escH(teacherName())} listens to your recordings and marks your work here.</p>
+   <h3 class="mt">📖 Reading</h3><div class="studiogrid">
+     ${card('sread','🎙️','Read aloud', lastF?`${lastF.wpm!=null?lastF.wpm+' words a minute':'Sent'}${lastF.tm?` · ${fluScore(lastF.tm)}/10`:''}`:'This week\'s passage')}
+     ${card('sdeep','💭','Think deeper', dk?(dk.tm?`Marked: ${deepScore(dk.tm)}/9`:'Sent. Waiting for marks'):'3 big questions this week')}</div>
+   <h3 class="mt">🗣️ Speaking</h3><div class="studiogrid">
+     ${card('soral','🎤','Oral tasks', `${oDone} sent · ${ORALS.length} tasks`)}</div>
+   <h3 class="mt">✍️ Writing</h3><div class="studiogrid">
+     ${card('spara','🧱','Paragraph builder', `${p.paras.length} written · ${PARAS.length} to build`)}
+     ${card('sqw','⏱️','Quick-write', `${studioStreak(p)} day streak`)}
+     ${card('smod','⭐','Model texts', `${Object.keys(p.models).length} of ${MODELS.length} studied`)}
+     ${card('speer','🤝','Peer review', myPeer?`${myPeer} piece${myPeer===1?'':'s'} to review`:'Nothing to review yet')}</div>`;
+  $('#bk').onclick=()=>screenHome();
+  $('#sread').onclick=()=>screenReadAloud(w); $('#sdeep').onclick=()=>screenDeep(w); $('#soral').onclick=()=>screenOrals();
+  $('#spara').onclick=()=>screenParas(); $('#sqw').onclick=()=>screenQuickWrite(); $('#smod').onclick=()=>screenModels(); $('#speer').onclick=()=>screenPeer();
+}
+
+/* ----- Read aloud: fluency ----- */
+function screenReadAloud(w){
+  stopTimers(); stopRec(); const p=P(), y=YEAR[w-1], ps=PS(y.passage), ex=excerptOf(ps); let rec=null;
+  app.innerHTML = backTitle('🎙️ Read aloud')+`
+   <div class="card"><small class="muted b">WEEK ${w} · ${escH(ps.title)}</small>
+     <p class="small muted">Read this part out loud, clearly and with expression. Press Start, read, then press Stop. Grade 5 readers usually read ${FLUENCY_TARGET[0]} to ${FLUENCY_TARGET[1]} words a minute.</p>
+     <div class="excerpt">${ex.text.map(t=>`<p>${escH(t)}</p>`).join('')}</div><small class="muted">${ex.words} words</small></div>
+   <div class="card mt">${recorderHTML(REC_MAX)}<div id="rres"></div></div>
+   <div class="card mt"><b>My read-alouds</b><div class="list mt8">${p.fluency.slice(0,6).map(x=>`<div class="item"><span class="em">${x.tm?'✅':'⏳'}</span><span class="grow">Week ${x.w} · ${escH(x.d)}<br><small class="muted">${x.wpm!=null?x.wpm+' words a minute':'Did not finish in time'}${x.tm?` · Accuracy ${x.tm.acc}/5 · Expression ${x.tm.expr}/5`:' · waiting for '+escH(teacherName())}</small>${x.tm&&x.tm.c?`<br><small>"${escH(x.tm.c)}"</small>`:''}</span>${x.tm?scorePill(fluScore(x.tm),10):''}</div>`).join('')||'<p class="muted small">None yet.</p>'}</div></div>`;
+  $('#bk').onclick=()=>screenStudio();
+  wireRecorder(REC_MAX, r=>{ rec=r; const wpm=r.capped?null:Math.round(ex.words/(r.secs/60));
+    $('#rres').innerHTML=`<div class="fb ${wpm!=null?'good':''} mt8">${wpm!=null?`<h3>${wpm} words a minute</h3><p>${wpmBand(wpm)}</p>`:`<h3>Time's up!</h3><p>You can still send it, or try again a little faster.</p>`}<button class="btn gold w100" id="rsend">📤 Send to ${escH(teacherName())}</button></div>`;
+    $('#rsend').onclick=async()=>{ $('#rsend').disabled=true; busy('Sending…');
+      try { const aid=await saveAudio('read', rec); p.fluency.unshift({id:uid36(), w, term:y.term, d:today(), secs:rec.secs, words:ex.words, wpm, aid}); p.xp+=15; save(); await pruneAudio(p.fluency); save(); busy(); toast(aid?'📤 Sent! +15 XP':'Saved on this device. +15 XP'); screenReadAloud(w); }
+      catch(e){ busy(); $('#rsend').disabled=false; toast(e.message||cloudErr(e)); } }; });
+}
+
+/* ----- Think deeper ----- */
+function screenDeep(w){
+  stopTimers(); const p=P(), y=YEAR[w-1], ps=PS(y.passage), kind=DEEP_KIND(ps.type), qs=DEEP_Q[kind], cur=p.deep['w'+w];
+  app.innerHTML = backTitle('💭 Think deeper')+`
+   <div class="card">${passageHTML(ps, false)}<p class="small muted mt8">Answer in full sentences. Use details from the text. Each answer needs at least 12 words.</p></div>
+   ${qs.map((q,i)=>`<div class="card mt"><b>${i+1}. ${escH(q)}</b>
+     ${cur&&cur.tm?`<p class="pre mt8">${escH(cur.a[i]||'')}</p><p class="b">${scorePill(cur.tm.s[i],3)}</p>`
+       :`<textarea class="name" rows="4" id="dq${i}" placeholder="I think…">${escH(cur?cur.a[i]||'':'')}</textarea><small class="muted" id="dc${i}"></small>`}</div>`).join('')}
+   ${cur&&cur.tm?`<div class="fb good mt"><h3>${escH(teacherName())} gave you ${deepScore(cur.tm)}/9</h3>${cur.tm.c?`<p>"${escH(cur.tm.c)}"</p>`:''}</div>`
+     :`<button class="btn gold w100 mt" id="dsend">${cur?'💾 Update my answers':'📤 Send my answers'}</button>`}`;
+  $('#bk').onclick=()=>screenStudio(); wireReader();
+  if (cur&&cur.tm) return;
+  const cnt=()=>qs.forEach((q,i)=>{ const n=wordsIn($('#dq'+i).value); $('#dc'+i).textContent=`${n} word${n===1?'':'s'}${n<12?' (at least 12)':' ✅'}`; });
+  qs.forEach((q,i)=>$('#dq'+i).oninput=cnt); cnt();
+  $('#dsend').onclick=()=>{ const a=qs.map((q,i)=>$('#dq'+i).value.trim()); if (a.some(x=>wordsIn(x)<12)) return toast('Each answer needs at least 12 words');
+    const first=!cur; p.deep['w'+w]={a, d:today(), term:y.term, w}; if (first) p.xp+=20; save(); toast(first?'📤 Sent! +20 XP':'💾 Updated'); screenStudio(); };
+}
+
+/* ----- Oral tasks ----- */
+function screenOrals(){
+  stopTimers(); stopRec(); const p=P();
+  app.innerHTML = backTitle('🎤 Oral tasks')+`<p class="muted">Plan, practise, record and send. ${escH(teacherName())} marks each talk out of 20.</p>
+   <div class="list">${ORALS.map(o=>{ const sent=p.orals.filter(x=>x.task===o.id), best=sent.find(x=>x.tm);
+     return `<button class="item big" data-o="${o.id}"><span class="em">${o.icon}</span><span class="grow"><b>${escH(o.title)}</b> <small class="muted">Term ${o.term}</small><br><small class="muted">${best?`Marked ${oralScore(best.tm)}/20`:sent.length?'Sent. Waiting for marks':escH(o.brief)}</small></span>${best?scorePill(oralScore(best.tm),20):'▶'}</button>`; }).join('')}</div>`;
+  $('#bk').onclick=()=>screenStudio();
+  $$('[data-o]').forEach(b=>b.onclick=()=>screenOral(b.dataset.o));
+}
+function screenOral(tid){
+  stopTimers(); stopRec(); const p=P(), o=ORALS.find(x=>x.id===tid), plan=p.oralPlans[tid]||[], mine=p.orals.filter(x=>x.task===tid); let rec=null;
+  app.innerHTML = backTitle(`${o.icon} ${escH(o.title)}`)+`
+   <div class="card"><p><b>${escH(o.brief)}</b></p><p class="small muted">Aim for about one minute (the recording stops at ${mmss(REC_MAX)}).</p></div>
+   <div class="card mt"><b>1. Plan your talk</b>${o.plan.map((x,i)=>`<label class="lbl">${escH(x)}</label><textarea class="name" rows="2" id="op${i}">${escH(plan[i]||'')}</textarea>`).join('')}</div>
+   <div class="card mt"><b>2. Practise, then record</b><p class="small muted">Speak clearly, not too fast, and look up from your notes.</p>${recorderHTML(REC_MAX)}<div id="ores"></div></div>
+   <div class="card mt"><b>How you will be marked</b><div class="list mt8">${ORAL_RUBRIC.map(([k,n])=>`<div class="item"><span class="grow">${escH(n)}</span><b>/5</b></div>`).join('')}</div></div>
+   ${mine.length?`<div class="card mt"><b>Sent</b><div class="list mt8">${mine.map(x=>`<div class="item"><span class="em">${x.tm?'✅':'⏳'}</span><span class="grow">${escH(x.d)} · ${mmss(x.secs)}${x.tm?`<br><small class="muted">${ORAL_RUBRIC.map(([k,n])=>`${n.split(':')[0]} ${x.tm.r[k]}/5`).join(' · ')}</small>${x.tm.c?`<br><small>"${escH(x.tm.c)}"</small>`:''}`:''}</span>${x.tm?scorePill(oralScore(x.tm),20):''}</div>`).join('')}</div></div>`:''}`;
+  const keep=()=>{ p.oralPlans[tid]=o.plan.map((x,i)=>$('#op'+i).value); save(); };
+  o.plan.forEach((x,i)=>$('#op'+i).onchange=keep);
+  $('#bk').onclick=()=>{ keep(); screenOrals(); };
+  wireRecorder(REC_MAX, r=>{ rec=r;
+    $('#ores').innerHTML=`<div class="fb mt8"><p>Listen back. Happy with it?</p><button class="btn gold w100" id="osend">📤 Send to ${escH(teacherName())}</button></div>`;
+    $('#osend').onclick=async()=>{ keep(); if (r.secs<15) return toast('That was very short. Try to speak for about a minute.');
+      $('#osend').disabled=true; busy('Sending…');
+      try { const aid=await saveAudio('oral', rec); p.orals.unshift({id:uid36(), task:tid, term:termNow(), d:today(), secs:rec.secs, plan:p.oralPlans[tid], aid}); p.xp+=25; save(); await pruneAudio(p.orals); save(); busy(); toast(aid?'📤 Sent! +25 XP':'Saved on this device. +25 XP'); screenOral(tid); }
+      catch(e){ busy(); $('#osend').disabled=false; toast(e.message||cloudErr(e)); } }; });
+}
+
+/* ----- Paragraph builder ----- */
+function screenParas(){
+  stopTimers(); const p=P();
+  app.innerHTML = backTitle('🧱 Paragraph builder')+`<p class="muted">Every good paragraph has a <b>topic sentence</b>, <b>supporting details</b> and a <b>closing sentence</b>. Build one, then write your own.</p>
+   <div class="list">${PARAS.map(x=>{ const o=p.paraOrder[x.id], mine=p.paras.filter(y=>y.pid===x.id), m=mine.find(y=>y.tm);
+     return `<button class="item" data-pa="${x.id}"><span class="em">${m?'✅':mine.length?'⏳':o?'🧱':'🆕'}</span><span class="grow"><b>${escH(x.t)}</b><br><small class="muted">${o?`Built: ${o.first}/5`:'Not built yet'}${m?` · My paragraph ${paraScore(m.tm)}/10`:mine.length?' · My paragraph sent':''}</small></span>▶</button>`; }).join('')}</div>`;
+  $('#bk').onclick=()=>screenStudio();
+  $$('[data-pa]').forEach(b=>b.onclick=()=>screenPara(b.dataset.pa));
+}
+function screenPara(id){
+  stopTimers(); const p=P(), x=PARAS.find(y=>y.id===id), done=p.paraOrder[id];
+  const order=shuffle(x.s.map((t,i)=>i)), placed=[];
+  const labels=['Topic sentence','Detail','Detail','Detail','Closing sentence'];
+  const draw=()=>{ app.innerHTML = backTitle('🧱 '+escH(x.t))+`
+   <div class="card"><b>1. Build the paragraph</b><p class="small muted">Tap the sentences in the right order: topic sentence first, closing sentence last. Linking words are clues!</p>
+     <div class="list mt8" id="built">${placed.map((k,i)=>`<div class="item placed"><span class="em">${i+1}</span><span class="grow">${escH(x.s[k])}</span></div>`).join('')}</div>
+     <div class="list mt8">${order.filter(k=>!placed.includes(k)).map(k=>`<button class="item" data-s="${k}">${escH(x.s[k])}</button>`).join('')}</div>
+     ${placed.length?'<button class="link small" id="undo">↩ Undo</button>':''}</div>
+   <div id="pstep2"></div>`;
+    $('#bk').onclick=()=>screenParas();
+    $$('[data-s]').forEach(b=>b.onclick=()=>{ placed.push(+b.dataset.s); try{ sfx.tap(); }catch(e){} if (placed.length===5) finish(); else draw(); });
+    if ($('#undo')) $('#undo').onclick=()=>{ placed.pop(); draw(); }; };
+  const finish=()=>{ const sc=placed.filter((k,i)=>k===i).length;
+    if (!p.paraOrder[id]){ p.paraOrder[id]={first:sc, best:sc, d:today()}; p.xp+=sc*5; } else p.paraOrder[id].best=Math.max(p.paraOrder[id].best, sc);
+    save(); try{ sc===5?sfx.win():sfx.tap(); }catch(e){}
+    app.innerHTML = backTitle('🧱 '+escH(x.t))+`
+     <div class="fb ${sc===5?'good':'bad'}"><h3>${sc===5?'✅ Perfect paragraph!':`You placed ${sc} of 5 correctly.`}</h3>${scorePill(sc,5)}</div>
+     <div class="card mt">${x.s.map((t,i)=>`<p><small class="b muted">${labels[i].toUpperCase()}</small><br>${escH(t)}</p>`).join('')}</div>
+     <div class="card mt"><b>2. Now write your own</b><p>${escH(x.prompt)}</p>
+       <textarea class="name" rows="7" id="pw" placeholder="Start with your topic sentence…"></textarea>
+       <div class="checklist" id="pchk"></div>
+       <button class="btn gold w100 mt8" id="psend">📤 Send my paragraph</button>
+       <button class="btn ghost w100 mt8" id="pagain">🔁 Build it again</button></div>`;
+    $('#bk').onclick=()=>screenParas(); $('#pagain').onclick=()=>screenPara(id);
+    const chk=()=>{ const t=$('#pw').value, sents=(t.match(/[^.!?]+[.!?]/g)||[]).length, link=/\b(first(ly)?|second(ly)?|third(ly)?|next|then|also|finally|lastly|in addition|however|to begin with|after that|because)\b/i.test(t), n=wordsIn(t);
+      const items=[[n>=40,`At least 40 words (${n})`],[sents>=4,`At least 4 sentences (${sents})`],[link,'Uses linking words'],[/[.!?]\s*$/.test(t.trim()),'Ends with a full stop, ? or !']];
+      $('#pchk').innerHTML=items.map(([ok,l])=>`<div class="${ok?'ok':''}">${ok?'✅':'⬜'} ${l}</div>`).join(''); return items.every(i=>i[0]); };
+    $('#pw').oninput=chk; chk();
+    $('#psend').onclick=()=>{ if (!chk()) return toast('Tick every box on the checklist first'); p.paras.unshift({id:uid36(), pid:id, order:p.paraOrder[id].first, text:$('#pw').value.trim(), d:today(), term:termNow()}); p.xp+=15; save(); toast('📤 Sent! +15 XP'); screenParas(); };
+  };
+  draw();
+}
+
+/* ----- Quick-write ----- */
+function screenQuickWrite(pick){
+  stopTimers(); const p=P(), day=Math.floor(Date.now()/864e5), prompt=QW[(day+(pick||0))%QW.length], doneToday=p.qw.filter(x=>x.d===today()).length;
+  let t0=null;
+  app.innerHTML = backTitle('⏱️ Quick-write')+`
+   <div class="card"><div class="row"><span class="grow"><small class="muted b">TODAY'S PROMPT</small></span><span class="b">🔥 ${studioStreak(p)} day streak</span></div>
+     <h3>${escH(prompt)}</h3>${(pick||0)<3?'<button class="link small" id="other">🎲 Give me a different prompt</button>':''}
+     <p class="small muted">Write for 5 minutes without stopping. Don't worry about mistakes: just keep writing!</p>
+     <div class="rectime" id="qt">5:00</div>
+     <textarea class="name" rows="9" id="qx" placeholder="Start typing and the timer starts…"></textarea>
+     <div class="row"><small class="muted grow" id="qn">0 words</small></div>
+     <button class="btn gold w100 mt8" id="qs">✅ Done</button></div>
+   <div class="card mt"><b>My quick-writes</b>${doneToday?'<small class="muted"> · done today ✅</small>':''}<div class="list mt8">${p.qw.slice(0,8).map(x=>`<div class="item"><span class="grow"><small class="muted">${escH(x.d)} · ${x.words} words</small><br>${escH(x.prompt)}</span>${x.tm?`<b>${'⭐'.repeat(x.tm.star)}</b>`:''}</div>`).join('')||'<p class="muted small">None yet.</p>'}</div></div>`;
+  $('#bk').onclick=()=>screenStudio();
+  if ($('#other')) $('#other').onclick=()=>screenQuickWrite((pick||0)+1);
+  const tick=()=>{ const left=Math.max(0, 300-(Date.now()-t0)/1000); if ($('#qt')) $('#qt').textContent=left?mmss(left):"⏰ Time! Finish your sentence."; if (!left) clearInterval(raceTimer); };
+  $('#qx').oninput=()=>{ if (!t0){ t0=Date.now(); raceTimer=setInterval(tick,500); } $('#qn').textContent=`${wordsIn($('#qx').value)} words`; };
+  $('#qs').onclick=()=>{ const t=$('#qx').value.trim(), n=wordsIn(t); if (n<20) return toast('Write at least 20 words');
+    const best=Math.max(0,...p.qw.map(x=>x.words)); p.qw.unshift({id:uid36(), d:today(), prompt, text:t, words:n, term:termNow()}); p.qw=p.qw.slice(0,60); p.xp+=10; save();
+    toast(n>best&&p.qw.length>1?`🏅 New record: ${n} words! +10 XP`:`✅ ${n} words! +10 XP`); clearInterval(raceTimer); screenQuickWrite(); };
+}
+
+/* ----- Model texts ----- */
+function screenModels(){
+  stopTimers(); const p=P();
+  app.innerHTML = backTitle('⭐ Model texts')+`<p class="muted">See what a great piece looks like, then test yourself on its features.</p>
+   <div class="list">${MODELS.map(m=>{ const r=p.models[m.id]; return `<button class="item" data-m="${m.id}"><span class="em">${r?(r.best===100?'🌟':'✅'):'📄'}</span><span class="grow"><b>${escH(m.title)}</b><br><small class="muted">${r?`Feature spotter: best ${r.best}%`:'Not studied yet'}</small></span>▶</button>`; }).join('')}</div>`;
+  $('#bk').onclick=()=>screenStudio();
+  $$('[data-m]').forEach(b=>b.onclick=()=>screenModel(b.dataset.m));
+}
+function screenModel(id, back){
+  stopTimers(); const m=MODELS.find(x=>x.id===id);
+  app.innerHTML = backTitle('⭐ '+escH(m.title))+`
+   <div class="card model">${m.text.map((t,i)=>i===0?`<h3>${escH(t)}</h3>`:`<p>${escH(t)}</p>`).join('')}</div>
+   <div class="card mt"><b>What makes it work</b><div class="list mt8">${m.notes.map(([f,e])=>`<div class="item"><span class="grow"><b>${escH(f)}</b><br><small>${escH(e)}</small></span></div>`).join('')}</div></div>
+   <button class="btn gold w100 mt" id="mq">🔎 Feature spotter quiz (4 questions)</button>`;
+  $('#bk').onclick=()=>(back||screenModels)();
+  $('#mq').onclick=()=>{ R={mode:'model', model:id, qs:shuffle(m.qs.map(s=>{ const a=s.split('|'); return mc(escH(a[0]), a[1], a.slice(2), `The answer is <b>${escH(a[1])}</b>.`); })), i:0, correct:0, streak:0, points:0, back:()=>screenModel(id, back)}; renderRoundQ(); };
+}
+
+/* ----- Peer review ----- */
+function screenPeer(){
+  stopTimers(); const p=P(), items=(DB.peerItems||[]).slice().reverse();
+  app.innerHTML = backTitle('🤝 Peer review')+`<p class="muted">Read a classmate's writing (names are hidden) and give <b>two stars and a wish</b>. ${escH(teacherName())} scores how helpful your feedback is and sends the best feedback to the writer.</p>
+   <div class="list">${items.map(x=>{ const r=p.peer[x.id]; return `<button class="item" data-pr="${x.id}"><span class="em">${r?(r.tm?'⭐':'✅'):'🆕'}</span><span class="grow"><b>${escH(x.kind||'Writing')}</b><br><small class="muted">${r?(r.tm?`Helpfulness: ${'⭐'.repeat(r.tm.h)}`:'Sent'):'Waiting for your review'}</small></span>▶</button>`; }).join('')||'<div class="card center"><p>Nothing to review yet. Your teacher will share pieces here.</p></div>'}</div>`;
+  $('#bk').onclick=()=>screenStudio();
+  $$('[data-pr]').forEach(b=>b.onclick=()=>screenPeerReview(b.dataset.pr));
+}
+function screenPeerReview(id){
+  stopTimers(); const p=P(), x=(DB.peerItems||[]).find(y=>y.id===id), r=p.peer[id]; if (!x) return screenPeer();
+  const stars=new Set(r?r.stars:[]); let wish=r?r.wish:null;
+  app.innerHTML = backTitle('🤝 Peer review')+`
+   <div class="card"><small class="muted b">${escH(x.kind||'')}</small>${x.prompt?`<p class="small"><b>Task:</b> ${escH(x.prompt)}</p>`:''}<p class="pre">${escH(x.text)}</p></div>
+   ${r?`<div class="card mt"><b>Your feedback</b><p>⭐ ${escH(r.stars.join(' and '))}: ${escH(r.st)}</p><p>🌱 ${escH(r.wish)}: ${escH(r.wt)}</p>${r.tm?`<p class="b">${escH(teacherName())}: helpfulness ${'⭐'.repeat(r.tm.h)}</p>`:''}</div>`:`
+   <div class="card mt"><b>⭐ Two stars: what is good? Pick two.</b><div class="pool l mt8">${PEER_STARS.map(s=>`<button class="chip" data-st="${escH(s)}">${escH(s)}</button>`).join('')}</div>
+     <textarea class="name mt8" rows="2" id="pst" placeholder="Explain with an example: I liked… because…"></textarea></div>
+   <div class="card mt"><b>🌱 One wish: what could be better? Pick one.</b><div class="pool l mt8">${PEER_WISHES.map(s=>`<button class="chip" data-wi="${escH(s)}">${escH(s)}</button>`).join('')}</div>
+     <textarea class="name mt8" rows="2" id="pwt" placeholder="Explain kindly: You could…"></textarea></div>
+   <button class="btn gold w100 mt" id="prs">📤 Send my feedback</button>`}`;
+  $('#bk').onclick=()=>screenPeer(); if (r) return;
+  $$('[data-st]').forEach(b=>b.onclick=()=>{ const s=b.dataset.st; if (stars.has(s)) stars.delete(s); else if (stars.size<2) stars.add(s); else return toast('Pick two stars only'); b.classList.toggle('sel', stars.has(s)); });
+  $$('[data-wi]').forEach(b=>b.onclick=()=>{ wish=b.dataset.wi; $$('[data-wi]').forEach(c=>c.classList.toggle('sel', c===b)); });
+  $('#prs').onclick=()=>{ if (stars.size!==2) return toast('Pick two stars'); if (!wish) return toast('Pick one wish');
+    if (wordsIn($('#pst').value)<6 || wordsIn($('#pwt').value)<6) return toast('Explain your stars and your wish (at least 6 words each)');
+    p.peer[id]={stars:[...stars], st:$('#pst').value.trim(), wish, wt:$('#pwt').value.trim(), d:today(), term:termNow()}; p.xp+=15; save(); toast('📤 Sent! +15 XP'); screenPeer(); };
+}
+
+/* ================= STUDIO: teacher marking ================= */
+function studioQueue(){
+  const q={read:[], oral:[], deep:[], para:[], qw:[], peer:[]};
+  Object.values(DB.profiles).forEach(p=>{
+    p.fluency.forEach(x=>{ if (!x.tm) q.read.push({p,x}); }); p.orals.forEach(x=>{ if (!x.tm) q.oral.push({p,x}); });
+    Object.entries(p.deep).forEach(([k,x])=>{ if (!x.tm) q.deep.push({p,x,k}); }); p.paras.forEach(x=>{ if (!x.tm) q.para.push({p,x}); });
+    p.qw.forEach(x=>{ if (!x.tm) q.qw.push({p,x}); }); Object.entries(p.peer).forEach(([k,x])=>{ if (!x.tm) q.peer.push({p,x,k}); }); });
+  return q;
+}
+function screenMarkHub(){
+  stopTimers(); const q=studioQueue();
+  const row=(id,ic,t,n)=>`<button class="item big" id="${id}"><span class="em">${ic}</span><span class="grow"><b>${t}</b></span>${n?`<span class="scorepill">${n}</span>`:'<small class="muted">none</small>'}</button>`;
+  app.innerHTML = backTitle('🎧 Studio marking')+`<p class="small muted">Everything learners have sent from the Studio. Marks go into "Marks for tracker" (Listening & Speaking, Reading and Writing).</p>
+   <div class="list">${row('mr','🎙️','Read-alouds',q.read.length)}${row('mo','🎤','Oral tasks',q.oral.length)}${row('md','💭','Think deeper answers',q.deep.length)}
+   ${row('mp','🧱','Paragraphs',q.para.length)}${row('mq','⏱️','Quick-writes to star',q.qw.length)}${row('mpe','🤝','Peer review',q.peer.length)}</div>`;
+  $('#bk').onclick=()=>screenTeacher();
+  $('#mr').onclick=()=>markList('read'); $('#mo').onclick=()=>markList('oral'); $('#md').onclick=()=>markList('deep');
+  $('#mp').onclick=()=>markList('para'); $('#mq').onclick=()=>screenQWTeacher(); $('#mpe').onclick=()=>screenPeerTeacher();
+}
+function markList(kind){
+  stopTimers(); const q=studioQueue()[kind], t={read:'🎙️ Read-alouds', oral:'🎤 Oral tasks', deep:'💭 Think deeper', para:'🧱 Paragraphs'}[kind];
+  app.innerHTML = backTitle(t+' to mark')+`<div class="list">${q.map((e,i)=>`<button class="item" data-i="${i}"><span class="grow"><b>${escH(e.p.name)}</b><br><small class="muted">${escH(e.x.d)} · ${kind==='read'?`Week ${e.x.w}${e.x.wpm!=null?` · ${e.x.wpm} wpm`:''}`:kind==='oral'?escH((ORALS.find(o=>o.id===e.x.task)||{}).title||''):kind==='deep'?`Week ${e.x.w}`:escH((PARAS.find(o=>o.id===e.x.pid)||{}).t||'')}</small></span>▶</button>`).join('')||'<p class="muted">All marked. Well done!</p>'}</div>`;
+  $('#bk').onclick=()=>screenMarkHub();
+  $$('[data-i]').forEach(b=>b.onclick=()=>{ const e=q[+b.dataset.i], back=()=>markList(kind);
+    if (kind==='read') markFluency(e.p, e.x, back); else if (kind==='oral') markOral(e.p, e.x, back); else if (kind==='deep') markDeep(e.p, e.x, back); else markPara(e.p, e.x, back); });
+}
+const rubricRow = (key, label, max, val) => `<div class="rrow"><span class="grow">${escH(label)}</span>${Array.from({length:max},(_, i)=>`<button class="rb ${val===i+1?'on':''}" data-rk="${key}" data-rv="${i+1}">${i+1}</button>`).join('')}</div>`;
+function wireRubric(vals){ $$('[data-rk]').forEach(b=>b.onclick=()=>{ vals[b.dataset.rk]=+b.dataset.rv; $$(`[data-rk="${b.dataset.rk}"]`).forEach(x=>x.classList.toggle('on', x===b)); }); }
+function markFluency(p, x, back){
+  stopTimers(); const ps=PS(YEAR[x.w-1].passage), ex=excerptOf(ps), v={acc:x.tm&&x.tm.acc, expr:x.tm&&x.tm.expr};
+  app.innerHTML = backTitle('🎙️ '+escH(p.name))+`
+   <div class="card"><small class="muted b">WEEK ${x.w} · ${escH(ps.title)} · ${ex.words} words</small><div class="excerpt small">${ex.text.map(t=>`<p>${escH(t)}</p>`).join('')}</div></div>
+   <div class="card mt">${audioBtn(x)}<p class="b mt8">${x.wpm!=null?`${x.wpm} words a minute (${mmss(x.secs)})`:`Stopped at ${mmss(x.secs)} before the end`}</p><small class="muted">Grade 5 target ${FLUENCY_TARGET[0]}–${FLUENCY_TARGET[1]} wpm</small></div>
+   <div class="card mt">${rubricRow('acc','Accuracy (words read correctly)',5,v.acc)}${rubricRow('expr','Expression and phrasing',5,v.expr)}
+     <small class="muted">1 Not yet · 2 Developing · 3 Achieved · 4 Good · 5 Excellent</small>
+     <label class="lbl">Comment (optional)</label><input class="name" id="cm" maxlength="160" value="${escH(x.tm&&x.tm.c||'')}">
+     <button class="btn gold w100 mt8" id="sv">💾 Save mark</button></div>`;
+  $('#bk').onclick=back; wireRubric(v); if (isCloudTeacher()) wireAudio();
+  $('#sv').onclick=()=>{ if (!v.acc||!v.expr) return toast('Choose both scores'); x.tm={acc:v.acc, expr:v.expr, c:$('#cm').value.trim(), d:today()}; save(); toast(`✅ ${p.name}: ${fluScore(x.tm)}/10`); back(); };
+}
+function markOral(p, x, back){
+  stopTimers(); const o=ORALS.find(y=>y.id===x.task)||{title:'Oral', plan:[]}, v=Object.assign({}, x.tm&&x.tm.r);
+  app.innerHTML = backTitle('🎤 '+escH(p.name))+`
+   <div class="card"><b>${escH(o.title)}</b> · ${escH(x.d)} · ${mmss(x.secs)}<div class="mt8">${audioBtn(x)}</div>
+     ${(x.plan||[]).some(Boolean)?`<details class="mt8"><summary>Their plan</summary>${o.plan.map((h,i)=>x.plan[i]?`<p><small class="muted">${escH(h)}</small><br>${escH(x.plan[i])}</p>`:'').join('')}</details>`:''}</div>
+   <div class="card mt">${ORAL_RUBRIC.map(([k,n])=>rubricRow(k,n,5,v[k])).join('')}
+     <label class="lbl">Comment (optional)</label><input class="name" id="cm" maxlength="160" value="${escH(x.tm&&x.tm.c||'')}">
+     ${isCloudTeacher()&&parentOf(p._uid)&&x.aid&&!x.gone?`<label class="toggle mt8"><span class="grow"><b>Let ${escH(p.name)}'s parents hear it</b><br><small class="muted">They can play it in Parent view, with your mark and comment.</small></span><input type="checkbox" id="opar" ${x.tm&&x.tm.par?'checked':''}><i></i></label>`:''}
+     <button class="btn gold w100 mt8" id="sv">💾 Save mark</button></div>`;
+  $('#bk').onclick=back; wireRubric(v); if (isCloudTeacher()) wireAudio();
+  $('#sv').onclick=async()=>{ if (ORAL_RUBRIC.some(([k])=>!v[k])) return toast('Score all four parts');
+    const par=!!($('#opar')&&$('#opar').checked);
+    x.tm={r:v, c:$('#cm').value.trim(), d:today(), par}; save();
+    if (isCloudTeacher() && x.aid && !x.gone){ try { await CL.db.doc(`classes/${DB.cloud.code}/audio/${x.aid}`).update({par:par?parentOf(p._uid)||'':''}); } catch(e){} }
+    toast(`✅ ${p.name}: ${oralScore(x.tm)}/20`); back(); };
+}
+function markDeep(p, x, back){
+  stopTimers(); const ps=PS(YEAR[x.w-1].passage), qs=DEEP_Q[DEEP_KIND(ps.type)], v={}; (x.tm&&x.tm.s||[]).forEach((s,i)=>v['q'+i]=s);
+  app.innerHTML = backTitle('💭 '+escH(p.name))+`<p class="small muted">Week ${x.w} · ${escH(ps.title)}. Score each answer: 1 basic, 2 good, 3 excellent with evidence from the text (0 if it is missing or off topic).</p>
+   ${qs.map((q,i)=>`<div class="card mt8"><b>${escH(q)}</b><p class="pre">${escH(x.a[i]||'')}</p><div class="rrow"><span class="grow"></span>${[0,1,2,3].map(n=>`<button class="rb ${v['q'+i]===n?'on':''}" data-rk="q${i}" data-rv="${n}">${n}</button>`).join('')}</div></div>`).join('')}
+   <div class="card mt"><label class="lbl">Comment (optional)</label><input class="name" id="cm" maxlength="160" value="${escH(x.tm&&x.tm.c||'')}"><button class="btn gold w100 mt8" id="sv">💾 Save mark</button></div>`;
+  $('#bk').onclick=back; wireRubric(v);
+  $('#sv').onclick=()=>{ if (qs.some((q,i)=>v['q'+i]==null)) return toast('Score all three answers'); x.tm={s:qs.map((q,i)=>v['q'+i]), c:$('#cm').value.trim(), d:today()}; save(); toast(`✅ ${p.name}: ${deepScore(x.tm)}/9`); back(); };
+}
+function markPara(p, x, back){
+  stopTimers(); const m=PARAS.find(y=>y.id===x.pid)||{prompt:''}, v=Object.assign({}, x.tm&&x.tm.r);
+  app.innerHTML = backTitle('🧱 '+escH(p.name))+`
+   <div class="card"><small class="muted">${escH(m.prompt)} · built the model paragraph ${x.order}/5</small><p class="pre mt8">${escH(x.text)}</p></div>
+   <div class="card mt">${PARA_RUBRIC.map(([k,n,max])=>rubricRow(k,n,max,v[k])).join('')}
+     <label class="lbl">Comment (optional)</label><input class="name" id="cm" maxlength="160" value="${escH(x.tm&&x.tm.c||'')}"><button class="btn gold w100 mt8" id="sv">💾 Save mark</button></div>`;
+  $('#bk').onclick=back; wireRubric(v);
+  $('#sv').onclick=()=>{ if (PARA_RUBRIC.some(([k])=>!v[k])) return toast('Score all four parts'); x.tm={r:v, c:$('#cm').value.trim(), d:today()}; save(); toast(`✅ ${p.name}: ${paraScore(x.tm)}/10`); back(); };
+}
+function screenQWTeacher(){
+  stopTimers(); const q=studioQueue().qw.sort((a,b)=>String(b.x.d).localeCompare(String(a.x.d))).slice(0,40);
+  app.innerHTML = backTitle('⏱️ Quick-writes')+`<p class="small muted">Give each a quick 1 to 3 stars for effort and ideas. Spelling doesn't count here.</p>
+   ${q.map((e,i)=>`<div class="card mt8"><b>${escH(e.p.name)}</b> <small class="muted">${escH(e.x.d)} · ${e.x.words} words</small><p class="small muted">${escH(e.x.prompt)}</p><p class="pre">${escH(e.x.text)}</p>
+     <div class="row">${[1,2,3].map(n=>`<button class="btn small ghost" data-q="${i}" data-n="${n}">${'⭐'.repeat(n)}</button>`).join('')}</div></div>`).join('')||'<p class="muted">Nothing to star.</p>'}`;
+  $('#bk').onclick=()=>screenMarkHub();
+  $$('[data-q]').forEach(b=>b.onclick=()=>{ q[+b.dataset.q].x.tm={star:+b.dataset.n, d:today()}; save(); screenQWTeacher(); });
+}
+function peerMap(){ const k=(DB.cloud&&DB.cloud.code)||'local'; DB.peerMaps=DB.peerMaps||{}; return DB.peerMaps[k]=DB.peerMaps[k]||{}; }
+function screenPeerTeacher(){
+  stopTimers(); const items=(DB.peerItems||[]).slice().reverse(), map=peerMap();
+  app.innerHTML = backTitle('🤝 Peer review')+`<p class="small muted">To share a piece, open it from "Writing to mark" or "Shared writing" and switch on "Use for peer review". The writer's name is never shown. Score each review for helpfulness, and send the best ones to the writer.</p>
+   ${items.map(it=>{ const reviews=Object.values(DB.profiles).filter(p=>p.peer[it.id]).map(p=>({p, r:p.peer[it.id]})), m=map[it.id];
+     return `<div class="card mt"><div class="row"><b class="grow">${escH(it.kind||'Writing')}</b><small class="muted">by ${escH(m?m.name:'?')} · ${reviews.length} review${reviews.length===1?'':'s'}</small><button class="btn small ghost" data-rmp="${it.id}">✕</button></div>
+       ${reviews.map(({p,r})=>`<div class="peerrev"><small class="b">${escH(p.name)}</small><p>⭐ ${escH(r.stars.join(' and '))}: ${escH(r.st)}</p><p>🌱 ${escH(r.wish)}: ${escH(r.wt)}</p>
+         <div class="row">${[1,2,3].map(n=>`<button class="btn small ${r.tm&&r.tm.h===n?'gold':'ghost'}" data-h="${escH(p.name)}|${it.id}|${n}">${'⭐'.repeat(n)}</button>`).join('')}<span class="grow"></span>
+         ${r.tm&&r.tm.sent?'<small class="muted">Sent to writer ✅</small>':`<button class="btn small" data-send="${escH(p.name)}|${it.id}">Send to writer</button>`}</div></div>`).join('')||'<p class="muted small">No reviews yet.</p>'}</div>`; }).join('')||'<p class="muted">No pieces shared for peer review yet.</p>'}`;
+  $('#bk').onclick=()=>screenMarkHub();
+  $$('[data-h]').forEach(b=>b.onclick=()=>{ const [n,id,h]=b.dataset.h.split('|'), r=DB.profiles[n].peer[id]; r.tm=Object.assign({}, r.tm, {h:+h, d:today()}); save(); screenPeerTeacher(); });
+  $$('[data-send]').forEach(b=>b.onclick=()=>{ const [n,id]=b.dataset.send.split('|'), r=DB.profiles[n].peer[id], m=map[id], a=m&&DB.profiles[m.name], w=a&&a.writing.find(w=>pieceKey(w)===m.key);
+    if (!w) return toast('The original piece could not be found'); w.pf=(w.pf||[]).concat([{stars:r.stars, st:r.st, wish:r.wish, wt:r.wt}]).slice(-6); r.tm=Object.assign({h:3}, r.tm, {sent:true, d:today()}); save(); toast('✅ Sent to the writer'); screenPeerTeacher(); });
+  $$('[data-rmp]').forEach(b=>b.onclick=()=>confirmBox('Stop using this piece for peer review?', 'Remove', ()=>{ DB.peerItems=(DB.peerItems||[]).filter(x=>x.id!==b.dataset.rmp); delete map[b.dataset.rmp]; save(); savePeerMap(); screenPeerTeacher(); }));
+}
+async function savePeerMap(){ if (!isCloudTeacher()) return; const ref=CL.db.doc(`teachers/${CL.user.uid}`); try { await ref.update({[`peerMap.${DB.cloud.code}`]:peerMap()}); } catch(e){ try { await ref.set({peerMap:{[DB.cloud.code]:peerMap()}}, {merge:true}); } catch(e2){} } }
 
 /* ----- Learner: redraft a piece ----- */
 function screenRedraft(idx){
@@ -6854,6 +7307,7 @@ function screenTeacher(){
      <button class="tool" id="mmap"><span>🗺️</span><b>Mastery map</b><small>Every learner, every skill, at a glance</small></button>
      <button class="tool" id="winbox"><span>📥</span><b>Writing to mark${unmarkedWriting().length?` (${unmarkedWriting().length})`:''}</b><small>Rubric, comments and redraft requests</small></button>
      <button class="tool" id="shared"><span>📰</span><b>Shared writing</b><small>What parents and the class magazine can see</small></button>
+     <button class="tool" id="tstudio"><span>🎧</span><b>Studio marking${(q=>{ const n=Object.values(q).reduce((a,b)=>a+b.length,0); return n?` (${n})`:''; })(studioQueue())}</b><small>Read-alouds, orals, deeper reading, paragraphs</small></button>
      <button class="tool" id="tasg"><span>📌</span><b>Set work</b><small>Give a skill to one learner, a group or the class</small></button>
      <button class="tool" id="tbooks"><span>📚</span><b>Reading log${pendingBooks().length?` (${pendingBooks().length})`:''}</b><small>Check books learners have read</small></button>
      <button class="tool" id="tquiz"><span>✏️</span><b>My quizzes</b><small>Write your own questions for all your classes</small></button>
@@ -6897,7 +7351,7 @@ function screenTeacher(){
      <li>Use Class Starter at the start of a lesson for a quick 5-question warm-up.</li></ul></div>`;
   $('#bk').onclick=()=>teacherBack();
   wireCloudBar(); $('#starter').onclick=()=>screenStarterSetup(); $('#picker').onclick=()=>screenPicker(); $('#tres').onclick=()=>screenTestResults(); $('#mmap').onclick=()=>screenMasteryMap(); $('#winbox').onclick=()=>screenWritingInbox(); $('#shared').onclick=()=>screenSharedWriting();
-  $('#tasg').onclick=()=>screenSetWork(); $('#tbooks').onclick=()=>screenBooksTeacher(); $('#tquiz').onclick=()=>screenQuizMaker(); $('#tleague').onclick=()=>screenLeague(); $('#ttrack').onclick=()=>screenTrackerExport();
+  $('#tasg').onclick=()=>screenSetWork(); $('#tstudio').onclick=()=>screenMarkHub(); $('#tbooks').onclick=()=>screenBooksTeacher(); $('#tquiz').onclick=()=>screenQuizMaker(); $('#tleague').onclick=()=>screenLeague(); $('#ttrack').onclick=()=>screenTrackerExport();
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#sv').onclick=()=>{ DB.teacher=$('#tn').value.trim()||'Mr Radloff'; DB.focus=$('#fw').value||null;
@@ -7106,7 +7560,10 @@ const pieceKey = w => w.id || (w.id = 'h'+hashStr((w.d||'')+'|'+(w.kind||'')+'|'
 
 function applyTeacherFields(p, d){
   const marks=(d&&d.marks)||{}; let fresh=0;
-  (p.writing||[]).forEach(w=>{ const m=marks[pieceKey(w)]; if (m){ if (!w.tm || JSON.stringify(w.tm)!==JSON.stringify(m)) fresh++; w.tm=m; } });
+  (p.writing||[]).forEach(w=>{ const m=marks[pieceKey(w)]; if (m){ if (!w.tm || JSON.stringify(w.tm)!==JSON.stringify(m)) fresh++; w.tm=m; } const f=marks['pf:'+pieceKey(w)]; if (f) w.pf=f; });
+  const ap=(x,m)=>{ if (m){ if (!x.tm || JSON.stringify(x.tm)!==JSON.stringify(m)) fresh++; x.tm=m; } };
+  [['f:',p.fluency],['o:',p.orals],['p:',p.paras],['q:',p.qw]].forEach(([pre,arr])=>(arr||[]).forEach(x=>ap(x, marks[pre+x.id])));
+  Object.entries(p.deep||{}).forEach(([k,x])=>ap(x, marks['d:'+k])); Object.entries(p.peer||{}).forEach(([k,x])=>ap(x, marks['r:'+k]));
   if (d && d.published && typeof d.published==='object'){ const pub=d.published;
     (p.writing||[]).forEach(w=>{ const s=pub[pieceKey(w)]; if (s && (s.par || s.mag)) w.pub=s; else delete w.pub; }); }
   if (d && d.teacher){ p.reader=!!d.teacher.reader; if (p.reader) p.prefs.autoRead=true;
@@ -7116,7 +7573,7 @@ function applyTeacherFields(p, d){
 function applyClassSettings(c){
   if (!c) return; const s=c.settings||{};
   ['week','startLv','kbd','openAll','classSound'].forEach(k=>{ if (s[k]!==undefined && s[k]!==null) DB[k]=s[k]; });
-  DB.assign=Array.isArray(c.assign)?c.assign:[]; DB.quizzes=Array.isArray(c.quizzes)?c.quizzes:(DB.quizzes||[]); DB.league=c.league||null;
+  DB.assign=Array.isArray(c.assign)?c.assign:[]; DB.peerItems=Array.isArray(c.peer)?c.peer:[]; DB.quizzes=Array.isArray(c.quizzes)?c.quizzes:(DB.quizzes||[]); DB.league=c.league||null;
   if (c.teacherName) DB.teacher=c.teacherName;
 }
 
@@ -7211,7 +7668,8 @@ async function parentSignIn(code, entry, pin){
     let mag=[], magOk=true; try { const qs=await db.collection(`classes/${code}/magazine`).get(); qs.forEach(m=>mag.push(m.data())); } catch(e){ magOk=false; }
     const byNew=(a,b)=>String(b.at||b.d).localeCompare(String(a.at||a.d));
     out={child:entry.name, col:entry.col, cls:c.name||'', teacher:c.teacherName||'Your teacher',
-      mine:Object.values(pub).filter(x=>x&&x.par).sort(byNew), mag:mag.sort(byNew), magOk, week:f.week||null};
+      mine:Object.values(pub).filter(x=>x&&x.par).sort(byNew), mag:mag.sort(byNew), magOk, week:f.week||null, orals:[]};
+    for (const o of (f.orals||[])){ try { const a=await db.doc(`classes/${code}/audio/${o.aid}`).get(); out.orals.push(Object.assign({}, o, {src:a.exists?a.data().data:null})); } catch(e){ out.orals.push(o); } }
   } finally { try { await auth.signOut(); } catch(e){} busy(); }
   document.onkeydown=null; screenParent(out, out.mine.length?'mine':'week');
 }
@@ -7242,12 +7700,15 @@ function screenParent(v, tab){
         <div class="item"><span class="em">📖</span><span class="grow">This week's reading</span><b>${wk.read?'Done':'Not yet'}</b></div>
         <div class="item"><span class="em">🧩</span><span class="grow">Weekly quiz</span><b>${wk.quiz?escH(wk.quiz):'Not yet'}</b></div>
         ${wk.test?`<div class="item"><span class="em">📝</span><span class="grow">${escH(wk.test.title)}</span><b>${wk.test.pc}%</b></div>`:''}
-        <div class="item"><span class="em">📚</span><span class="grow">Books read this year (checked by the teacher)</span><b>${wk.books}</b></div></div>
+        <div class="item"><span class="em">📚</span><span class="grow">Books read this year (checked by the teacher)</span><b>${wk.books}</b></div>
+        ${wk.wpm!=null?`<div class="item"><span class="em">🎙️</span><span class="grow">Reading speed (Grade 5 target ${FLUENCY_TARGET[0]}–${FLUENCY_TARGET[1]})</span><b>${wk.wpm} wpm</b></div>`:''}
+        ${wk.flu!=null?`<div class="item"><span class="em">🗣️</span><span class="grow">Reading aloud: accuracy and expression</span><b>${wk.flu}/10</b></div>`:''}</div>
       <small class="muted">${wk.last?`Last practised ${escH(parentDate(wk.last))}. `:''}Updated when ${escH(v.teacher)} syncs the class.</small></div>`
     :`<div class="card center"><p>The weekly summary will appear once ${escH(v.teacher)} syncs the class.</p></div>`;
+  const talks=(v.orals||[]).length?`<div class="card mt"><b>🎤 Talks ${escH(v.child)} recorded</b>${v.orals.map(o=>`<div class="mt8"><b>${escH(o.title)}</b> <small class="muted">${escH(parentDate(o.d))}</small> <span class="scorepill">${o.score}/20</span>${o.c?`<p class="small">"${escH(o.c)}"</p>`:''}${o.src?`<audio controls src="${o.src}"></audio>`:'<small class="muted">Recording not available</small>'}</div>`).join('')}</div>`:'';
   app.innerHTML = `<div class="parenthead"><small>👪 Parent view · ${escH(v.cls)}</small><h2>${escH(v.child)}'s page</h2><small>From ${escH(v.teacher)}</small></div>
    <div class="seg2 mt noprint"><button class="${tab==='week'?'on':''}" id="twk">This week</button><button class="${tab==='mine'?'on':''}" id="tmine">Writing (${v.mine.length})</button><button class="${tab==='mag'?'on':''}" id="tmag">Magazine (${v.mag.length})</button></div>
-   <div class="mt">${tab==='mag'?mag:tab==='week'?week:mine}</div>
+   <div class="mt">${tab==='mag'?mag:tab==='week'?week+talks:mine}</div>
    <div class="row mt noprint"><button class="btn ghost grow" id="pprint">🖨️ Print</button><button class="btn grow" id="pclose">Close parent view</button></div>
    <p class="small muted mt8 noprint">Only ${escH(v.child)}'s family can see the summary and writing tabs. Parent view can only read: nothing here can change ${escH(v.child)}'s work. You are already logged out, so nothing stays on this device after you close it.</p>`;
   $('#tmine').onclick=()=>screenParent(v,'mine'); $('#tmag').onclick=()=>screenParent(v,'mag'); $('#twk').onclick=()=>screenParent(v,'week');
@@ -7275,7 +7736,7 @@ async function cloudLogout(quiet){
   try { await cloudInit(); await CL.auth.signOut(); } catch(e){}
   if (DB.cloud){ Object.keys(DB.profiles).forEach(k=>{ if (DB.profiles[k]._uid) delete DB.profiles[k]; });
     if (DB.cloud.role==='teacher' && DB.localBackup){ Object.assign(DB.profiles, DB.localBackup); delete DB.localBackup; } }
-  if (DB.cloud && DB.cloud.role==='learner'){ DB.assign=[]; DB.league=null; DB.quizzes=[]; }
+  if (DB.cloud && DB.cloud.role==='learner'){ DB.assign=[]; DB.league=null; DB.quizzes=[]; DB.peerItems=[]; }
   DB.cloud=null; DB.current=null; CL.lastJson=''; CL.pushed=null; save(); busy();
   if (!quiet){ toast('Logged out. See you next time!'); screenProfiles(); }
 }
@@ -7337,17 +7798,21 @@ async function teacherOpenClass(code, isNew){
     const locals=Object.keys(DB.profiles).filter(n=>!DB.profiles[n]._uid);
     if (locals.length){ DB.localBackup=Object.assign(DB.localBackup||{}, Object.fromEntries(locals.map(n=>[n, DB.profiles[n]]))); locals.forEach(n=>delete DB.profiles[n]); }
     DB.current=null; applyClassSettings(c); await teacherPull(); busy(); screenCloudClass(isNew);
-    try { const t=(await CL.db.doc(`teachers/${CL.user.uid}`).get()).data()||{}; if (Array.isArray(t.quizzes)) DB.quizzes=t.quizzes; } catch(e){}
+    try { const t=(await CL.db.doc(`teachers/${CL.user.uid}`).get()).data()||{}; if (Array.isArray(t.quizzes)) DB.quizzes=t.quizzes; if (t.peerMap && t.peerMap[code]){ DB.peerMaps=DB.peerMaps||{}; DB.peerMaps[code]=t.peerMap[code]; } } catch(e){}
     if (!DB.leagueAt || Date.now()-DB.leagueAt>6*3600e3) teacherLeague().catch(()=>{});
   } catch(e){ busy(); toast(cloudErr(e)); }
 }
-const teacherSigOf = p => { const marks={}, published={}; (p.writing||[]).forEach(w=>{ if (w.tm) marks[pieceKey(w)]=w.tm; if (w.pub && (w.pub.par || w.pub.mag)) published[pieceKey(w)]=w.pub; }); const books={}; (p.books||[]).forEach(b=>{ if (b.ok) books[b.id]=1; }); return {marks, teacher:{reader:!!p.reader, books}, published}; };
+const teacherSigOf = p => { const marks={}, published={}; (p.writing||[]).forEach(w=>{ if (w.tm) marks[pieceKey(w)]=w.tm; if (w.pub && (w.pub.par || w.pub.mag)) published[pieceKey(w)]=w.pub; }); const books={}; (p.books||[]).forEach(b=>{ if (b.ok) books[b.id]=1; });
+  [['f:',p.fluency],['o:',p.orals],['p:',p.paras],['q:',p.qw]].forEach(([pre,arr])=>(arr||[]).forEach(x=>{ if (x.tm) marks[pre+x.id]=x.tm; }));
+  Object.entries(p.deep||{}).forEach(([k,x])=>{ if (x.tm) marks['d:'+k]=x.tm; }); Object.entries(p.peer||{}).forEach(([k,x])=>{ if (x.tm) marks['r:'+k]=x.tm; });
+  (p.writing||[]).forEach(w=>{ if (w.pf && w.pf.length) marks['pf:'+pieceKey(w)]=w.pf; });
+  return {marks, teacher:{reader:!!p.reader, books}, published}; };
 /* ---------- Sharing: parent view and class magazine ---------- */
 const magId = (uid, key) => `${uid}_${key}`;
 const magDoc = (name, s) => ({name, kind:s.kind||'', prompt:s.prompt||'', text:s.text||'', d:s.d||'', at:s.at||''});
 function magWanted(){ const out={}; Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>(p.writing||[]).forEach(w=>{ if (w.pub && w.pub.mag) out[magId(p._uid, pieceKey(w))]=magDoc(p.name, w.pub); })); return out; }
 function pubSnap(w, par, mag){ return {par:!!par, mag:!!mag, at:today(), kind:w.kind||'', prompt:w.prompt||'', text:w.text||'', d:w.d||'', v:w.v||1, tm:w.tm||null}; }
-const settingsSig = () => JSON.stringify({week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[]});
+const settingsSig = () => JSON.stringify({week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
 async function teacherPull(){
   const code=DB.cloud.code;
   await teacherPush();
@@ -7360,7 +7825,7 @@ async function teacherPull(){
   Object.keys(DB.profiles).forEach(n=>{ if (DB.profiles[n]._uid) delete DB.profiles[n]; });
   Object.assign(DB.profiles, out); DB.classList=Object.values(c.learners||{}).map(x=>x.name).sort();
   try { const fs=await CL.db.collection(`classes/${code}/family`).get({source:'server'}); pushed._fam={};
-    fs.forEach(m=>{ const x=m.data(); pushed._fam[m.id]=JSON.stringify({child:x.child, cls:x.cls, teacher:x.teacher, published:x.published, week:x.week}); }); } catch(e){ pushed._fam=null; }
+    fs.forEach(m=>{ const x=m.data(); pushed._fam[m.id]=JSON.stringify({child:x.child, cls:x.cls, teacher:x.teacher, published:x.published, week:x.week, orals:x.orals}); }); } catch(e){ pushed._fam=null; }
   try { const ms=await CL.db.collection(`classes/${code}/magazine`).get({source:'server'}); pushed._mag={};
     ms.forEach(m=>{ const x=m.data(); pushed._mag[m.id]=JSON.stringify(magDoc(x.name, x)); }); } catch(e){ pushed._mag=null; }
   CL.pushed=pushed; DB.cloud.synced=Date.now(); save();
@@ -7372,7 +7837,7 @@ async function teacherPush(){
   Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>{ const sig=teacherSigOf(p), js=JSON.stringify(sig);
     if (CL.pushed[p._uid]!==js){ const ref=CL.db.doc(`classes/${code}/learners/${p._uid}`);
       batch.set(ref, {marks:sig.marks, teacher:sig.teacher}, {merge:true}); batch.set(ref, {published:sig.published}, {mergeFields:['published']}); CL.pushed[p._uid]=js; n++; } });
-  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on'}, teacherName:teacherName(), assign:DB.assign||[]}); CL.pushed._s=ss; n++; }
+  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on'}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
   if (n){ setSync('busy'); await batch.commit(); setSync('ok'); }
   await magazinePush(); await familyPush();
 }
@@ -7381,10 +7846,12 @@ function weekSummary(p){
   const w=curWeek(), y=YEAR[w-1], r=p.yr['w'+w]||{}, st=weekStatus(p,w), t=[...TESTS].reverse().find(x=>p.tests[x.id]);
   return {label:`Term ${y.term}, Week ${y.tw}: ${y.theme}`, spell:p.spellTests['w'+w]!=null?`${p.spellTests['w'+w]}/${SPELL_N(w)}`:null,
     read:(r.read||0)>=3, quiz:r.quiz!=null?`${r.quiz}/10`:null, done:st.done, total:st.total,
-    test:t?{title:t.title, pc:pctOf(p.tests[t.id].first)}:null, books:(p.books||[]).filter(b=>b.ok).length, last:p.lastDay||null};
+    test:t?{title:t.title, pc:pctOf(p.tests[t.id].first)}:null, books:(p.books||[]).filter(b=>b.ok).length, last:p.lastDay||null,
+    wpm:(p.fluency||[]).find(x=>x.wpm!=null)?(p.fluency||[]).find(x=>x.wpm!=null).wpm:null, flu:(f=>f?fluScore(f.tm):null)((p.fluency||[]).find(x=>x.tm))};
 }
 function familyDoc(p){ const pub={}; (p.writing||[]).forEach(w=>{ if (w.pub && w.pub.par) pub[pieceKey(w)]=w.pub; });
-  return {child:p.name, cls:(CL.cls&&CL.cls.name)||'', teacher:teacherName(), published:pub, week:weekSummary(p)}; }
+  const orals=(p.orals||[]).filter(o=>o.tm&&o.tm.par&&o.aid&&!o.gone).map(o=>({title:(ORALS.find(x=>x.id===o.task)||{}).title||'Oral', d:o.d, score:oralScore(o.tm), c:o.tm.c||'', aid:o.aid}));
+  return {child:p.name, cls:(CL.cls&&CL.cls.name)||'', teacher:teacherName(), published:pub, week:weekSummary(p), orals}; }
 async function familyPush(){
   if (!isCloudTeacher() || !CL.pushed || !CL.pushed._fam) return;
   const code=DB.cloud.code, batch=CL.db.batch(), next={}; let n=0;
