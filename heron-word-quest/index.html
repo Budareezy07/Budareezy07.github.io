@@ -442,6 +442,14 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .model h3{margin-top:0}
 .loadcard{background:#ecfdf5;border:2px solid #34d399}.loadcard.mid{background:#fffbeb;border-color:#f59e0b}.loadcard.heavy{background:#fef2f2;border-color:#f87171}
 .loadbig{font-size:30px;font-weight:900;margin:4px 0}
+.startnext{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:20px;padding:14px 16px;background:linear-gradient(135deg,#ffd75e,#f0a92a);color:#1f2756;text-align:left;box-shadow:0 5px 0 #c98a17,0 10px 22px #f0a92a55;cursor:pointer}
+.startnext .snic{font-size:38px;line-height:1}.startnext b{display:block;font-size:20px;line-height:1.2}.startnext small{display:block}.startnext .sngo{font-size:24px;font-weight:900}
+.tw3{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}.tw3>div{background:#f4f6fb;border-radius:12px;padding:8px;text-align:center}.tw3 b{display:block;font-size:22px}.tw3 small{font-size:12px;color:#5b6478;font-weight:700}
+.nslist{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.nschip{border:1.5px solid #f3c4c4;background:#fff5f5;color:#b42318;border-radius:999px;padding:3px 10px;font-weight:700;font-size:13px;cursor:pointer}
+.twbtns{display:flex;flex-wrap:wrap;gap:8px}.twbtns .btn{flex:1 1 140px}
+.reteach{display:flex;align-items:center;gap:10px;width:100%;border:2px solid #fde68a;background:#fffbeb;border-radius:14px;padding:10px 12px;text-align:left;cursor:pointer}.reteach b{display:block;font-size:17px}.reteach small{display:block}
+.moretools{background:#fff;border-radius:16px;padding:4px 12px;box-shadow:0 2px 8px #1f275612}.moretools>summary{cursor:pointer;font-weight:800;padding:10px 0;list-style:none}.moretools>summary::-webkit-details-marker{display:none}.moretools>summary::before{content:'▸ '}.moretools[open]>summary::before{content:'▾ '}.moretools[open]{padding-bottom:12px}
+.datapage ul{margin:4px 0 10px}
 .pchart{width:100%;height:auto;display:block;margin-top:6px}.pchart .ax{font:700 13px system-ui,sans-serif;fill:#64748b}.pchart .gl{stroke:#e5e7eb}.pchart .tl{stroke:#a5b4fc;stroke-dasharray:3 4}.pchart .nl{stroke:#f59e0b;stroke-dasharray:5 4;stroke-width:2}
 .legend{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}.legend button{border:2px solid var(--c);background:#fff;color:var(--c);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12px;cursor:pointer}.legend button.off{opacity:.35;text-decoration:line-through}
 .fchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.fchips button{border:1.5px solid #d5dbe7;background:#fff;border-radius:999px;padding:4px 11px;font-weight:700;font-size:12px;cursor:pointer;color:#1f2756}.fchips button.on{background:#1f2756;border-color:#1f2756;color:#fff}
@@ -5136,7 +5144,7 @@ function screenHome(){
   const lv=level(p.xp), into=p.xp%200, todayN=p.lastDay===today()?p.todayRounds:0;
   const w = WOTD[dayIndex()%WOTD.length], dailyDone = p.dailyDone===today();
   const focus = DB.focus && WD(DB.focus), rec = recommend(p), fc = feathers(p);
-  const hour = new Date().getHours(), greet = hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const hour = new Date().getHours(), greet = hour<12?'Good morning':hour<17?'Good afternoon':'Good evening', nt = nextTask(p);
   app.innerHTML = `
    <div class="hero">${crest()}<div class="grow"><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div>
      <div class="hbtns">${isCloudLearner()?`<span class="syncdot ${CL.state||'ok'}" id="syncdot" title="Saved online"></span>`:''}<button class="btn small ghost" id="snd" aria-label="Sound">${sndOn()?'🔊':'🔇'}</button><button class="btn small ghost" id="set" aria-label="Settings">⚙️</button></div></div>
@@ -5144,6 +5152,7 @@ function screenHome(){
    <div class="player"><button class="ava" id="ward" aria-label="Dress up my heron">${heronSVG(p.look,'h64')}<span class="pen">✏️</span></button>
      <div class="grow"><b class="f19">${greet}, ${escH(p.name)}!</b> <span class="muted b">Level ${lv}</span>
        <div class="xpbar"><i style="width:${into/2}%"></i></div><small class="muted b">${200-into} XP to level ${lv+1} · <button class="link small" id="sw">switch player</button></small></div></div>
+   ${nt?`<button class="startnext mt" id="startnext"><span class="snic">${nt.ic}</span><span class="grow"><small class="up b">Start here</small><b>${escH(nt.t)}</b><small>${escH(nt.sub)}</small></span><span class="sngo">▶</span></button>`:''}
    <div class="stats">
      <div class="stat"><b>🪙 ${p.coins}</b><span>coins</span></div>
      <div class="stat"><b>🏅 ${totalStars(p)}</b><span>of ${ALLSKILLS.length*3} medals</span></div>
@@ -5187,6 +5196,7 @@ function screenHome(){
   wireWeekCard(p);
   if ($('#sayw')) $('#sayw').onclick=()=>speak(`${w[0]}. ${w[1]}. ${w[2]}`);
   if ($('#focus')) $('#focus').onclick=()=>screenWorld(focus.id);
+  if ($('#startnext')) $('#startnext').onclick=()=>nt.go();
   if ($('#rec')) $('#rec').onclick=()=> p.learned[rec.k.id] ? startRound(rec.k.id, null, ()=>screenHome()) : screenLearn(rec.k.id);
   if ($('#mend')) $('#mend').onclick=()=>startMend();
   if ($('#review')) $('#review').onclick=()=>startReview();
@@ -7807,6 +7817,58 @@ async function screenGradeProgress(){
   draw();
 }
 
+/* ----- Start here: the one next thing to do ----- */
+function nextTask(p){
+  const w=curWeek(), y=YEAR[w-1], r=p.yr['w'+w]||{}, back=()=>screenHome(), st=weekStatus(p,w), step=`Step ${Math.min(st.total, st.done+1)} of ${st.total} this week`;
+  const t=testForWeek(w)||checkDue(p,w);
+  if (t && !p.tests[t.id] && testOpen(t)) return {ic:t.check?'📍':'📝', t:t.title, sub:t.check?'Do this one first':'Big test this week · 30 marks', go:()=>screenTest(t.id, back)};
+  const a=mySetWork(p).find(x=>!p.asg[x.id] && SK(x.sk));
+  if (a) return {ic:'📌', t:SK(a.sk).name, sub:`Set by ${teacherName()}`, go:()=>{ if (!p.learned[a.sk]){ p.learned[a.sk]=true; save(); } startRound(a.sk, a.lv, back); R.asg=a.id; }};
+  if (!r.spell) return {ic:'🔤', t:'Spelling: '+SPELL_WEEKS[w-1].pat, sub:step, go:()=>screenWeek(w)};
+  if ((r.read||0)<3) return {ic:'📖', t:'Reading: '+PS(y.passage).title, sub:step, go:()=>startRead(w, back)};
+  for (const s of y.skills) if ((p.best[s]||0)<1) return {ic:'🎯', t:SK(s).name, sub:step, go:()=>p.learned[s]?startRound(s,null,back):screenLearn(s)};
+  if (y.write && !r.write) return {ic:WT(y.write).icon, t:'Writing: '+WT(y.write).title, sub:step, go:()=>screenTask(y.write, w)};
+  if (r.quiz==null) return {ic:'🧩', t:'Weekly quiz', sub:step, go:()=>startQuiz(w, back)};
+  if (p.mistakes.length) return {ic:'🩹', t:'Fix my mistakes', sub:'Your week is done! Now fix a few old mistakes', go:()=>startMend()};
+  const rec=recommend(p);
+  if (rec) return {ic:'🌟', t:rec.k.name, sub:'Your week is done! Plume suggests this next', go:()=>p.learned[rec.k.id]?startRound(rec.k.id,null,back):screenLearn(rec.k.id)};
+  return null;
+}
+/* ----- Teacher: this week on one card ----- */
+function teacherWeekHTML(){
+  const w=curWeek(), y=YEAR[w-1], ps=Object.values(DB.profiles); if (!ps.length) return '';
+  const st=ps.map(p=>({p, s:weekStatus(p,w)})), none=st.filter(x=>x.s.done===0), all=st.filter(x=>x.s.done>=x.s.total);
+  const wr=unmarkedWriting().length, sq=Object.values(studioQueue()).reduce((a,b)=>a+b.length,0), bk=pendingBooks().length;
+  const t=testForWeek(w) || (w<=3?CHECKS[0]:w>=CHECKS[1].week?CHECKS[1]:null), tDone=t?ps.filter(p=>p.tests[t.id]).length:0;
+  const outs=ALLSKILLS.map(k=>{ const v=ps.map(p=>mastery(p,k.id)).filter(v=>v!=null); return {k, n:v.length, avg:avgN(v)}; }).filter(o=>o.n>=Math.max(2, Math.ceil(ps.length/3))).sort((a,b)=>a.avg-b.avg);
+  const weak=outs[0];
+  return `<div class="card tweek mt"><div class="row"><span class="f40">${y.icon}</span><span class="grow"><small class="up b muted">This week · Term ${y.term}, Week ${y.tw}${weekDate(w)?' · '+weekDate(w):''}</small><br><b class="f19">${escH(y.theme)}</b></span></div>
+    <div class="tw3 mt8"><div><b>${all.length}/${ps.length}</b><small>finished the week</small></div><div><b>${ps.length-none.length}/${ps.length}</b><small>started</small></div>
+      ${t?`<div><b>${tDone}/${ps.length}</b><small>${t.check?(t.id==='base'?'Starting Point':'End of Year'):'Term '+t.term+' test'} done</small></div>`:''}</div>
+    ${none.length?`<p class="small mt8"><b>Not started yet:</b></p><div class="nslist">${none.slice(0,16).map(x=>`<button class="nschip" data-d="${escH(x.p.name)}">${escH(x.p.name)}</button>`).join('')}${none.length>16?`<small class="muted">and ${none.length-16} more</small>`:''}</div>`:'<p class="small mt8">✅ Everyone has started this week\'s work.</p>'}
+    <div class="twbtns mt8"><button class="btn ${wr?'gold':'ghost'}" id="tw-wr">📥 Writing to mark${wr?` (${wr})`:': none'}</button>
+      ${studioOn()||sq?`<button class="btn ${sq?'gold':'ghost'}" id="tw-st">🎧 Studio to mark${sq?` (${sq})`:': none'}</button>`:''}
+      ${bk?`<button class="btn ghost" id="tw-bk">📚 Books to check (${bk})</button>`:''}</div>
+    ${weak?`<button class="reteach mt8" id="tw-pr"><span class="grow"><small class="up b">🎯 Reteach</small><b>${escH(weak.k.name)}</b><small>Class mastery ${weak.avg} of 100 · the weakest outcome so far</small></span><span>📈</span></button>`:''}
+  </div>`;
+}
+/* ----- Parents: what the app keeps about their child ----- */
+function parentDataHTML(v){
+  const c=escH(v.child), t=escH(v.teacher);
+  return `<div class="card datapage"><h3>🔒 About ${c}'s data</h3>
+    <p class="b mt8">What the app keeps</p><ul class="ex small">
+      <li>${c}'s name, as ${t} typed it in. The app does not ask for email addresses, ID numbers, birthdays or photos.</li>
+      <li>${c}'s work in the app: answers, scores, writing, and ${t}'s marks and comments.</li>
+      <li>Voice recordings, only if ${c} records a read-aloud or a talk.</li></ul>
+    <p class="b">Who can see it</p><ul class="ex small">
+      <li>${c} and ${t}.</li>
+      <li>You, through this parent view. Your PIN only shows your own child, and it can only read.</li>
+      <li>Other families see a piece of ${c}'s writing only if ${t} chooses it for the class magazine.</li>
+      <li>The class league shows class averages only, never single learners.</li></ul>
+    <p class="b">Where it is kept</p><p class="small">Securely online with Google Firebase, so ${c} can use the app at school and at home. The app has no adverts, and nothing is sold or shared with anyone else.</p>
+    <p class="b">How long, and deleting it</p><p class="small">It is kept for this school year. You can ask ${t} at any time to see ${c}'s data or to delete it.</p></div>`;
+}
+
 /* ================= TEACHER CORNER ================= */
 const teacherBack = () => (DB.current && P()) ? screenHome() : screenProfiles();
 function screenTeacherGate(){
@@ -7841,6 +7903,8 @@ function screenTeacher(){
   const names=Object.keys(DB.profiles);
   app.innerHTML = backTitle('🍎 Teacher corner')+`
    ${cloudBarHTML()}
+   ${teacherWeekHTML()}
+   <details class="moretools mt" id="mtools" ${DB.toolsOpen?'open':''}><summary>🧰 All tools <small class="muted">(marking, progress, tests, quizzes and more)</small></summary>
    <div class="tools"><button class="tool" id="starter"><span>📽️</span><b>Class Starter</b><small>Big-screen quiz for the projector</small></button>
      <button class="tool" id="picker"><span>🎲</span><b>Name Picker</b><small>Randomly choose a learner</small></button>
      <button class="tool" id="tprog"><span>📈</span><b>Progress</b><small>Every mark and learning outcome, by learner, class and grade</small></button>
@@ -7854,7 +7918,7 @@ function screenTeacher(){
      <button class="tool" id="tbooks"><span>📚</span><b>Reading log${pendingBooks().length?` (${pendingBooks().length})`:''}</b><small>Check books learners have read</small></button>
      <button class="tool" id="tquiz"><span>✏️</span><b>My quizzes</b><small>Write your own questions for all your classes</small></button>
      <button class="tool" id="tleague"><span>🏆</span><b>Class league</b><small>This week's points for each of your classes</small></button>
-     <button class="tool" id="ttrack"><span>📊</span><b>Marks for tracker</b><small>Term marks to paste into your spreadsheet</small></button></div>
+     <button class="tool" id="ttrack"><span>📊</span><b>Marks for tracker</b><small>Term marks to paste into your spreadsheet</small></button></div></details>
    <div class="card mt scrollx"><div class="row"><b class="grow">${isCloudTeacher()?"Class progress (online class)":"Class progress on this device"}</b><button class="btn small ghost" id="csv">📋 Copy report</button></div>
      <p class="muted small"><b>This week (Term ${YEAR[curWeek()-1].term}, Week ${YEAR[curWeek()-1].tw}: ${escH(YEAR[curWeek()-1].theme)})</b>: 🔤 spelling test, 📖 reading score, 🧩 quiz, tasks done. Test column shows the latest big test (official mark). Accuracy per world. Green 80%+, amber 60–79%, red below 60%. Tap a name for detail and writing. "Copy report" pastes straight into Excel or Google Sheets.</p>
      <table><tr><th>Player</th><th>Lvl</th><th>★</th><th>🪶</th>${WORLDS.map(w=>`<th title="${w.name}">${w.icon}</th>`).join('')}<th>Needs work</th><th>Wk ${YEAR[curWeek()-1].tw}</th><th>Test</th></tr>
@@ -7896,6 +7960,9 @@ function screenTeacher(){
   $('#tasg').onclick=()=>screenSetWork(); $('#tstudio').onclick=()=>screenMarkHub(); $('#tswitch').onclick=()=>screenSwitchboard(); $('#tbooks').onclick=()=>screenBooksTeacher(); $('#tquiz').onclick=()=>screenQuizMaker(); $('#tleague').onclick=()=>screenLeague(); $('#ttrack').onclick=()=>screenTrackerExport();
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
+  $('#mtools').ontoggle=()=>{ DB.toolsOpen=$('#mtools').open; save(); };
+  if ($('#tw-wr')) $('#tw-wr').onclick=()=>screenWritingInbox(); if ($('#tw-st')) $('#tw-st').onclick=()=>screenMarkHub();
+  if ($('#tw-bk')) $('#tw-bk').onclick=()=>screenBooksTeacher(); if ($('#tw-pr')) $('#tw-pr').onclick=()=>screenProgressTeacher();
   $('#sv').onclick=()=>{ DB.teacher=$('#tn').value.trim()||'Mr Radloff'; DB.focus=$('#fw').value||null;
     DB.classList=uniq($('#cls').value.split('\n').map(s=>s.trim().replace(/\s+/g,' ')).filter(Boolean)).slice(0,60);
     DB.pin=$('#pinset').value.trim(); DB.week=$('#wkset').value==='auto'?'auto':+$('#wkset').value; DB.openAll=$('#openall').checked; DB.startLv=+$('#stlv').value; DB.kbd=$('#kbdset').value; DB.classSound=$('#sndset').value; save(); toast('Saved ✓'); };
@@ -8253,10 +8320,11 @@ function screenParent(v, tab){
   const talks=(v.orals||[]).length?`<div class="card mt"><b>🎤 Talks ${escH(v.child)} recorded</b>${v.orals.map(o=>`<div class="mt8"><b>${escH(o.title)}</b> <small class="muted">${escH(parentDate(o.d))}</small> <span class="scorepill">${o.score}/20</span>${o.c?`<p class="small">"${escH(o.c)}"</p>`:''}${o.src?`<audio controls src="${o.src}"></audio>`:'<small class="muted">Recording not available</small>'}</div>`).join('')}</div>`:'';
   app.innerHTML = `<div class="parenthead"><small>👪 Parent view · ${escH(v.cls)}</small><h2>${escH(v.child)}'s page</h2><small>From ${escH(v.teacher)}</small></div>
    <div class="seg2 mt noprint"><button class="${tab==='week'?'on':''}" id="twk">This week</button><button class="${tab==='prog'?'on':''}" id="tprg">📈 Progress</button><button class="${tab==='mine'?'on':''}" id="tmine">Writing (${v.mine.length})</button><button class="${tab==='mag'?'on':''}" id="tmag">Magazine (${v.mag.length})</button></div>
-   <div class="mt">${tab==='mag'?mag:tab==='week'?week+talks:tab==='prog'?(v.prog?progressHTML(v.prog, v._pst||(v._pst={off:{}, of:'all', mf:'all'})):`<div class="card center"><p>The progress report will appear once ${escH(v.teacher)} syncs the class.</p></div>`):mine}</div>
+   <div class="mt">${tab==='data'?parentDataHTML(v):tab==='mag'?mag:tab==='week'?week+talks:tab==='prog'?(v.prog?progressHTML(v.prog, v._pst||(v._pst={off:{}, of:'all', mf:'all'})):`<div class="card center"><p>The progress report will appear once ${escH(v.teacher)} syncs the class.</p></div>`):mine}</div>
+   <button class="link small mt noprint" id="pdata">🔒 About ${escH(v.child)}'s data</button>
    <div class="row mt noprint"><button class="btn ghost grow" id="pprint">🖨️ Print</button><button class="btn grow" id="pclose">Close parent view</button></div>
    <p class="small muted mt8 noprint">Only ${escH(v.child)}'s family can see the summary and writing tabs. Parent view can only read: nothing here can change ${escH(v.child)}'s work. You are already logged out, so nothing stays on this device after you close it.</p>`;
-  $('#tprg').onclick=()=>screenParent(v,'prog'); if (tab==='prog' && v.prog) wireProgress(v._pst, keepScroll(()=>screenParent(v,'prog')));
+  $('#tprg').onclick=()=>screenParent(v,'prog'); $('#pdata').onclick=()=>screenParent(v,'data'); if (tab==='prog' && v.prog) wireProgress(v._pst, keepScroll(()=>screenParent(v,'prog')));
   $('#tmine').onclick=()=>screenParent(v,'mine'); $('#tmag').onclick=()=>screenParent(v,'mag'); $('#twk').onclick=()=>screenParent(v,'week');
   $('#pprint').onclick=()=>{ try { window.print(); } catch(e){ toast('Printing is not available here'); } };
   $('#pclose').onclick=()=>screenProfiles();
@@ -8540,7 +8608,8 @@ function printCards(list, pins, code, parents){
      <div class="lc-name">${escH(x.name)}'s family</div>
      <div class="lc-row"><span>Class code</span><b class="mono">${code}</b></div>
      <div class="lc-row"><span>Parent PIN</span><b class="mono">${pins['p_'+uid]||'??????'}</b></div>
-     <div class="lc-how">Open ${url?`<b class="mono">${escH(url)}</b>`:'Heron Word Quest'}, tap <b>👪 Parent view</b>, type the class code, tap ${escH(x.name)}'s name and type the parent PIN. You will see the writing ${escH(teacherName())} shares, the class magazine and a short summary of the week. This PIN can only read. It cannot change anything.</div></div>`).join('')||'<p>No parent PINs yet.</p>'}</div>`;
+     <div class="lc-how">Open ${url?`<b class="mono">${escH(url)}</b>`:'Heron Word Quest'}, tap <b>👪 Parent view</b>, type the class code, tap ${escH(x.name)}'s name and type the parent PIN. You will see the writing ${escH(teacherName())} shares, the class magazine, a summary of the week and a progress report. This PIN can only read. It cannot change anything.</div>
+     <div class="lc-how small">🔒 <b>Your child's data:</b> the app keeps ${escH(x.name)}'s name, work, marks and any voice recordings securely online. Only ${escH(x.name)}, ${escH(teacherName())} and you can see them. There are no adverts and nothing is shared. Read more in Parent view under "About ${escH(x.name)}'s data".</div></div>`).join('')||'<p>No parent PINs yet.</p>'}</div>`;
     $('#bk2').onclick=()=>screenCloudClass(); $('#pr').onclick=()=>window.print(); return; }
   app.innerHTML = `<div class="noprint row"><button class="btn ghost" id="bk2">← Back</button><button class="btn grow" id="pr">🖨️ Print</button></div>
    <p class="noprint small muted">Cut out one card for each learner. Keep the PINs private.</p>
