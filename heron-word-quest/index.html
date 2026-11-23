@@ -932,7 +932,7 @@ const PASSAGES = [
 
 /* ================= SPELLING: 45 WEEKLY LISTS (3 terms x 15 weeks) ================= */
 /* Format: pattern, then "word:sentence" pairs. Every sentence is original. */
-const SPELL_WEEKS = [
+const SPELL_LISTS = [
 ['ai, ay and a-e', "afraid:The puppy was afraid of the thunder.|explain:Can you explain how the machine works?|remain:Please remain in your seats until the bell rings.|daily:We feed the chickens on a daily basis.|display:Our artwork is on display in the hall.|delay:The rain caused a delay at the airport.|mistake:Everyone makes a mistake sometimes.|escape:The hamster tried to escape from its cage.|complain:My brother likes to complain about homework.|holiday:We went to the coast for the holiday."],
 ['ee, ea and ie', "between:I sat between my two best friends.|freedom:The bird flew away and enjoyed its freedom.|speech:The head girl gave a speech at assembly.|season:Summer is my favourite season.|beneath:The cat slept beneath the table.|increase:The price of bread may increase next month.|reason:What is the reason you are late?|believe:I believe you can do it!|achieve:Practise hard and you will achieve your goal.|field:The cows grazed in the green field."],
 ['igh, y and i-e', "midnight:The clock struck midnight.|frighten:Loud bangs frighten our dog.|delight:The children shouted with delight.|reply:Please reply to my message soon.|supply:We need a supply of fresh water.|deny:Did he deny eating the last biscuit?|describe:Describe your bedroom in three sentences.|polite:It is polite to say thank you.|survive:Plants need water to survive.|invite:I want to invite the whole class to my party."],
@@ -1053,16 +1053,19 @@ const SPELL_STRETCH = [
  "drought:The drought dried up the dams.|borough:Each borough has its own council.|thoughtful:It was thoughtful of you to call.|throughout:It rained throughout the night.|trough:The pigs ate from a trough.",
  "humorous:He wrote a humorous story about his dog.|maintenance:The pool is closed for maintenance.|existence:Do you believe in the existence of aliens?|occurrence:Snow is a rare occurrence in Durban.|vacuum:Please vacuum the carpet."
 ];
-SPELL_WEEKS.forEach((w,i)=>{
+SPELL_LISTS.forEach((w,i)=>{
   const sw=SPELL_SWAPS[w.week];
   if (sw) sw.split('|').forEach(x=>{ const [pair,s]=[x.slice(0,x.indexOf(':')), x.slice(x.indexOf(':')+1)], [oldW,newW]=pair.split('>'); const j=w.words.findIndex(p=>p[0]===oldW); if (j>=0) w.words[j]=[newW,s]; });
   w.stretch = (SPELL_STRETCH[i]||'').split('|').filter(Boolean).map(x=>{ const k=x.indexOf(':'); return [x.slice(0,k), x.slice(k+1)]; });
 });
 const spellAll = w => [...w.words, ...(w.stretch||[])];
+/* 13 teaching weeks a term (2027 calendar): 6 lists rest, but their words stay in the games */
+const SPELL_DROP = [12,14,27,28,35,40];
+const SPELL_WEEKS = SPELL_LISTS.filter(w=>!SPELL_DROP.includes(w.week)).map((w,i)=>Object.assign({}, w, {orig:w.week, week:i+1}));
 const SPELL_N = w => spellAll(SPELL_WEEKS[w-1]).length;
 
-const SPELL_ALL = SPELL_WEEKS.flatMap(spellAll);
-const SPELL_TIER = lv => SPELL_WEEKS.filter(w=> lv===1 ? w.week<=15 : lv===2 ? w.week>15&&w.week<=30 : w.week>30).flatMap(spellAll);
+const SPELL_ALL = SPELL_LISTS.flatMap(spellAll);
+const SPELL_TIER = lv => SPELL_LISTS.filter(w=> lv===1 ? w.week<=15 : lv===2 ? w.week>15&&w.week<=30 : w.week>30).flatMap(spellAll);
 const blankWord = (s,w) => s.replace(new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i'),'______');
 const SPELL = SPELL_ALL;
 
@@ -3250,6 +3253,8 @@ const TP = id => TEST_PASSAGES.find(p=>p.id===id);
 const ALL_VISUAL = [...VISUAL, NEW_PASSAGES.find(p=>p.id==='splash')];
 const PS = id => ALL_PASSAGES.find(p=>p.id===id);
 
+const WEEKS_PER_TERM = 13;   // Heronbridge 2027: 13 teaching weeks a term
+const YEAR_DROP = [12,13,27,29,32,33];   // themes that rest to fit 39 weeks
 const YEAR = [
  ['New beginnings','🎒',['n-cp','s-types'],'lunchbox','about','Introduce yourself to a new friend: who you are, what you love and something surprising about you.'],
  ['Birds of the vlei','🦩',['p-caps','n-plural'],'heron','report','Write an information report about a bird you have seen, such as a heron, hadeda, pigeon or sunbird.'],
@@ -3296,11 +3301,9 @@ const YEAR = [
  ['Myths and legends','🌙',['w-idiom','n-coll'],'moonglow','story','Write a legend that explains something in nature, like why the sea is salty.'],
  ['Big debates','⚖️',['r-fact','s-complex'],'phones','persuade','Should children have phones at school? Give your opinion with at least three reasons.'],
  ['Goodbye, Grade 5!','🎓',['r-comp','w-homo'],'lastday','letter','Write a letter to next year\'s Grade 5 class with advice for a great year.']
-].map(([theme,icon,skills,passage,write,prompt],i)=>({w:i+1, term:Math.ceil((i+1)/15), tw:(i%15)+1, theme, icon, skills, passage, write, prompt}));
-const WEEKS_PER_TERM = 15;
-const TESTS = [1,2,3].flatMap(t=>[
-  {id:`t${t}mid`, term:t, week:(t-1)*15+8, kind:'Mid-term', title:`Term ${t} Mid-term Test`, from:(t-1)*15+1, to:(t-1)*15+7, passage:`test${t}a`},
-  {id:`t${t}end`, term:t, week:(t-1)*15+15, kind:'End-of-term', title:`Term ${t} End-of-term Test`, from:(t-1)*15+1, to:(t-1)*15+14, passage:`test${t}b`}]);
+].filter((_,i)=>!YEAR_DROP.includes(i+1)).map(([theme,icon,skills,passage,write,prompt],i)=>({w:i+1, term:Math.ceil((i+1)/WEEKS_PER_TERM), tw:(i%WEEKS_PER_TERM)+1, theme, icon, skills, passage, write, prompt}));
+const TEST_WEEK = 8;   // one term test, in week 8, well before reports
+const TESTS = [1,2,3].map(t=>({id:`t${t}`, term:t, week:(t-1)*WEEKS_PER_TERM+TEST_WEEK, kind:'Term', title:`Term ${t} Test`, from:(t-1)*WEEKS_PER_TERM+1, to:(t-1)*WEEKS_PER_TERM+TEST_WEEK-1, passage:`test${t}a`}));
 const testForWeek = w => TESTS.find(t=>t.week===w);
 
 /* ================= EXTENDED WRITING TASKS ================= */
@@ -5010,7 +5013,7 @@ function reviveQ(m){
   return q;
 }
 function recommend(p){
-  const y=YEAR[(DB.week||1)-1], wk=y.skills.map(SK).find(k=>(p.best[k.id]||0)<3);
+  const y=YEAR[curWeek()-1], wk=y.skills.map(SK).find(k=>(p.best[k.id]||0)<3);
   if (wk) return {k:wk, why:`This week's skill · ${LVI[curLv(wk.id)-1]} ${LVN[curLv(wk.id)-1]} level`};
   let weak=null;
   ALLSKILLS.forEach(k=>{ const s=p.stats[k.id]; if (s&&s.t>=4&&s.c/s.t<.7&&(p.best[k.id]||0)<3){ const r=s.c/s.t; if (!weak||r<weak.r) weak={k,r}; } });
@@ -7128,7 +7131,33 @@ function screenRedraft(idx){
 }
 
 /* ================= WEEKLY PLAN, YEAR PLAN, SPELLING TESTS, WRITING TASKS ================= */
-const curWeek = () => Math.min(YEAR.length, Math.max(1, DB.week||1));
+/* ----- School calendar: the app works out the week from the date ----- */
+const SCHOOL_CAL = {
+  2027: {opens:['2027-01-13','2027-05-04','2027-09-06'], closes:['2027-04-09','2027-08-06','2027-12-03'], skip:['2027-06-28']}   // skip: full half-term weeks
+};
+const dISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const dParse = x => { const [y,m,d]=x.split('-').map(Number); return new Date(y,m-1,d); };
+const CAL_M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], CAL_D = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const dMon = d => `${d.getDate()} ${CAL_M[d.getMonth()]}`;
+const dShort = d => `${CAL_D[d.getDay()]} ${dMon(d)}`;
+function calYear(now=new Date()){ const y=now.getFullYear(); return SCHOOL_CAL[y] ? y : (Object.keys(SCHOOL_CAL).map(Number).sort().find(x=>x>y) || null); }
+const CAL_WEEKS = {};
+function calWeeks(yr){
+  if (CAL_WEEKS[yr]) return CAL_WEEKS[yr];
+  const c=SCHOOL_CAL[yr], out=[];
+  c.opens.forEach((o,t)=>{ const d=dParse(o); d.setDate(d.getDate()-((d.getDay()+6)%7)); const end=dParse(c.closes[t]);
+    while (d<=end){ if (!c.skip.includes(dISO(d))) out.push({term:t+1, mon:new Date(d)}); d.setDate(d.getDate()+7); } });
+  return CAL_WEEKS[yr]=out;
+}
+function schoolNow(now=new Date()){
+  const yr=calYear(now); if (!yr) return null;
+  const c=SCHOOL_CAL[yr], ws=calWeeks(yr); let i=-1; ws.forEach((x,j)=>{ if (x.mon<=now) i=j; });
+  const t=i<0?-1:ws[i].term-1, closed=t>=0 && now>new Date(dParse(c.closes[t]).getTime()+864e5-1);
+  return {w:Math.max(1, Math.min(YEAR.length, i+1)), yr, holiday:i<0||closed, next:i<0?dParse(c.opens[0]):closed&&c.opens[t+1]?dParse(c.opens[t+1]):null};
+}
+const weekDate = w => { const yr=calYear(), x=yr&&calWeeks(yr)[w-1]; return x ? dMon(x.mon) : ''; };
+const autoWeekOn = () => DB.week==null || DB.week==='auto';
+const curWeek = () => { const n=autoWeekOn()?schoolNow():null; return Math.min(YEAR.length, Math.max(1, n?n.w:(+DB.week||1))); };
 const weekOpen = w => DB.openAll || w <= curWeek();
 function weekStatus(p, w){
   const y=YEAR[w-1], r=p.yr['w'+w]||{}, items=[];
@@ -7144,6 +7173,7 @@ function weekCardHTML(p){
   const tile=(id,ic,lbl,sub,done,extra='')=>`<button class="wkt ${done?'done':''}" ${id}>${done?'<span class="tick">✓</span>':''}<span class="wic">${ic}</span><b>${lbl}</b><small>${sub}</small>${extra}</button>`;
   return `<div class="weekcard mt"><button class="wkhead" id="wk-open"><span class="wkicon">${y.icon}</span><span class="grow"><small class="up b">Term ${y.term} · Week ${y.tw} · This week</small><b>${escH(y.theme)}</b></span><span class="wkpct">${st.done}/${st.total}</span></button>
     <div class="wkbar"><i style="width:${st.done/st.total*100}%"></i></div>
+    ${(n=>n&&n.holiday&&autoWeekOn()?`<p class="small muted center hol">🏖️ School holidays${n.next?` · school opens ${dShort(n.next)}`:''}. You can still practise!</p>`:'')(schoolNow())}
     ${testBannerHTML(p,w)}
     <div class="wktiles">
       ${tile('id="wk-spell"','🔤','Spelling',escH(sw.pat), !!r.spell, p.spellTests['w'+w]!=null?`<small class="b">Test: ${p.spellTests['w'+w]}/${SPELL_N(w)}</small>`:'')}
@@ -7221,11 +7251,11 @@ function startRead(w, back){
 }
 function screenYear(){
   stopTimers(); const p=P(), cw=curWeek();
-  app.innerHTML = backTitle('📅 The Year Plan')+`<p class="muted">Three terms of ${WEEKS_PER_TERM} weeks. Every week has a spelling list, a reading text, two skills, a writing task and a quiz. Week 8 and week 15 of each term have a big test.</p>
+  app.innerHTML = backTitle('📅 The Year Plan')+`<p class="muted">Three terms of ${WEEKS_PER_TERM} weeks${calYear()?`, following the Heronbridge ${calYear()} calendar`:''}. Every week has a spelling list, a reading text, two skills, a writing task and a quiz. Week ${TEST_WEEK} of each term has the term test.</p>
    ${testsCardHTML(p)}
    ${[1,2,3].map(t=>`<h3 class="mt">Term ${t}</h3><div class="list mt8">${YEAR.filter(y=>y.term===t).map(y=>{ const st=weekStatus(p,y.w), open=weekOpen(y.w);
      return `<button class="item yrow ${y.w===cw?'now':''} ${open?'':'locked'}" data-yw="${y.w}" ${open?'':'disabled'}><span class="em">${open?y.icon:'🔒'}</span>
-       <span class="grow"><small class="muted b">Week ${y.tw}${y.w===cw?' · THIS WEEK':''}</small>${testForWeek(y.w)?` <span class="pill testpill">📝 ${testForWeek(y.w).kind} test</span>`:''}<br><b>${escH(y.theme)}</b><br><small class="muted">${escH(SPELL_WEEKS[y.w-1].pat)} · ${y.skills.map(s=>escH(SK(s).name)).join(' · ')}</small></span>
+       <span class="grow"><small class="muted b">Week ${y.tw}${weekDate(y.w)?' · '+weekDate(y.w):''}${y.w===cw?' · THIS WEEK':''}</small>${testForWeek(y.w)?` <span class="pill testpill">📝 ${testForWeek(y.w).kind} test</span>`:''}<br><b>${escH(y.theme)}</b><br><small class="muted">${escH(SPELL_WEEKS[y.w-1].pat)} · ${y.skills.map(s=>escH(SK(s).name)).join(' · ')}</small></span>
        <span class="wkpct sm">${st.done}/${st.total}</span></button>`; }).join('')}</div>`).join('')}`;
   $('#bk').onclick=()=>screenHome();
   $$('[data-yw]').forEach(b=>b.onclick=()=>screenWeek(+b.dataset.yw));
@@ -7284,13 +7314,13 @@ function screenTask(id, w){
   upd();
 }
 
-/* ================= BIG TESTS: mid-term (week 8) and end-of-term (week 15) ================= */
+/* ================= BIG TESTS: one term test in week 8 of each term ================= */
 const CAPS_LEVELS = [[80,7,'Outstanding'],[70,6,'Meritorious'],[60,5,'Substantial'],[50,4,'Adequate'],[40,3,'Moderate'],[30,2,'Elementary'],[0,1,'Not achieved']];
 const capsLevel = pc => CAPS_LEVELS.find(([m])=>pc>=m);
 const testOpen = t => weekOpen(t.week);
 const testLv = t => t.term===1 ? 2 : 3;            // Term 1 Silver, Terms 2 and 3 Gold (with challenge questions)
 const TBY = id => TESTS.find(t=>t.id===id);
-const testShort = t => `T${t.term} ${t.kind==='Mid-term'?'Mid':'End'}`;
+const testShort = t => `T${t.term} Test`;
 const pctOf = r => Math.round(r.score/r.total*100);
 const SECS = {
   A:{ic:'🔤', name:'Section A: Spelling', what:'10 words (4 stretch)', tip:'Plume says each word. Listen, then type it carefully. The sentence helps you know which word it is.'},
@@ -7552,7 +7582,7 @@ function screenTeacher(){
    <div class="card mt"><b>Settings</b>
      <label class="lbl">Teacher name (shown on the home screen and certificates)</label><input class="name" id="tn" value="${escH(teacherName())}" maxlength="24">
      <label class="lbl">Current week of the year plan (shown on every player's home screen)</label>
-     <select class="name" id="wkset">${YEAR.map(y=>`<option value="${y.w}" ${y.w===curWeek()?'selected':''}>Term ${y.term} · Week ${y.tw}: ${escH(y.theme)}${testForWeek(y.w)?' 📝':''}</option>`).join('')}</select>
+     <select class="name" id="wkset">${calYear()?`<option value="auto" ${autoWeekOn()?'selected':''}>📅 Automatic from the school calendar (now Term ${YEAR[(schoolNow()||{w:1}).w-1].term}, Week ${YEAR[(schoolNow()||{w:1}).w-1].tw})</option>`:''}${YEAR.map(y=>`<option value="${y.w}" ${!autoWeekOn()&&y.w===curWeek()?'selected':''}>Term ${y.term} · Week ${y.tw}${weekDate(y.w)?' ('+weekDate(y.w)+')':''}: ${escH(y.theme)}${testForWeek(y.w)?' 📝':''}</option>`).join('')}</select>
      <label class="lbl">Keyboard for typed answers and spelling</label>
      <select class="name" id="kbdset">${[['auto','Automatic: on-screen keyboard on phones and tablets (recommended)'],['on','Always use the on-screen keyboard'],['off','Use the device keyboard']].map(([v,l])=>`<option value="${v}" ${(DB.kbd||'auto')===v?'selected':''}>${l}</option>`).join('')}</select>
      <small class="muted">The on-screen keyboard has no autocorrect, word suggestions or spell-check, so it cannot help with spelling.</small>
@@ -7586,7 +7616,7 @@ function screenTeacher(){
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#sv').onclick=()=>{ DB.teacher=$('#tn').value.trim()||'Mr Radloff'; DB.focus=$('#fw').value||null;
     DB.classList=uniq($('#cls').value.split('\n').map(s=>s.trim().replace(/\s+/g,' ')).filter(Boolean)).slice(0,60);
-    DB.pin=$('#pinset').value.trim(); DB.week=+$('#wkset').value; DB.openAll=$('#openall').checked; DB.startLv=+$('#stlv').value; DB.kbd=$('#kbdset').value; DB.classSound=$('#sndset').value; save(); toast('Saved ✓'); };
+    DB.pin=$('#pinset').value.trim(); DB.week=$('#wkset').value==='auto'?'auto':+$('#wkset').value; DB.openAll=$('#openall').checked; DB.startLv=+$('#stlv').value; DB.kbd=$('#kbdset').value; DB.classSound=$('#sndset').value; save(); toast('Saved ✓'); };
   $('#exp').onclick=()=>copyText(encode({v:1,profiles:DB.profiles}),'Export code copied');
   $('#impgo').onclick=()=>{ try { const o=decode($('#imp').value); let n=0;
       Object.values(o.profiles||{}).forEach(p=>{ migrate(p); const cur=DB.profiles[p.name]; if (!cur||p.xp>cur.xp){ DB.profiles[p.name]=p; n++; } });
@@ -8015,7 +8045,7 @@ async function teacherCreateClass(name){
   const uid=CL.user.uid; let code, tries=0;
   while (tries++<5){ code=randCode(6);
     try { await CL.db.doc(`classes/${code}`).set({name, teacherUid:uid, teacherName:CL.user.displayName||teacherName(), created:FV().serverTimestamp(),
-      learners:{}, learnerUids:[], settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on'}}); break; }
+      learners:{}, learnerUids:[], settings:{week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on'}}); break; }
     catch(e){ if (tries>=5) throw e; } }
   await CL.db.doc(`rosters/${code}`).set({className:name, names:[]});
   await CL.db.doc(`teachers/${uid}`).set({classes:FV().arrayUnion({code, name})}, {merge:true});
@@ -8043,7 +8073,7 @@ const magId = (uid, key) => `${uid}_${key}`;
 const magDoc = (name, s) => ({name, kind:s.kind||'', prompt:s.prompt||'', text:s.text||'', d:s.d||'', at:s.at||''});
 function magWanted(){ const out={}; Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>(p.writing||[]).forEach(w=>{ if (w.pub && w.pub.mag) out[magId(p._uid, pieceKey(w))]=magDoc(p.name, w.pub); })); return out; }
 function pubSnap(w, par, mag){ return {par:!!par, mag:!!mag, at:today(), kind:w.kind||'', prompt:w.prompt||'', text:w.text||'', d:w.d||'', v:w.v||1, tm:w.tm||null}; }
-const settingsSig = () => JSON.stringify({f:DB.features||{}, week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
+const settingsSig = () => JSON.stringify({f:DB.features||{}, week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
 async function teacherPull(){
   const code=DB.cloud.code;
   await teacherPush();
@@ -8068,7 +8098,7 @@ async function teacherPush(){
   Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>{ const sig=teacherSigOf(p), js=JSON.stringify(sig);
     if (CL.pushed[p._uid]!==js){ const ref=CL.db.doc(`classes/${code}/learners/${p._uid}`);
       batch.set(ref, {marks:sig.marks, teacher:sig.teacher}, {merge:true}); batch.set(ref, {published:sig.published}, {mergeFields:['published']}); CL.pushed[p._uid]=js; n++; } });
-  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', features:DB.features||{}}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
+  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', features:DB.features||{}}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
   if (n){ setSync('busy'); await batch.commit(); setSync('ok'); }
   await magazinePush(); await familyPush();
 }
