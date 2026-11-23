@@ -494,6 +494,8 @@ table.mtable{border-collapse:collapse;font-size:13px;width:auto;min-width:100%}t
 /* cloud */
 .logincard{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#1f2756,#34418f);color:#fff;box-shadow:0 4px 0 #141a3d}
 .logincard small{display:block;opacity:.85}.logincard .mic{font-size:30px}
+.whoq{margin-bottom:4px}.rolec{padding:20px 18px;border:0;cursor:pointer}.rolec .mic{font-size:44px}.rolec b{display:block;font-size:22px}.rolec small{font-size:14px}
+.logincard.teacher{background:linear-gradient(135deg,#b45309,#e8a317);box-shadow:0 4px 0 #8a3f06}
 .codein{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:30px;letter-spacing:.3em;text-align:center;text-transform:uppercase}
 .mono{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em}
 .bigcode{font-size:44px;font-weight:900;color:var(--navy);letter-spacing:.18em;margin:2px 0 6px}
@@ -5087,6 +5089,20 @@ function stopTimers(){
 }
 
 /* ================= PLAYERS ================= */
+/* ----- First screen: who are you? ----- */
+function screenStart(){
+  stopTimers(); applyPrefs();
+  app.innerHTML = `
+   <div class="hero">${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div></div>
+   <h2 class="center mt whoq">Who are you?</h2>
+   <button class="logincard rolec mt8" id="rlearn"><span class="mic">🎒</span><span class="grow"><b>I'm a learner</b><small>Play, learn and see your progress</small></span>▶</button>
+   <button class="logincard rolec parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>I'm a parent</b><small>See your child's work and progress</small></span>▶</button>
+   <button class="logincard rolec teacher mt8" id="tc"><span class="mic">🍎</span><span class="grow"><b>I'm a teacher</b><small>Classes, marking and reports</small></span>▶</button>
+   ${storeNote()}`;
+  $('#rlearn').onclick=()=>screenProfiles();
+  $('#plogin').onclick=()=>screenClassLogin('', 'parent');
+  $('#tc').onclick=()=>screenTeacherGate();
+}
 function screenProfiles(){
   stopTimers(); applyPrefs();
   const names = Object.keys(DB.profiles), free = DB.classList.filter(n=>!DB.profiles[n]);
@@ -5094,7 +5110,6 @@ function screenProfiles(){
   app.innerHTML = `
    <div class="hero">${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div></div>
    <button class="logincard mt" id="clogin"><span class="mic">🔐</span><span class="grow"><b>Class login</b><small>Use your class code and PIN to save your progress online</small></span>▶</button>
-   <button class="logincard parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>Parent view</b><small>Your child's week, shared writing and the class magazine. Uses the parent PIN.</small></span>▶</button>
    ${names.length?`<div class="card mt"><h3>Who's playing?</h3><div class="plist mt8">${names.map(n=>{const p=DB.profiles[n];return `
       <button class="pcard" data-n="${escH(n)}">${heronSVG(p.look,'h56')}<b>${escH(n)}</b><small>Level ${level(p.xp)} · ${totalStars(p)}★</small></button>`}).join('')}</div></div>`:''}
    <div class="card mt"><h3>${names.length?'New player':'Welcome, word hero! Who are you?'}</h3>
@@ -5104,13 +5119,12 @@ function screenProfiles(){
      <div class="muted mt8 b">Pick your heron:</div>
      <div class="avapick">${['grey','blue','pink'].map((c,i)=>`<button data-c="${c}" class="${i?'':'sel'}">${heronSVG({col:c,hat:'cap'},'h56')}</button>`).join('')}</div>
      <button class="btn gold w100" id="go">Start my quest! 🪶</button></div>
-   <div class="center mt"><button class="link" id="tc">🍎 Teacher corner</button></div>${storeNote()}`;
+   <div class="center mt"><button class="link" id="tostart">← Back to the start</button></div>${storeNote()}`;
   $$('[data-n]').forEach(b=>b.onclick=()=>{ DB.current=b.dataset.n; save(); applyPrefs(); screenHome(); });
   $$('[data-c]').forEach(b=>b.onclick=()=>{ pickCol=b.dataset.c; $$('[data-c]').forEach(x=>x.classList.toggle('sel',x===b)); });
   $$('[data-pn]').forEach(b=>b.onclick=()=>{ pickName=b.dataset.pn; $$('[data-pn]').forEach(x=>x.classList.toggle('sel',x===b)); });
-  $('#tc').onclick=()=>screenTeacherGate();
+  $('#tostart').onclick=()=>screenStart();
   $('#clogin').onclick=()=>screenClassLogin();
-  $('#plogin').onclick=()=>screenClassLogin('', 'parent');
   if ($('#hrlog')) $('#hrlog').onclick=()=>screenBooks();
   $('#go').onclick=()=>{
     const typed = $('#nm') ? $('#nm').value.trim().replace(/\s+/g,' ') : '';
@@ -5721,7 +5735,7 @@ function fillVoices(){
 }
 
 /* ---------- Boot ---------- */
-function boot(){ load(); if (DB.current && DB.profiles[DB.current]) screenHome(); else screenProfiles(); if (typeof cloudResume==='function' && DB.cloud) setTimeout(cloudResume, 300); }
+function boot(){ load(); if (DB.current && DB.profiles[DB.current]) screenHome(); else screenStart(); if (typeof cloudResume==='function' && DB.cloud) setTimeout(cloudResume, 300); }
 
 /* ================= ADAPTIVE LEARNING: smart practice, spaced review, mastery map ================= */
 const REVIEW_DAYS = [1, 2, 4, 8, 16, 32];
@@ -7870,7 +7884,7 @@ function parentDataHTML(v){
 }
 
 /* ================= TEACHER CORNER ================= */
-const teacherBack = () => (DB.current && P()) ? screenHome() : screenProfiles();
+const teacherBack = () => (DB.current && P()) ? screenHome() : screenStart();
 function screenTeacherGate(){
   stopTimers();
   if (!DB.pin) return screenTeacher();
@@ -8212,7 +8226,7 @@ function screenClassLogin(code, mode){
    <div class="card center"><div class="f60">${par?'👪':'🏫'}</div><h2>${par?"Enter your child's class code":'Enter your class code'}</h2><p class="muted">${par?"It is the 6-letter code on your child's login card.":'Your teacher will give you a code with 6 letters and numbers.'}</p>
      <input class="name codein" id="cc" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" value="${escH(code||DB.lastCode||'')}">
      <button class="btn gold w100 mt8" id="go">Next ▶</button><p class="small muted mt8" id="msg"></p></div>`;
-  $('#bk').onclick=()=>screenProfiles();
+  $('#bk').onclick=()=>par?screenStart():screenProfiles();
   const go=async()=>{ const c=$('#cc').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
     if (c.length!==6) return toast('The class code has 6 letters and numbers');
     $('#msg').textContent='Looking for your class…'; $('#go').disabled=true;
@@ -8327,7 +8341,7 @@ function screenParent(v, tab){
   $('#tprg').onclick=()=>screenParent(v,'prog'); $('#pdata').onclick=()=>screenParent(v,'data'); if (tab==='prog' && v.prog) wireProgress(v._pst, keepScroll(()=>screenParent(v,'prog')));
   $('#tmine').onclick=()=>screenParent(v,'mine'); $('#tmag').onclick=()=>screenParent(v,'mag'); $('#twk').onclick=()=>screenParent(v,'week');
   $('#pprint').onclick=()=>{ try { window.print(); } catch(e){ toast('Printing is not available here'); } };
-  $('#pclose').onclick=()=>screenProfiles();
+  $('#pclose').onclick=()=>screenStart();
 }
 function learnerListen(){
   CL.unsubs.forEach(u=>{ try{u();}catch(e){} }); CL.unsubs=[]; if (!isCloudLearner()) return;
@@ -8352,7 +8366,7 @@ async function cloudLogout(quiet){
     if (DB.cloud.role==='teacher' && DB.localBackup){ Object.assign(DB.profiles, DB.localBackup); delete DB.localBackup; } }
   if (DB.cloud && DB.cloud.role==='learner'){ DB.assign=[]; DB.league=null; DB.quizzes=[]; DB.peerItems=[]; DB.listenAudio={}; }
   DB.cloud=null; DB.current=null; CL.lastJson=''; CL.pushed=null; save(); busy();
-  if (!quiet){ toast('Logged out. See you next time!'); screenProfiles(); }
+  if (!quiet){ toast('Logged out. See you next time!'); screenStart(); }
 }
 
 /* ---------- Teacher: account, classes, learners ---------- */
