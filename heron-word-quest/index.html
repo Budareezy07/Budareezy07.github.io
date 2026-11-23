@@ -440,6 +440,8 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .peerrev{background:#f0fdf9;border-radius:12px;padding:10px;margin-top:8px}
 .item.placed{background:#ecfdf5}.chip.sel{background:#facc15}
 .model h3{margin-top:0}
+.loadcard{background:#ecfdf5;border:2px solid #34d399}.loadcard.mid{background:#fffbeb;border-color:#f59e0b}.loadcard.heavy{background:#fef2f2;border-color:#f87171}
+.loadbig{font-size:30px;font-weight:900;margin:4px 0}
 .f60.pulse{animation:pulse 1s infinite}
 .cta.books{background:linear-gradient(135deg,#0f766e,#14a38f)}.cta.tquiz{background:linear-gradient(135deg,#7c3aed,#a855f7)}
 .setwork{border:2px solid #f59e0b;background:#fffbeb;border-radius:18px;padding:12px}
@@ -5113,12 +5115,12 @@ function screenHome(){
      <div class="b">${w[1]}</div><div class="muted i">"${w[2]}"</div></div>
    <div class="quad mt">
      <button class="cta daily ${dailyDone?'done':''}" id="daily"><span class="ic">${dailyDone?'✅':'🎯'}</span><span><b>Daily Challenge</b>${dailyDone?'Done! Back tomorrow':'5 questions · double coins'}</span></button>
-     <button class="cta race" id="race"><span class="ic">🏁</span><span><b>Heron Race</b>60 seconds. Beat the birds!</span></button>
-     <button class="cta rain" id="rain"><span class="ic">🌧️</span><span><b>Word Rain</b>Arcade: catch the right words!</span></button>
+     ${featOn('games')?`<button class="cta race" id="race"><span class="ic">🏁</span><span><b>Heron Race</b>60 seconds. Beat the birds!</span></button>`:''}
+     ${featOn('games')?`<button class="cta rain" id="rain"><span class="ic">🌧️</span><span><b>Word Rain</b>Arcade: catch the right words!</span></button>`:''}
      <button class="cta write" id="write"><span class="ic">✍️</span><span><b>Writer's Workshop</b>Build super sentences</span></button>
-     <button class="cta studio" id="hstudio"><span class="ic">🎙️</span><span><b>Studio</b>Read aloud, speak, think deeper and write</span></button>
-     <button class="cta books" id="hbooks"><span class="ic">📚</span><span><b>Reading Challenge</b>${(p.books||[]).filter(b=>b.ok).length} books checked · ${bookBadge(p).now||'start your first badge'}</span></button>
-     <button class="cta tquiz" id="hquiz"><span class="ic">✏️</span><span><b>${escH(teacherName())}'s quizzes</b>${(DB.quizzes||[]).length?`${(DB.quizzes||[]).filter(q=>!p.cq[q.id]).length} new to try`:'None yet'}</span></button>
+     ${studioOn()?`<button class="cta studio" id="hstudio"><span class="ic">🎙️</span><span><b>Studio</b>Read aloud, speak, think deeper and write</span></button>`:''}
+     ${featOn('books')?`<button class="cta books" id="hbooks"><span class="ic">📚</span><span><b>Reading Challenge</b>${(p.books||[]).filter(b=>b.ok).length} books checked · ${bookBadge(p).now||'start your first badge'}</span></button>`:''}
+     ${featOn('quizzes')?`<button class="cta tquiz" id="hquiz"><span class="ic">✏️</span><span><b>${escH(teacherName())}'s quizzes</b>${(DB.quizzes||[]).length?`${(DB.quizzes||[]).filter(q=>!p.cq[q.id]).length} new to try`:'None yet'}</span></button>`:''}
    </div>
    <div class="goal mt">Today's goal: 3 activities <div class="dots">${[0,1,2].map(i=>`<i class="${i<todayN?'on':''}"></i>`).join('')}</div>${todayN>=3?' ✅':''}</div>
    <h3 class="maph">🗺️ The Quest Map</h3>
@@ -5143,8 +5145,8 @@ function screenHome(){
   if ($('#mend')) $('#mend').onclick=()=>startMend();
   if ($('#review')) $('#review').onclick=()=>startReview();
   $('#daily').onclick=()=>{ if (dailyDone){ toast("You already did today's challenge! 🎉"); return; } startDaily(); };
-  $('#race').onclick=()=>startRace(); $('#rain').onclick=()=>screenArcade(); $('#write').onclick=()=>screenWorkshop();
-  $('#hbooks').onclick=()=>screenBooks(); $('#hstudio').onclick=()=>screenStudio(); $('#hquiz').onclick=()=>screenMyQuizzes();
+  if ($('#race')) $('#race').onclick=()=>startRace(); if ($('#rain')) $('#rain').onclick=()=>screenArcade(); $('#write').onclick=()=>screenWorkshop();
+  if ($('#hbooks')) $('#hbooks').onclick=()=>screenBooks(); if ($('#hstudio')) $('#hstudio').onclick=()=>screenStudio(); if ($('#hquiz')) $('#hquiz').onclick=()=>screenMyQuizzes();
   $$('[data-asg]').forEach(b=>b.onclick=()=>{ const a=(DB.assign||[]).find(x=>x.id===b.dataset.asg); if (!a || !SK(a.sk)) return toast('That task is no longer set');
     if (!p.learned[a.sk]) { p.learned[a.sk]=true; save(); } startRound(a.sk, a.lv, ()=>screenHome()); R.asg=a.id; });
   $$('[data-w]').forEach(b=>b.onclick=()=>screenWorld(b.dataset.w));
@@ -6390,7 +6392,7 @@ function startTeacherQuiz(id){
 
 /* ================= CLASS LEAGUE ================= */
 function leagueHTML(){
-  const L=DB.league; if (!isCloudLearner() || !L || !L.rows || L.rows.length<2) return '';
+  const L=DB.league; if (!featOn('league') || !isCloudLearner() || !L || !L.rows || L.rows.length<2) return '';
   const max=Math.max(1, ...L.rows.map(r=>r.pts));
   return `<div class="league mt"><div class="row"><b class="grow">🏆 Class league · this week</b><small>avg points per learner</small></div>
     ${L.rows.map((r,i)=>`<div class="lrow ${r.code===DB.cloud.code?'me':''}"><b>${i+1}.</b><span style="min-width:44px">${escH(r.label)}</span><span class="lbar"><i style="width:${Math.round(r.pts/max*100)}%"></i></span><b>${r.pts}</b></div>`).join('')}
@@ -6597,22 +6599,18 @@ function studioStreak(p){ const days=new Set((p.qw||[]).map(x=>x.d)); let n=0, d
 function screenStudio(){
   stopTimers(); stopRec(); const p=P(); if (!p) return screenProfiles();
   const w=curWeek(), dk=p.deep['w'+w], lastF=p.fluency[0], oDone=p.orals.length, myPeer=(DB.peerItems||[]).filter(x=>!p.peer[x.id]).length;
-  const card=(id,ic,t,sub)=>`<button class="studiocard" id="${id}"><span class="sic">${ic}</span><b>${t}</b><small>${sub}</small></button>`;
+  const KEY={sread:'read', sdeep:'deep', slisten:'listen', soral:'orals', spara:'paras', sqw:'qw', smod:'models', speer:'peer'};
+  const card=(id,ic,t,sub)=>featOn(KEY[id])?`<button class="studiocard" id="${id}"><span class="sic">${ic}</span><b>${t}</b><small>${sub}</small></button>`:'';
+  const sec=(h,cards)=>cards.trim()?`<h3 class="mt">${h}</h3><div class="studiogrid">${cards}</div>`:'';
   app.innerHTML = backTitle('🎙️ Studio')+`<p class="muted">Speak, read and write. ${escH(teacherName())} listens to your recordings and marks your work here.</p>
-   <h3 class="mt">📖 Reading</h3><div class="studiogrid">
-     ${card('sread','🎙️','Read aloud', lastF?`${lastF.wpm!=null?lastF.wpm+' words a minute':'Sent'}${lastF.tm?` · ${fluScore(lastF.tm)}/10`:''}`:'This week\'s passage')}
-     ${card('sdeep','💭','Think deeper', dk?(dk.tm?`Marked: ${deepScore(dk.tm)}/9`:'Sent. Waiting for marks'):'3 big questions this week')}</div>
-   <h3 class="mt">👂 Listening & speaking 🗣️</h3><div class="studiogrid">
-     ${card('slisten','👂','Listening', `${Object.keys(p.listen).length} of ${LISTEN.length} done`)}
-     ${card('soral','🎤','Oral tasks', `${oDone} sent · ${ORALS.length} tasks`)}</div>
-   <h3 class="mt">✍️ Writing</h3><div class="studiogrid">
-     ${card('spara','🧱','Paragraph builder', `${p.paras.length} written · ${PARAS.length} to build`)}
-     ${card('sqw','⏱️','Quick-write', `${studioStreak(p)} day streak`)}
-     ${card('smod','⭐','Model texts', `${Object.keys(p.models).length} of ${MODELS.length} studied`)}
-     ${card('speer','🤝','Peer review', myPeer?`${myPeer} piece${myPeer===1?'':'s'} to review`:'Nothing to review yet')}</div>`;
+   ${sec('📖 Reading', card('sread','🎙️','Read aloud', lastF?`${lastF.wpm!=null?lastF.wpm+' words a minute':'Sent'}${lastF.tm?` · ${fluScore(lastF.tm)}/10`:''}`:'This week\'s passage')+card('sdeep','💭','Think deeper', dk?(dk.tm?`Marked: ${deepScore(dk.tm)}/9`:'Sent. Waiting for marks'):'3 big questions this week'))}
+   ${sec('👂 Listening & speaking 🗣️', card('slisten','👂','Listening', `${Object.keys(p.listen).length} of ${LISTEN.length} done`)+card('soral','🎤','Oral tasks', `${oDone} sent · ${ORALS.length} tasks`))}
+   ${sec('✍️ Writing', card('spara','🧱','Paragraph builder', `${p.paras.length} written · ${PARAS.length} to build`)+card('sqw','⏱️','Quick-write', `${studioStreak(p)} day streak`)+card('smod','⭐','Model texts', `${Object.keys(p.models).length} of ${MODELS.length} studied`)+card('speer','🤝','Peer review', myPeer?`${myPeer} piece${myPeer===1?'':'s'} to review`:'Nothing to review yet'))}
+   ${studioOn()?'':`<div class="card center"><p>${escH(teacherName())} hasn't switched on any Studio activities yet.</p></div>`}`;
   $('#bk').onclick=()=>screenHome();
-  $('#sread').onclick=()=>screenReadAloud(w); $('#sdeep').onclick=()=>screenDeep(w); $('#soral').onclick=()=>screenOrals(); $('#slisten').onclick=()=>screenListening();
-  $('#spara').onclick=()=>screenParas(); $('#sqw').onclick=()=>screenQuickWrite(); $('#smod').onclick=()=>screenModels(); $('#speer').onclick=()=>screenPeer();
+  const on=(id,f)=>{ if ($('#'+id)) $('#'+id).onclick=f; };
+  on('sread',()=>screenReadAloud(w)); on('sdeep',()=>screenDeep(w)); on('soral',()=>screenOrals()); on('slisten',()=>screenListening());
+  on('spara',()=>screenParas()); on('sqw',()=>screenQuickWrite()); on('smod',()=>screenModels()); on('speer',()=>screenPeer());
 }
 
 /* ----- Read aloud: fluency ----- */
@@ -7058,6 +7056,59 @@ async function removeListenAudio(id){
   const m=Object.assign({}, DB.listenAudio); delete m[id]; DB.listenAudio=m; save();
 }
 
+/* ================= SWITCHBOARD: what each class sees ================= */
+const FEATURES = [
+ {k:'read',    g:'mark', icon:'🎙️', name:'Read aloud',         desc:'Learners record the week\'s passage. You mark accuracy and expression.', per:1,    mins:1.5},
+ {k:'deep',    g:'mark', icon:'💭', name:'Think deeper',        desc:'Three open reading questions a week. You mark each out of 3.',        per:1,    mins:2},
+ {k:'orals',   g:'mark', icon:'🎤', name:'Oral tasks',          desc:'12 talks across the year. You listen and mark out of 20.',           per:0.27, mins:3},
+ {k:'paras',   g:'mark', icon:'🧱', name:'Paragraph builder',   desc:'Builds are auto-scored. You mark their own paragraph out of 10.',   per:0.36, mins:1.5},
+ {k:'qw',      g:'mark', icon:'⏱️', name:'Quick-writes',        desc:'Five-minute writing. You give 1 to 3 stars (optional).',           per:2,    mins:0.2},
+ {k:'peer',    g:'mark', icon:'🤝', name:'Peer review',         desc:'Learners review shared pieces. You score how helpful they are.',   per:0.5,  mins:0.5},
+ {k:'books',   g:'mark', icon:'📚', name:'Reading Challenge',   desc:'Learners log books. You tick each one off.',                       per:0.3,  mins:0.2},
+ {k:'listen',  g:'auto', icon:'👂', name:'Listening',           desc:'30 listening texts, scored automatically.'},
+ {k:'models',  g:'auto', icon:'⭐', name:'Model texts',         desc:'Annotated examples with a feature quiz, scored automatically.'},
+ {k:'quizzes', g:'auto', icon:'✏️', name:'Your quizzes',        desc:'The quizzes you write, scored automatically.'},
+ {k:'league',  g:'home', icon:'🏆', name:'Class league',        desc:'Weekly points table for your classes, on the home screen.'},
+ {k:'games',   g:'home', icon:'🏁', name:'Heron Race and Word Rain', desc:'The timed race and the arcade game on the home screen.'}
+];
+const STUDIO_KEYS=['read','deep','listen','orals','paras','qw','models','peer'];
+const featOn = k => !(DB.features && DB.features[k]===false);
+const studioOn = () => STUDIO_KEYS.some(featOn);
+const PRESETS = {
+  all:   {label:'Everything on', f:{}},
+  light: {label:'Light marking', f:{read:false, deep:false, peer:false}},
+  auto:  {label:'Practice only', f:{read:false, deep:false, orals:false, paras:false, qw:false, peer:false, books:false}}
+};
+function switchLearners(){ return isCloudTeacher()&&CL.cls&&CL.cls.learners ? Object.keys(CL.cls.learners).length : Object.keys(DB.profiles).length; }
+function markLoad(f, n){ let items=0, mins=0; FEATURES.forEach(x=>{ if (x.g==='mark' && f[x.k]!==false){ items+=x.per*n; mins+=x.per*x.mins*n; } }); return {items:Math.round(items), mins:Math.round(mins)}; }
+function screenSwitchboard(){
+  stopTimers(); const f=Object.assign({}, DB.features||{}), n=switchLearners()||28, cloud=isCloudTeacher();
+  const draw=()=>{
+    const load=markLoad(f, n), hrs=m=>m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`;
+    const row=x=>`<label class="toggle"><span class="grow"><b>${x.icon} ${escH(x.name)}</b><br><small class="muted">${escH(x.desc)}</small></span><input type="checkbox" data-f="${x.k}" ${f[x.k]!==false?'checked':''}><i></i></label>`;
+    app.innerHTML = backTitle('🎛️ Switchboard')+`
+     <p class="small muted">${cloud?`These switches are for <b>${escH(DB.cloud.name)}</b>. Each class has its own, so you can rotate the heavier tasks between classes.`:'These switches are for this device.'} Switched-off activities disappear from learners' screens. Nothing they have done is lost.</p>
+     <div class="card loadcard ${load.mins>120?'heavy':load.mins>60?'mid':''}"><small class="b up">Your marking for this class</small>
+       <div class="loadbig">${hrs(load.mins)} a week</div>
+       <small>About ${load.items} items for ${n} learner${n===1?'':'s'}${cloud?'. Four classes set the same way: about '+hrs(load.mins*4)+' a week.':'.'}</small></div>
+     <div class="row mt8">${Object.entries(PRESETS).map(([k,p])=>`<button class="btn small ghost grow" data-pre="${k}">${p.label}</button>`).join('')}</div>
+     <div class="card mt"><b>Marked by you</b>${FEATURES.filter(x=>x.g==='mark').map(row).join('')}</div>
+     <div class="card mt"><b>Scored automatically (no marking)</b>${FEATURES.filter(x=>x.g==='auto').map(row).join('')}</div>
+     <div class="card mt"><b>Home screen extras</b>${FEATURES.filter(x=>x.g==='home').map(row).join('')}</div>
+     <p class="small muted mt8">💡 Tip: switch Read aloud and Think deeper on for one class a week, and rotate. Over four weeks every learner gets a turn, and you mark a quarter as much.</p>
+     <button class="btn gold w100 mt8" id="sv">💾 Save for ${cloud?escH(DB.cloud.name):'this device'}</button>
+     ${cloud?'<button class="btn ghost w100 mt8" id="svall">Copy these switches to all my classes</button>':''}`;
+    $('#bk').onclick=()=>screenTeacher();
+    $$('[data-f]').forEach(c=>c.onchange=()=>{ if (c.checked) delete f[c.dataset.f]; else f[c.dataset.f]=false; draw(); });
+    $$('[data-pre]').forEach(b=>b.onclick=()=>{ Object.keys(f).forEach(k=>delete f[k]); Object.assign(f, PRESETS[b.dataset.pre].f); draw(); });
+    $('#sv').onclick=()=>{ DB.features=Object.assign({}, f); save(); toast('✅ Saved. Learners see the change next time they open the app.'); screenTeacher(); };
+    if ($('#svall')) $('#svall').onclick=async()=>{ DB.features=Object.assign({}, f); save(); busy('Copying to all your classes…');
+      try { const codes=await teacherClassCodes(); for (const code of codes){ await CL.db.doc(`classes/${code}`).update({'settings.features':DB.features}); } busy(); toast(`✅ Copied to ${codes.length} class${codes.length===1?'':'es'}`); screenTeacher(); }
+      catch(e){ busy(); toast(cloudErr(e)); } };
+  };
+  draw();
+}
+
 /* ----- Learner: redraft a piece ----- */
 function screenRedraft(idx){
   stopTimers(); const p=P(), w=p.writing[idx]; if (!w) return screenWritingBook();
@@ -7485,6 +7536,7 @@ function screenTeacher(){
      <button class="tool" id="mmap"><span>🗺️</span><b>Mastery map</b><small>Every learner, every skill, at a glance</small></button>
      <button class="tool" id="winbox"><span>📥</span><b>Writing to mark${unmarkedWriting().length?` (${unmarkedWriting().length})`:''}</b><small>Rubric, comments and redraft requests</small></button>
      <button class="tool" id="shared"><span>📰</span><b>Shared writing</b><small>What parents and the class magazine can see</small></button>
+     <button class="tool" id="tswitch"><span>🎛️</span><b>Switchboard</b><small>Choose what this class sees, and your marking time</small></button>
      <button class="tool" id="tstudio"><span>🎧</span><b>Studio marking${(q=>{ const n=Object.values(q).reduce((a,b)=>a+b.length,0); return n?` (${n})`:''; })(studioQueue())}</b><small>Read-alouds, orals, deeper reading, paragraphs</small></button>
      <button class="tool" id="tasg"><span>📌</span><b>Set work</b><small>Give a skill to one learner, a group or the class</small></button>
      <button class="tool" id="tbooks"><span>📚</span><b>Reading log${pendingBooks().length?` (${pendingBooks().length})`:''}</b><small>Check books learners have read</small></button>
@@ -7529,7 +7581,7 @@ function screenTeacher(){
      <li>Use Class Starter at the start of a lesson for a quick 5-question warm-up.</li></ul></div>`;
   $('#bk').onclick=()=>teacherBack();
   wireCloudBar(); $('#starter').onclick=()=>screenStarterSetup(); $('#picker').onclick=()=>screenPicker(); $('#tres').onclick=()=>screenTestResults(); $('#mmap').onclick=()=>screenMasteryMap(); $('#winbox').onclick=()=>screenWritingInbox(); $('#shared').onclick=()=>screenSharedWriting();
-  $('#tasg').onclick=()=>screenSetWork(); $('#tstudio').onclick=()=>screenMarkHub(); $('#tbooks').onclick=()=>screenBooksTeacher(); $('#tquiz').onclick=()=>screenQuizMaker(); $('#tleague').onclick=()=>screenLeague(); $('#ttrack').onclick=()=>screenTrackerExport();
+  $('#tasg').onclick=()=>screenSetWork(); $('#tstudio').onclick=()=>screenMarkHub(); $('#tswitch').onclick=()=>screenSwitchboard(); $('#tbooks').onclick=()=>screenBooksTeacher(); $('#tquiz').onclick=()=>screenQuizMaker(); $('#tleague').onclick=()=>screenLeague(); $('#ttrack').onclick=()=>screenTrackerExport();
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#sv').onclick=()=>{ DB.teacher=$('#tn').value.trim()||'Mr Radloff'; DB.focus=$('#fw').value||null;
@@ -7751,6 +7803,7 @@ function applyTeacherFields(p, d){
 function applyClassSettings(c){
   if (!c) return; const s=c.settings||{};
   ['week','startLv','kbd','openAll','classSound'].forEach(k=>{ if (s[k]!==undefined && s[k]!==null) DB[k]=s[k]; });
+  DB.features=(s.features && typeof s.features==='object')?s.features:{};
   DB.assign=Array.isArray(c.assign)?c.assign:[]; DB.peerItems=Array.isArray(c.peer)?c.peer:[]; DB.listenAudio=(c.listenAudio&&typeof c.listenAudio==='object')?c.listenAudio:{}; DB.quizzes=Array.isArray(c.quizzes)?c.quizzes:(DB.quizzes||[]); DB.league=c.league||null;
   if (c.teacherName) DB.teacher=c.teacherName;
 }
@@ -7990,7 +8043,7 @@ const magId = (uid, key) => `${uid}_${key}`;
 const magDoc = (name, s) => ({name, kind:s.kind||'', prompt:s.prompt||'', text:s.text||'', d:s.d||'', at:s.at||''});
 function magWanted(){ const out={}; Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>(p.writing||[]).forEach(w=>{ if (w.pub && w.pub.mag) out[magId(p._uid, pieceKey(w))]=magDoc(p.name, w.pub); })); return out; }
 function pubSnap(w, par, mag){ return {par:!!par, mag:!!mag, at:today(), kind:w.kind||'', prompt:w.prompt||'', text:w.text||'', d:w.d||'', v:w.v||1, tm:w.tm||null}; }
-const settingsSig = () => JSON.stringify({week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
+const settingsSig = () => JSON.stringify({f:DB.features||{}, week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
 async function teacherPull(){
   const code=DB.cloud.code;
   await teacherPush();
@@ -8015,7 +8068,7 @@ async function teacherPush(){
   Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>{ const sig=teacherSigOf(p), js=JSON.stringify(sig);
     if (CL.pushed[p._uid]!==js){ const ref=CL.db.doc(`classes/${code}/learners/${p._uid}`);
       batch.set(ref, {marks:sig.marks, teacher:sig.teacher}, {merge:true}); batch.set(ref, {published:sig.published}, {mergeFields:['published']}); CL.pushed[p._uid]=js; n++; } });
-  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on'}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
+  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||1, startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', features:DB.features||{}}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
   if (n){ setSync('busy'); await batch.commit(); setSync('ok'); }
   await magazinePush(); await familyPush();
 }
