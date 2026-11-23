@@ -494,7 +494,7 @@ table.mtable{border-collapse:collapse;font-size:13px;width:auto;min-width:100%}t
 /* cloud */
 .logincard{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#1f2756,#34418f);color:#fff;box-shadow:0 4px 0 #141a3d}
 .logincard small{display:block;opacity:.85}.logincard .mic{font-size:30px}
-.whoq{margin-bottom:4px}.rolec{padding:20px 18px;border:0;cursor:pointer}.rolec .mic{font-size:44px}.rolec b{display:block;font-size:22px}.rolec small{font-size:14px}
+.whoq{margin-bottom:4px}.contcard{display:flex;align-items:center;gap:12px;width:100%;border:3px solid #f0a92a;background:#fffbeb;border-radius:18px;padding:10px 16px;text-align:left;cursor:pointer;color:#1f2756}.contcard b{display:block;font-size:20px}.contcard .sngo{font-size:22px;font-weight:900}.rolec{padding:20px 18px;border:0;cursor:pointer}.rolec .mic{font-size:44px}.rolec b{display:block;font-size:22px}.rolec small{font-size:14px}
 .logincard.teacher{background:linear-gradient(135deg,#b45309,#e8a317);box-shadow:0 4px 0 #8a3f06}
 .codein{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:30px;letter-spacing:.3em;text-align:center;text-transform:uppercase}
 .mono{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em}
@@ -5091,15 +5091,16 @@ function stopTimers(){
 /* ================= PLAYERS ================= */
 /* ----- First screen: who are you? ----- */
 function screenStart(){
-  stopTimers(); applyPrefs();
+  stopTimers(); applyPrefs(); const cur=DB.current&&DB.profiles[DB.current];
   app.innerHTML = `
    <div class="hero">${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div></div>
    <h2 class="center mt whoq">Who are you?</h2>
+   ${cur?`<button class="contcard mt8" id="cont">${heronSVG(cur.look,'h56')}<span class="grow"><small class="muted b">Welcome back!</small><b>Continue as ${escH(cur.name)}</b></span><span class="sngo">▶</span></button>`:''}
    <button class="logincard rolec mt8" id="rlearn"><span class="mic">🎒</span><span class="grow"><b>I'm a learner</b><small>Play, learn and see your progress</small></span>▶</button>
    <button class="logincard rolec parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>I'm a parent</b><small>See your child's work and progress</small></span>▶</button>
    <button class="logincard rolec teacher mt8" id="tc"><span class="mic">🍎</span><span class="grow"><b>I'm a teacher</b><small>Classes, marking and reports</small></span>▶</button>
    ${storeNote()}`;
-  $('#rlearn').onclick=()=>screenProfiles();
+  $('#rlearn').onclick=()=>screenProfiles(); if ($('#cont')) $('#cont').onclick=()=>screenHome();
   $('#plogin').onclick=()=>screenClassLogin('', 'parent');
   $('#tc').onclick=()=>screenTeacherGate();
 }
@@ -5735,7 +5736,7 @@ function fillVoices(){
 }
 
 /* ---------- Boot ---------- */
-function boot(){ load(); if (DB.current && DB.profiles[DB.current]) screenHome(); else screenStart(); if (typeof cloudResume==='function' && DB.cloud) setTimeout(cloudResume, 300); }
+function boot(){ load(); screenStart(); if (typeof cloudResume==='function' && DB.cloud) setTimeout(cloudResume, 300); }
 
 /* ================= ADAPTIVE LEARNING: smart practice, spaced review, mastery map ================= */
 const REVIEW_DAYS = [1, 2, 4, 8, 16, 32];
