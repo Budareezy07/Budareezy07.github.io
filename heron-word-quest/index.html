@@ -442,6 +442,19 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .model h3{margin-top:0}
 .loadcard{background:#ecfdf5;border:2px solid #34d399}.loadcard.mid{background:#fffbeb;border-color:#f59e0b}.loadcard.heavy{background:#fef2f2;border-color:#f87171}
 .loadbig{font-size:30px;font-weight:900;margin:4px 0}
+.pchart{width:100%;height:auto;display:block;margin-top:6px}.pchart .ax{font:700 13px system-ui,sans-serif;fill:#64748b}.pchart .gl{stroke:#e5e7eb}.pchart .tl{stroke:#a5b4fc;stroke-dasharray:3 4}.pchart .nl{stroke:#f59e0b;stroke-dasharray:5 4;stroke-width:2}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}.legend button{border:2px solid var(--c);background:#fff;color:var(--c);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12px;cursor:pointer}.legend button.off{opacity:.35;text-decoration:line-through}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.fchips button{border:1.5px solid #d5dbe7;background:#fff;border-radius:999px;padding:4px 11px;font-weight:700;font-size:12px;cursor:pointer;color:#1f2756}.fchips button.on{background:#1f2756;border-color:#1f2756;color:#fff}
+.scards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.scard{background:#fff;border-radius:14px;border-left:6px solid var(--c);padding:9px 12px;display:flex;flex-direction:column;box-shadow:0 2px 8px #1f275612}.scard span{font-weight:800;font-size:13px}.scard b{font-size:26px;color:var(--c);line-height:1.2}
+.gpill{font-weight:800;white-space:nowrap}.gup{color:#15803d}.gdown{color:#dc2626}
+.ptable{width:100%;border-collapse:collapse;font-size:13px}.ptable th,.ptable td{padding:6px 5px;text-align:center;border-bottom:1px solid #eef1f6;white-space:nowrap}.ptable th:first-child,.ptable td:first-child{text-align:left}.ptable tr.tot td{border-top:2px solid #d5dbe7}
+.orow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eef1f6}.orow .skbar{display:block;margin-top:4px}
+.ochip{min-width:62px;text-align:center;border-radius:12px;padding:4px 6px;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--c);font-weight:900;font-size:18px;display:flex;flex-direction:column;line-height:1.1}.ochip small{font-size:10px;font-weight:800}
+.owld{margin-top:12px}.owld>b{display:block;padding:6px 0;border-bottom:2px solid #e5e9f2}
+.spark{width:72px;height:24px;flex:none;display:inline-block}
+.obands{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.obands span{border-radius:999px;padding:3px 10px;font-weight:800;font-size:12px;color:var(--c);background:color-mix(in srgb,var(--c) 12%,#fff)}
+.mrow{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eef1f6}.mrow .em{font-size:20px}
+@media print{.pchart{max-width:100%}.card{break-inside:avoid}}
 .f60.pulse{animation:pulse 1s infinite}
 .cta.books{background:linear-gradient(135deg,#0f766e,#14a38f)}.cta.tquiz{background:linear-gradient(135deg,#7c3aed,#a855f7)}
 .setwork{border:2px solid #f59e0b;background:#fffbeb;border-radius:18px;padding:12px}
@@ -3305,6 +3318,35 @@ const YEAR = [
 const TEST_WEEK = 8;   // one term test, in week 8, well before reports
 const TESTS = [1,2,3].map(t=>({id:`t${t}`, term:t, week:(t-1)*WEEKS_PER_TERM+TEST_WEEK, kind:'Term', title:`Term ${t} Test`, from:(t-1)*WEEKS_PER_TERM+1, to:(t-1)*WEEKS_PER_TERM+TEST_WEEK-1, passage:`test${t}a`}));
 const testForWeek = w => TESTS.find(t=>t.week===w);
+/* ----- Starting Point and End of Year checks -----
+   The same fixed 30 marks at the start and at the end of the year, so the growth is a fair comparison.
+   Do not change these questions once learners have written the Starting Point Check. */
+const CHECK_SPELL = [['mountain','We hiked up the mountain.'],['beginning','Start at the beginning of the story.'],['hurried','We hurried to catch the bus.'],
+ ['happiness','Happiness is spending time with friends.'],['adventure','Our trip was a real adventure.'],['quietly','Please work quietly.'],
+ ['brought','Lerato brought cupcakes for the class.'],['necessary','It is necessary to wear a hat in the sun.'],['separate','Please keep the two groups separate.'],['straight','Draw a straight line with a ruler.']];
+const CHECK_LANG = [
+ ['n-abs','mc','Which word in this sentence is an <b>abstract noun</b>?<br><i>The children showed great courage during the storm.</i>','courage',['children','storm','great'],'An abstract noun names something you cannot see or touch. <b>Courage</b> is a quality.'],
+ ['v-past','type','Write the past tense of the verb in brackets.<br><i>Last week Ayanda ___ (catch) the early bus.</i>','caught',null,'<b>Catch</b> is irregular: catch, caught.'],
+ ['d-comp','mc','Choose the correct words.<br><i>This is the ___ book I have ever read.</i>','most exciting',['excitingest','more exciting','most excitingest'],'Long adjectives use <b>most</b> when we compare three or more things.'],
+ ['d-adv','mc','Which word is an <b>adverb</b>?<br><i>The old tortoise crept slowly across the road.</i>','slowly',['old','crept','road'],'<b>Slowly</b> tells us how the tortoise crept.'],
+ ['v-conc','mc','Choose the verb that agrees with the subject.<br><i>Each of the girls ___ a new pencil case.</i>','has',['have','are having','were'],'<b>Each</b> is singular, so it takes <b>has</b>.'],
+ ['n-pron','mc','Choose the correct pronoun.<br><i>Mom gave the tickets to Sipho and ___.</i>','me',['I','myself','mine'],'After <b>to</b> we use <b>me</b>. Test it: "Mom gave the tickets to me."'],
+ ['s-conj','mc','Choose the best conjunction.<br><i>We wanted to play outside, ___ it was raining too hard.</i>','but',['because','so','or'],'<b>But</b> shows a contrast.'],
+ ['p-poss','mc','The bags belong to three girls. Which is correct?',"the girls' bags",["the girl's bags",'the girls bags',"the girls's bags"],"For a plural ending in s, the apostrophe goes after the s: <b>girls'</b>."],
+ ['p-speech','mc','Which sentence is punctuated correctly?','"Where are you going?" asked Thandi.',['"Where are you going"? asked Thandi.','"Where are you going." asked Thandi?','Where are you going? asked Thandi.'],'The spoken words and their question mark go inside the speech marks.'],
+ ['w-affix','type','Add a prefix to make the opposite of <b>possible</b>.','impossible',null,'<b>im</b> + possible = <b>impossible</b>.'],
+ ['w-syn','mc','Which word is a <b>synonym</b> for <i>enormous</i>?','huge',['tiny','ancient','noisy'],'Synonyms have the same, or nearly the same, meaning.'],
+ ['w-fig','mc','<i>The wind whistled through the empty streets.</i><br>What kind of figurative language is this?','personification',['simile','metaphor','alliteration'],'The wind is given a human action, so this is <b>personification</b>.']];
+const CHECKS = [
+ {id:'base',  check:true, kind:'Starting Point', title:'Starting Point Check', term:1, week:1, from:1, to:YEAR.length, passage:'test1b'},
+ {id:'final', check:true, kind:'End of Year', title:'End of Year Check', term:3, week:YEAR.length-2, from:1, to:YEAR.length, passage:'test1b'}];
+function buildCheck(t){
+  const A=CHECK_SPELL.map(([wd,s],i)=>Object.assign(typeQ('Listen, then spell the word', wd, `<b>${escH(wd)}</b>: ${escH(s)}`, {speak:wd, clue:blankWord(s,wd)}), {skill:'sp-bee', lv:i<6?2:3, sec:'A'}));
+  const B=CHECK_LANG.map(([sk,ty,q,a,w,e])=>Object.assign(ty==='mc'?mc(q,a,w,e):typeQ(q,a,e), {skill:sk, lv:2, sec:'B'}));
+  const ps=TP(t.passage), C=ps.qs.map(([q,a,o,e])=>Object.assign(mc(q,a,o,e,{passage:ps}), {skill:'r-comp', lv:ps.lv, sec:'C'}));
+  return [...A, ...B, ...C];
+}
+const checkDue = (p, w) => !p.tests.base && w<=3 ? CHECKS[0] : !p.tests.final && w>=CHECKS[1].week && weekOpen(CHECKS[1].week) ? CHECKS[1] : null;
 
 /* ================= EXTENDED WRITING TASKS ================= */
 const wSent = t => (t.match(/[^.!?]+[.!?]+/g)||[]).length;
@@ -4991,7 +5033,8 @@ function record(q, ok){ const p=P(); if (!q.skill) return; const s=p.stats[q.ski
 function updMastery(p, q, ok){ if (!p.mast || typeof SK!=='function' || !SK(q.skill)) return;
   const m=p.mast[q.skill]||(p.mast[q.skill]={th:startLv()+0.3, n:0, box:0});
   const L=(q.lv||curLv(q.skill))+(q.ch?0.35:0), exp=1/(1+Math.exp(-2.3*(m.th-L))), K=Math.max(0.12, 0.4/Math.sqrt(m.n+1));
-  m.th=Math.min(3.9, Math.max(0.6, m.th+K*((ok?1:0)-exp))); m.n++; m.last=today(); }
+  m.th=Math.min(3.9, Math.max(0.6, m.th+K*((ok?1:0)-exp))); m.n++; m.last=today();
+  const v=mastery(p, q.skill); if (v!=null){ (m.h||(m.h={}))[curWeek()]=v; } }
 const mastery = (p, sid) => { const m=p&&p.mast&&p.mast[sid]; if (!m||m.n<3) return null;
   return Math.round(Math.max(0,Math.min(1,(m.th-1)/2.6))*100*Math.min(1,(m.n+2)/10)); };
 const mBand = v => v==null ? ['–','#9aa5b8','Not started'] : v>=90 ? [v,'#127a43','Mastered'] : v>=70 ? [v,'#1fa65a','Strong'] : v>=40 ? [v,'#d48a00','Building'] : [v,'#e5484d','Starting'];
@@ -7182,12 +7225,12 @@ function weekCardHTML(p){
       ${y.write?tile('id="wk-write"',WT(y.write).icon,'Writing',escH(WT(y.write).title), !!r.write):''}
       ${tile('id="wk-quiz"','🧩','Weekly quiz','10 mixed questions', r.quiz!=null, r.quiz!=null?`<small class="b">Best: ${r.quiz}/10</small>`:'')}
     </div>
-    <button class="link small" id="wk-plan">📅 See the whole year plan</button></div>`;
+    <div class="row"><button class="link small" id="wk-plan">📅 See the whole year plan</button><button class="link small" id="wk-prog">📈 My progress</button></div></div>`;
 }
 function wireWeekCard(p){
   const w=curWeek(), y=YEAR[w-1], back=()=>screenHome();
   $('#wk-open').onclick=()=>screenWeek(w);
-  $('#wk-plan').onclick=()=>screenYear();
+  $('#wk-plan').onclick=()=>screenYear(); $('#wk-prog').onclick=()=>screenProgress(P(), ()=>screenHome(), true);
   $('#wk-spell').onclick=()=>screenWeek(w);
   $('#wk-read').onclick=()=>startRead(w, back);
   $$('[data-wks]').forEach(b=>b.onclick=()=>{ const s=b.dataset.wks; p.learned[s]?startRound(s,null,back):screenLearn(s); });
@@ -7196,9 +7239,9 @@ function wireWeekCard(p){
   wireTestBanner(w, back);
 }
 function testBannerHTML(p, w){
-  const t=testForWeek(w); if (!t) return '';
+  const t=testForWeek(w) || checkDue(p, w); if (!t) return '';
   const r=p.tests[t.id];
-  return `<button class="testbanner ${r?'done':''}" data-test="${t.id}"><span class="tbic">📝</span><span class="grow"><small class="up b">${r?'Test done':'Big test this week'}</small><b>${t.title}</b><small>${r?`Official mark: ${r.first.score}/${r.first.total} (${Math.round(r.first.score/r.first.total*100)}%)`:'Spelling · Language · Reading · 30 marks'}</small></span><span class="tbgo">${r?'✓':'▶'}</span></button>`;
+  return `<button class="testbanner ${r?'done':''}" data-test="${t.id}"><span class="tbic">${t.check?'📍':'📝'}</span><span class="grow"><small class="up b">${r?'Test done':t.check?(t.id==='base'?'Start of the year check':'End of year check'):'Big test this week'}</small><b>${t.title}</b><small>${r?`Official mark: ${r.first.score}/${r.first.total} (${Math.round(r.first.score/r.first.total*100)}%)`:'Spelling · Language · Reading · 30 marks'}</small></span><span class="tbgo">${r?'✓':'▶'}</span></button>`;
 }
 function wireTestBanner(w, back){ $$('[data-test]').forEach(b=>b.onclick=()=>screenTest(b.dataset.test, back)); }
 function startQuiz(w, back){
@@ -7262,8 +7305,8 @@ function screenYear(){
   $$('[data-tst]').forEach(b=>b.onclick=()=>screenTest(b.dataset.tst, ()=>screenYear()));
 }
 function testsCardHTML(p){
-  return `<div class="card"><b>📝 Big tests</b><div class="list mt8">${TESTS.map(t=>{ const r=p.tests[t.id], open=testOpen(t);
-    return `<button class="item ${open?'':'locked'}" data-tst="${t.id}" ${open?'':'disabled'}><span class="em">${open?(r?'✅':'📝'):'🔒'}</span><span class="grow"><b>${t.title}</b><br><small class="muted">Term ${t.term}, week ${t.week-(t.term-1)*WEEKS_PER_TERM} · ${r?`Official mark ${r.first.score}/${r.first.total} (${Math.round(r.first.score/r.first.total*100)}%)`:open?'Ready when you are':'Not open yet'}</small></span>${open?'▶':''}</button>`; }).join('')}</div></div>`;
+  return `<div class="card"><b>📝 Big tests</b><div class="list mt8">${ASSESS().map(t=>{ const r=p.tests[t.id], open=testOpen(t);
+    return `<button class="item ${open?'':'locked'}" data-tst="${t.id}" ${open?'':'disabled'}><span class="em">${open?(r?'✅':t.check?'📍':'📝'):'🔒'}</span><span class="grow"><b>${t.title}</b><br><small class="muted">${t.check?(t.id==='base'?'Start of the year · ':'End of the year · '):''}Term ${t.term}, week ${t.week-(t.term-1)*WEEKS_PER_TERM} · ${r?`Official mark ${r.first.score}/${r.first.total} (${Math.round(r.first.score/r.first.total*100)}%)`:open?'Ready when you are':'Not open yet'}</small></span>${open?'▶':''}</button>`; }).join('')}</div></div>`;
 }
 /* ----- Extended writing tasks ----- */
 function screenTasks(){
@@ -7319,7 +7362,7 @@ const CAPS_LEVELS = [[80,7,'Outstanding'],[70,6,'Meritorious'],[60,5,'Substantia
 const capsLevel = pc => CAPS_LEVELS.find(([m])=>pc>=m);
 const testOpen = t => weekOpen(t.week);
 const testLv = t => t.term===1 ? 2 : 3;            // Term 1 Silver, Terms 2 and 3 Gold (with challenge questions)
-const TBY = id => TESTS.find(t=>t.id===id);
+const TBY = id => TESTS.find(t=>t.id===id) || CHECKS.find(t=>t.id===id);
 const testShort = t => `T${t.term} Test`;
 const pctOf = r => Math.round(r.score/r.total*100);
 const SECS = {
@@ -7330,6 +7373,7 @@ const SECS = {
 const TEST_TYPES = ['mc','tap','type','sort','order'];
 
 function buildTest(t){
+  if (t.check) return buildCheck(t);
   const lv=testLv(t), weeks=YEAR.filter(y=>y.w>=t.from && y.w<=t.to);
   const A = [...sample(weeks.flatMap(y=>SPELL_WEEKS[y.w-1].words), 6), ...sample(weeks.flatMap(y=>SPELL_WEEKS[y.w-1].stretch), 4)].map(([wd,s])=>Object.assign(
     typeQ('Listen, then spell the word', wd, `<b>${escH(wd)}</b>: ${escH(s)}`, {speak:wd, clue:blankWord(s,wd)}), {skill:'sp-bee', lv, sec:'A'}));
@@ -7350,19 +7394,22 @@ function screenTest(id, back){
   stopTimers(); const p=P(), t=TBY(id), r=p.tests[id], open=testOpen(t);
   back = back || (()=>screenWeek(t.week));
   const wk = t.week-(t.term-1)*WEEKS_PER_TERM, lv=testLv(t);
-  app.innerHTML = backTitle(`📝 ${t.kind} test`)+`
-   <div class="card center testhero"><div class="f60">📝</div><h2>${t.title}</h2>
-     <p class="muted b">Covers Term ${t.term}, weeks 1 to ${t.to-t.from+1} · ${LVI[lv-1]} ${LVN[lv-1]} level</p>
+  const chk=!!t.check, base=p.tests.base;
+  app.innerHTML = backTitle(chk?`📍 ${t.title}`:`📝 ${t.kind} test`)+`
+   <div class="card center testhero"><div class="f60">${chk?'📍':'📝'}</div><h2>${t.title}</h2>
+     <p class="muted b">${chk?'Spelling, language and reading from the whole Grade 5 year':`Covers Term ${t.term}, weeks 1 to ${t.to-t.from+1} · ${LVI[lv-1]} ${LVN[lv-1]} level`}</p>
      <div class="secs mt8">${['A','B','C'].map(s=>`<div class="sec"><span>${SECS[s].ic}</span><b>${SECS[s].name.split(': ')[1]}</b><small>${SECS[s].what}</small></div>`).join('')}</div>
      <ul class="ex small left mt8">
        <li><b>30 marks.</b> Give yourself about 30 to 40 minutes in a quiet place.</li>
        <li>Plume will not tell you if an answer is right until the end. Do your best on every question.</li>
-       <li>Your first finished try is your <b>official mark</b>. You can try again later for practice.</li>
+       ${chk?(t.id==='base'?'<li><b>Some questions are about things you will learn later this year.</b> That is fine! Just do your best. This shows your starting point.</li>':'<li>This is the <b>same check</b> you wrote at the start of the year, so you can see how much you have grown.</li>')+'<li>You can only write it <b>once</b>.</li>'
+         :'<li>Your first finished try is your <b>official mark</b>. You can try again later for practice.</li>'}
        <li>Use earphones for the spelling section if other people are near you.</li>
        ${p.reader?'<li>🔊 <b>Your reader is switched on.</b> Plume will read the texts and questions to you.</li>':'<li>Read-aloud is switched off in tests, except for the spelling words.</li>'}</ul>
      ${r?`<div class="fb good left"><p>📌 Official mark: <b>${r.first.score}/${r.first.total}</b> (${pctOf(r.first)}%, Level ${capsLevel(pctOf(r.first))[1]})<br>⭐ Best try: <b>${r.best.score}/${r.best.total}</b> · Tries: ${r.tries}</p></div>`:''}
-     ${open?`<button class="btn gold w100 mt8" id="go">${r?'Practise it again ↻':'Start the test ▶'}</button>`:`<p class="muted b mt8">🔒 This test opens in Term ${t.term}, Week ${wk}.</p>`}
-     ${r&&r.last?`<button class="btn ghost w100 mt8" id="rv">🔍 See corrections from my last try</button>`:''}
+     ${chk&&r?`<p class="muted b mt8">✅ Done. ${t.id==='final'&&base?`Start of the year: ${pctOf(base.first)}% → now: ${pctOf(r.first)}%`:'Your teacher can see your starting point.'}</p>`
+       :open?`<button class="btn gold w100 mt8" id="go">${r?'Practise it again ↻':chk?'Start the check ▶':'Start the test ▶'}</button>`:`<p class="muted b mt8">🔒 This ${chk?'check':'test'} opens in Term ${t.term}, Week ${wk}.</p>`}
+     ${r&&r.last&&r.last.length?`<button class="btn ghost w100 mt8" id="rv">🔍 See corrections from my last try</button>`:''}
    </div>`;
   $('#bk').onclick=()=>back();
   if ($('#go')) $('#go').onclick=()=>startTest(id, back);
@@ -7438,12 +7485,12 @@ function endTest(){
   const score=qs.filter(q=>q.ok).length, total=qs.length, pc=Math.round(score/total*100), cl=capsLevel(pc), oldLv=level(p.xp);
   const sk={}; qs.forEach(q=>{ const k=q.sec==='A'?'spelling':q.sec==='C'?'reading':q.skill; const a=sk[k]||(sk[k]=[0,0]); a[1]++; if (q.ok) a[0]++; });
   const res={score, total, A:sc('A'), B:sc('B'), C:sc('C'), nA:by('A').length, nB:by('B').length, nC:by('C').length, date:today(), sk, reader:!!p.reader};
-  const prev=p.tests[t.id], official=!prev;
+  const prev=p.tests[t.id], official=!prev, chk=!!t.check;
   if (official) p.tests[t.id]={first:res, best:res, tries:1};
   else { prev.tries++; if (score>prev.best.score) prev.best=res; }
   const rec=p.tests[t.id];
-  rec.last = qs.filter(q=>!q.ok).map(q=>({s:q.sec, q:qPlain(q).slice(0,220), g:qGivenText(q).slice(0,80), a:qAnswerText(q).slice(0,220), e:String(q.explain||'').slice(0,260), t:q.type}));
-  qs.filter(q=>!q.ok).forEach(addMistake);
+  rec.last = chk ? [] : qs.filter(q=>!q.ok).map(q=>({s:q.sec, q:qPlain(q).slice(0,220), g:qGivenText(q).slice(0,80), a:qAnswerText(q).slice(0,220), e:String(q.explain||'').slice(0,260), t:q.type}));
+  if (!chk) qs.filter(q=>!q.ok).forEach(addMistake);
   const xp=score*10, coins=score*3+(pc>=80?20:0);
   p.xp+=xp; p.coins+=coins; p.rounds++; markDay();
   const fresh=checkBadges(); save();
@@ -7456,7 +7503,9 @@ function endTest(){
     <div class="reward"><div>⭐ +${xp} XP</div><div>🪙 +${coins} coins</div></div>
     ${level(p.xp)>oldLv?`<div class="fb good"><h3>🎉 Level up! You're now level ${level(p.xp)}</h3></div>`:''}
     ${badgeHTML(fresh)}
-    ${rec.last.length?`<p class="muted mt8">You have <b>${rec.last.length}</b> correction${rec.last.length===1?'':'s'} to look at. They are also saved in 🩹 Fix my mistakes.</p>`:'<div class="fb good"><h3>💯 Full marks!</h3></div>'}
+    ${chk?(t.id==='base'?'<div class="fb good"><p>📍 <b>This is your starting point.</b> Near the end of the year you will write the same check again and see how much you have grown.</p></div>'
+      :(b=>b?`<div class="fb good"><h3>🌱 Start of the year: ${pctOf(b.first)}% → now: ${pc}%</h3><p>${pc>pctOf(b.first)?`You grew by ${pc-pctOf(b.first)} points this year. Well done!`:'Well done for finishing the year!'}</p></div>`:'')(p.tests.base))
+    :rec.last.length?`<p class="muted mt8">You have <b>${rec.last.length}</b> correction${rec.last.length===1?'':'s'} to look at. They are also saved in 🩹 Fix my mistakes.</p>`:'<div class="fb good"><h3>💯 Full marks!</h3></div>'}
     <div class="row mt">${rec.last.length?'<button class="btn gold grow" id="rv">🔍 Corrections</button>':''}<button class="btn ghost grow" id="bw">← Back</button></div></div>`;
   if (pc>=75||fresh.length){ confetti(); sfx.win(); }
   const back=R.back, id=t.id;
@@ -7496,7 +7545,7 @@ function testCSV(id){
 }
 function screenTestResults(id){
   stopTimers();
-  const avail = TESTS.filter(t=>Object.values(DB.profiles).some(p=>p.tests[t.id]));
+  const avail = ASSESS().filter(t=>Object.values(DB.profiles).some(p=>p.tests[t.id]));
   const t = TBY(id) || avail[avail.length-1] || TESTS[0];
   const ps = Object.values(DB.profiles), done = ps.filter(p=>p.tests[t.id]);
   const avg = k => done.length ? Math.round(done.reduce((s,p)=>s+p.tests[t.id].first[k],0)/done.length*10)/10 : '–';
@@ -7505,7 +7554,7 @@ function screenTestResults(id){
   const skRows=Object.entries(agg).map(([k,[c,n]])=>({k, name:k==='spelling'?'🔤 Spelling':k==='reading'?'📖 Reading comprehension':(SK(k)?SK(k).name:k), pc:Math.round(c/n*100), n})).sort((a,b)=>a.pc-b.pc);
   const dist=[7,6,5,4,3,2,1].map(L=>[L, done.filter(p=>capsLevel(pctOf(p.tests[t.id].first))[1]===L).length]);
   app.innerHTML = backTitle('📝 Test results')+`
-   <select class="name" id="tsel">${TESTS.map(x=>`<option value="${x.id}" ${x.id===t.id?'selected':''}>${x.title}${Object.values(DB.profiles).some(p=>p.tests[x.id])?'':' (no results yet)'}</option>`).join('')}</select>
+   <select class="name" id="tsel">${ASSESS().map(x=>`<option value="${x.id}" ${x.id===t.id?'selected':''}>${x.title}${Object.values(DB.profiles).some(p=>p.tests[x.id])?'':' (no results yet)'}</option>`).join('')}</select>
    <div class="card mt"><div class="row"><b class="grow">${t.title}</b><button class="btn small ghost" id="tcsv">📋 Copy marks</button></div>
      <p class="muted small">Official marks are each learner's first finished try. 🔊 means the test was written with a reader. ${done.length} of ${ps.length} learner${ps.length===1?'':'s'} on this device ${done.length===1?'has':'have'} written it.</p>
      ${done.length?`<div class="stats stats4"><div class="stat"><b>${avgPc}%</b><span>class average</span></div><div class="stat"><b>${avg('A')}</b><span>spelling /10</span></div><div class="stat"><b>${avg('B')}</b><span>language /12</span></div><div class="stat"><b>${avg('C')}</b><span>reading /8</span></div></div>`:''}
@@ -7524,6 +7573,238 @@ function screenTestResults(id){
   $('#tsel').onchange=()=>screenTestResults($('#tsel').value);
   $('#tcsv').onclick=()=>copyText(testCSV(t.id),'Marks copied. Paste them into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
+}
+
+/* ================= PROGRESS: every mark and every learning outcome ================= */
+const STRANDS = [
+ {k:'read',  n:'Reading & Viewing',    ic:'📖', c:'#2563eb'},
+ {k:'write', n:'Writing & Presenting', ic:'✍️', c:'#db2777'},
+ {k:'lang',  n:'Language',             ic:'🧩', c:'#7c3aed'},
+ {k:'spell', n:'Spelling',             ic:'🔤', c:'#d97706'},
+ {k:'ls',    n:'Listening & Speaking', ic:'🗣️', c:'#059669'}];
+const STR = k => STRANDS.find(s=>s.k===k);
+const ASSESS = () => [CHECKS[0], ...TESTS, CHECKS[1]];
+const pcOf = (a,b) => b ? Math.round(a/b*100) : null;
+const avgN = a => a.length ? Math.round(a.reduce((s,x)=>s+x,0)/a.length) : null;
+const pcCol = v => v==null ? '#9aa5b8' : v>=70 ? '#1fa65a' : v>=50 ? '#d48a00' : '#e5484d';
+const pcPill = (v, suf='%') => v==null ? '<span class="muted">–</span>' : `<span class="pill" style="background:${pcCol(v)}22;color:${pcCol(v)}">${v}${suf}</span>`;
+const growPill = g => g==null ? '<span class="muted">–</span>' : `<span class="gpill ${g>0?'gup':g<0?'gdown':''}">${g>0?'▲ +':g<0?'▼ ':''}${g}</span>`;
+const dateWeek = d => { try { if (!d) return null; const n=schoolNow(new Date(String(d).slice(0,10)+'T12:00:00')); return n ? n.w : null; } catch(e){ return null; } };
+const wkLabel = w => { const y=YEAR[Math.min(YEAR.length, Math.max(1,w))-1]; return `T${y.term} W${y.tw}`; };
+
+// Everything a learner has been marked on, in one list. Teacher marks, tests and auto-scored work.
+function progressModel(p){
+  const it=[], add=o=>{ if (o.pc==null || isNaN(o.pc)) return; o.pc=Math.max(0, Math.min(100, Math.round(o.pc))); o.w=Math.min(YEAR.length, Math.max(1, o.w||dateWeek(o.d)||1)); it.push(o); };
+  const T=p.tests||{};
+  ASSESS().forEach(t=>{ const r=T[t.id]; if (!r) return; const f=r.first;
+    add({k:'test', s:'all', ic:t.check?'📍':'📝', t:t.title, d:f.date, w:t.check?(dateWeek(f.date)||t.week):t.week, pc:pctOf(f), sc:`${f.score}/${f.total}`, id:t.id,
+      parts:{spell:pcOf(f.A,f.nA), lang:pcOf(f.B,f.nB), read:pcOf(f.C,f.nC)}}); });
+  (p.writing||[]).forEach(x=>{ if (x.tm && x.tm.r) add({k:'mark', s:'write', ic:'✍️', t:String(x.kind||'Writing'), d:x.d, w:x.w, pc:tmTotal(x.tm)/25*100, sc:`${tmTotal(x.tm)}/25`}); });
+  (p.paras||[]).forEach(x=>{ if (x.tm) add({k:'mark', s:'write', ic:'🧱', t:'Paragraph: '+((PARAS.find(q=>q.id===x.pid)||{}).t||'paragraph'), d:x.d, pc:paraScore(x.tm)*10, sc:`${paraScore(x.tm)}/10`}); });
+  Object.values(p.deep||{}).forEach(x=>{ if (x.tm) add({k:'mark', s:'read', ic:'💭', t:'Think deeper'+(YEAR[x.w-1]?': '+YEAR[x.w-1].theme:''), d:x.d, w:x.w, pc:deepScore(x.tm)/9*100, sc:`${deepScore(x.tm)}/9`}); });
+  (p.fluency||[]).forEach(x=>{ if (x.tm || x.wpm) { const o={k:'mark', s:'ls', ic:'🎙️', t:'Read aloud'+(YEAR[x.w-1]?': '+YEAR[x.w-1].theme:''), d:x.d, w:x.w, pc:x.tm?fluScore(x.tm)*10:null, sc:x.tm?`${fluScore(x.tm)}/10`:''};
+      if (x.wpm) o.wpm=x.wpm; if (o.pc!=null) add(o); else if (x.wpm) it.push(Object.assign(o, {w:x.w||dateWeek(x.d)||1, only:1})); } });
+  (p.orals||[]).forEach(x=>{ if (x.tm) add({k:'mark', s:'ls', ic:'🎤', t:'Oral: '+((ORALS.find(o=>o.id===x.task)||{}).title||'talk'), d:x.d, pc:oralScore(x.tm)*5, sc:`${oralScore(x.tm)}/20`}); });
+  Object.entries(p.listen||{}).forEach(([id,x])=>add({k:'auto', s:'ls', ic:'👂', t:'Listening: '+((LISTEN.find(l=>l.id===id)||{}).title||id), d:x.d, pc:x.first, sc:x.first+'%'}));
+  Object.entries(p.models||{}).forEach(([id,x])=>add({k:'auto', s:'write', ic:'⭐', t:'Model text: '+((MODELS.find(m=>m.id===id)||{}).title||id), d:x.d, pc:x.first, sc:x.first+'%'}));
+  Object.entries(p.cq||{}).forEach(([id,x])=>add({k:'auto', s:'lang', ic:'✏️', t:'Quiz: '+(((DB.quizzes||[]).find(q=>q.id===id)||{}).title||'class quiz'), d:x.d, pc:x.first, sc:x.first+'%'}));
+  YEAR.forEach(y=>{ const r=(p.yr||{})['w'+y.w]||{}, st=(p.spellTests||{})['w'+y.w], ps=PS(y.passage);
+    if (st!=null) add({k:'week', s:'spell', ic:'🔤', t:'Spelling test: '+SPELL_WEEKS[y.w-1].pat, w:y.w, pc:pcOf(st, SPELL_N(y.w)), sc:`${st}/${SPELL_N(y.w)}`});
+    if (r.read!=null && ps) add({k:'week', s:'read', ic:'📖', t:'Reading: '+ps.title, w:y.w, pc:pcOf(r.read, ps.qs.length), sc:`${r.read}/${ps.qs.length}`});
+    if (r.quizFirst!=null) add({k:'week', s:'lang', ic:'🧩', t:'Weekly quiz: '+y.theme, w:y.w, pc:r.quizFirst*10, sc:`${r.quizFirst}/10`}); });
+  const sk={};
+  ALLSKILLS.forEach(k=>{ const m=p.mast&&p.mast[k.id], s=p.stats&&p.stats[k.id], v=mastery(p,k.id); if (v==null && !(s&&s.t)) return;
+    sk[k.id]={m:v, b:(p.best||{})[k.id]||0, a:s&&s.t?Math.round(s.c/s.t*100):null, n:s?s.t:0, h:(m&&m.h)||{}}; });
+  return {items:it.sort((a,b)=>a.w-b.w || String(a.d||'').localeCompare(String(b.d||''))), sk};
+}
+// Test sections count towards their strand: spelling, language and reading.
+const strandPoints = items => items.flatMap(x=> x.only ? [] : x.s==='all' ? Object.entries(x.parts||{}).filter(([,v])=>v!=null).map(([s,pc])=>({s, w:x.w, pc})) : [{s:x.s, w:x.w, pc:x.pc}]);
+function strandTrend(pts, k, upto, win=4){
+  const mine=pts.filter(x=>k==null||x.s===k), out=[];
+  for (let w=1; w<=upto; w++){ if (!mine.some(x=>x.w===w)) continue; out.push([w, avgN(mine.filter(x=>x.w<=w && x.w>w-win).map(x=>x.pc))]); }
+  return out;
+}
+const testOf = m => { const ts=m.items.filter(i=>i.k==='test'), b=ts.find(i=>i.id==='base'), l=ts.filter(i=>i.id!=='base').pop(); return {b, l, g:b&&l?l.pc-b.pc:null}; };
+
+/* ----- Charts (plain SVG, print well) ----- */
+function lineChartSVG(series, o={}){
+  const W=480, H=o.h||270, L=40, R=8, T=14, B=30, N=YEAR.length, lo=o.min||0, hi=o.max||100, unit=o.unit==null?'%':o.unit;
+  const X=w=>L+(w-1)/(N-1)*(W-L-R), Y=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);
+  let g='';
+  [1,2,3].forEach(t=>{ const a=X((t-1)*WEEKS_PER_TERM+1)-7, b=X(t*WEEKS_PER_TERM)+7;
+    g+=`<rect x="${a.toFixed(1)}" y="${T}" width="${(b-a).toFixed(1)}" height="${H-T-B}" rx="8" fill="${t===2?'#fbf6ea':'#f2f5ff'}"/><text x="${((a+b)/2).toFixed(1)}" y="${H-9}" text-anchor="middle" class="ax">Term ${t}</text>`; });
+  if (o.band) g+=`<rect x="${L}" y="${Y(o.band[1]).toFixed(1)}" width="${W-L-R}" height="${(Y(o.band[0])-Y(o.band[1])).toFixed(1)}" fill="#bbf7d0" opacity=".55"/><text x="${W-R-4}" y="${(Y(o.band[1])+12).toFixed(1)}" text-anchor="end" class="ax">Grade 5 target</text>`;
+  (o.grid||[0,25,50,75,100]).forEach(v=>{ g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="gl"/><text x="${L-6}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end" class="ax">${v}${unit==='%'?'%':''}</text>`; });
+  if (!o.noTests) TESTS.forEach(t=>{ g+=`<line x1="${X(t.week).toFixed(1)}" x2="${X(t.week).toFixed(1)}" y1="${T}" y2="${H-B}" class="tl"/><text x="${X(t.week).toFixed(1)}" y="${T+11}" text-anchor="middle" class="ax">📝</text>`; });
+  if (o.now) g+=`<line x1="${X(o.now).toFixed(1)}" x2="${X(o.now).toFixed(1)}" y1="${T}" y2="${H-B}" class="nl"><title>This week</title></line>`;
+  // Smooth lines. Only the latest point gets a dot; invisible targets keep the hover values.
+  const smooth=P=>{ if (P.length<3) return P.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(1)},${y.toFixed(1)}`).join('');
+    const cl=y=>Math.max(T, Math.min(H-B, y)); let d=`M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
+    for (let i=0;i<P.length-1;i++){ const p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||p2;
+      d+=`C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${cl(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${cl(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`; }
+    return d; };
+  series.forEach(s=>{ if (s.off || !s.pts.length) return; const P=s.pts.map(([w,v])=>[X(w),Y(v)]), [lx,ly]=P[P.length-1];
+    if (P.length>1) g+=`<path d="${smooth(P)}" fill="none" stroke="${s.c}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" ${s.dash?'stroke-dasharray="7 6"':''}/>`;
+    g+=`<circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="5" fill="${s.c}" stroke="#fff" stroke-width="2"/>`;
+    s.pts.forEach(([w,v],i)=>{ g+=`<circle cx="${P[i][0].toFixed(1)}" cy="${P[i][1].toFixed(1)}" r="9" fill="transparent"><title>${escH(s.n)} · ${wkLabel(w)}: ${v}${unit}</title></circle>`; }); });
+  return `<svg viewBox="0 0 ${W} ${H}" class="pchart" role="img" aria-label="${escH(o.label||'Progress chart')}">${g}</svg>`;
+}
+function sparkSVG(h, c){
+  const pts=Object.entries(h||{}).map(([w,v])=>[+w,+v]).sort((a,b)=>a[0]-b[0]);
+  if (pts.length<2) return '<span class="spark"></span>';
+  const W=72, H=24, a=pts[0][0], b=pts[pts.length-1][0], X=w=>2+(w-a)/Math.max(1,b-a)*(W-4), Y=v=>H-3-v/100*(H-6);
+  return `<svg viewBox="0 0 ${W} ${H}" class="spark"><path d="${pts.map(([w,v],i)=>`${i?'L':'M'}${X(w).toFixed(1)},${Y(v).toFixed(1)}`).join('')}" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${X(b).toFixed(1)}" cy="${Y(pts[pts.length-1][1]).toFixed(1)}" r="2.6" fill="${c}"/></svg>`;
+}
+const legendHTML = (series, st) => `<div class="legend">${series.map(s=>`<button data-sl="${s.k}" style="--c:${s.c}" class="${s.off?'off':''}">${s.ic?s.ic+' ':''}${escH(s.n)}</button>`).join('')}</div>`;
+const fchips = (attr, cur, opts) => `<div class="fchips noprint">${opts.map(([v,l])=>`<button data-${attr}="${v}" class="${cur===v?'on':''}">${l}</button>`).join('')}</div>`;
+const trendNote = st => `${fchips('tw', st.raw?'raw':'trend', [['trend','📈 Trend'],['raw','📊 Week by week']])}<p class="small muted">${st.raw?'Each line follows the average of all marks, week by week.':'Each line follows the average of the marks over the last 4 weeks, so you can see the trend.'} The dot is the latest mark. 📝 marks the term tests. Tap a strand to hide or show it.</p>`;
+
+/* ----- One learner: every mark, every outcome ----- */
+function progressHTML(m, st){
+  const it=m.items, pts=strandPoints(it), upto=Math.max(curWeek(), 1, ...it.map(x=>x.w)), win=st.raw?1:4;
+  const {b:base, l:lastT, g:growth}=testOf(m);
+  const outs=ALLSKILLS.map(k=>({k, s:m.sk[k.id]})), band=v=>v==null?'none':v>=90?'m':v>=70?'s':v>=40?'b':'st';
+  const cnt=t=>outs.filter(o=>band(o.s?o.s.m:null)===t).length;
+  const series=STRANDS.map(S=>({k:S.k, n:S.n, ic:S.ic, c:S.c, pts:strandTrend(pts,S.k,upto,win), off:!!st.off[S.k]}));
+  const scards=STRANDS.map(S=>{ const mine=pts.filter(x=>x.s===S.k);
+    if (!mine.length) return `<div class="scard" style="--c:${S.c}"><span>${S.ic} ${S.n}</span><b>–</b><small class="muted">No marks yet</small></div>`;
+    const all=avgN(mine.map(x=>x.pc)), ch=mine.length>=4?avgN(mine.slice(-3).map(x=>x.pc))-avgN(mine.slice(0,3).map(x=>x.pc)):null;
+    return `<div class="scard" style="--c:${S.c}"><span>${S.ic} ${S.n}</span><b>${all}%</b><small class="muted">${mine.length} mark${mine.length===1?'':'s'}${ch!=null?` · ${growPill(ch)} since the start`:''}</small></div>`; }).join('');
+  const tests=ASSESS().map(t=>({t, x:it.find(i=>i.id===t.id)})), col=t=>t.check?(t.id==='base'?'Start':'End'):'T'+t.term+' test';
+  const testTable=`<table class="ptable"><tr><th></th>${tests.map(({t})=>`<th>${col(t)}</th>`).join('')}</tr>
+    ${[['spell','🔤 Spelling'],['lang','🧩 Language'],['read','📖 Reading']].map(([k,l])=>`<tr><td>${l}</td>${tests.map(({x})=>`<td>${x?pcPill(x.parts[k]):'<span class="muted">–</span>'}</td>`).join('')}</tr>`).join('')}
+    <tr class="tot"><td><b>Total</b></td>${tests.map(({x})=>`<td>${x?pcPill(x.pc):'<span class="muted">–</span>'}${x?`<br><small class="muted">L${capsLevel(x.pc)[1]}</small>`:''}</td>`).join('')}</tr></table>`;
+  const termTable=`<table class="ptable"><tr><th>Strand</th><th>Term 1</th><th>Term 2</th><th>Term 3</th><th>Year</th></tr>${STRANDS.map(S=>{ const mine=pts.filter(x=>x.s===S.k);
+    return `<tr><td>${S.ic} ${S.n}</td>${[1,2,3].map(t=>`<td>${pcPill(avgN(mine.filter(x=>YEAR[x.w-1].term===t).map(x=>x.pc)))}</td>`).join('')}<td>${pcPill(avgN(mine.map(x=>x.pc)))}</td></tr>`; }).join('')}
+    <tr class="tot"><td><b>All marks</b></td>${[1,2,3].map(t=>`<td>${pcPill(avgN(pts.filter(x=>YEAR[x.w-1].term===t).map(x=>x.pc)))}</td>`).join('')}<td>${pcPill(avgN(pts.map(x=>x.pc)))}</td></tr></table>`;
+  const wpm=it.filter(x=>x.wpm).map(x=>[x.w, x.wpm]), wmax=Math.max(160, ...wpm.map(x=>x[1]+20));
+  const of=st.of||'all', oShow=outs.filter(o=>{ const bd=band(o.s?o.s.m:null); return of==='all' || (of==='work'&&(bd==='b'||bd==='st')) || (of==='strong'&&(bd==='m'||bd==='s')) || (of==='none'&&bd==='none'); });
+  const outRows=WORLDS.map(W=>{ const rows=W.skills.filter(k=>oShow.some(o=>o.k===k)); if (!rows.length) return '';
+    return `<div class="owld"><b>${W.icon||''} ${escH(W.name)}</b>${rows.map(k=>{ const s=m.sk[k.id], [v,c,lab]=mBand(s?s.m:null), hv=s?Object.entries(s.h).sort((a,b)=>a[0]-b[0]).map(x=>x[1]):[], ch=hv.length>1?hv[hv.length-1]-hv[0]:null;
+      return `<div class="orow"><span class="grow"><b>${escH(k.name)}</b><br><small class="muted">${escH(k.out||'')}</small>${s&&s.n?`<br><small class="muted">${s.n} answer${s.n===1?'':'s'} · ${s.a}% right${s.b?' · '+LVI[s.b-1]+' '+LVN[s.b-1]:''}${ch?` · ${growPill(ch)}`:''}</small>`:''}</span>${s?sparkSVG(s.h, c):''}<span class="ochip" style="--c:${c}">${v}<small>${lab}</small></span></div>`; }).join('')}</div>`; }).join('');
+  const mf=st.mf||'all', mList=it.filter(x=>!x.only && (mf==='all' || (mf==='test'?x.k==='test':x.s===mf))).slice().reverse(), shown=st.all?mList:mList.slice(0,40);
+  const mRows=shown.map(x=>`<div class="mrow"><span class="em">${x.ic}</span><span class="grow"><b>${escH(x.t)}</b><br><small class="muted">${x.s==='all'?'Test':STR(x.s).n} · ${wkLabel(x.w)}${x.d?' · '+(()=>{ try { return dMon(dParse(String(x.d).slice(0,10))); } catch(e){ return ''; } })():''}</small></span><small class="b">${escH(x.sc)}</small>${pcPill(x.pc)}</div>`).join('');
+  return `
+   <div class="stats stats4">
+     <div class="stat"><b>${base?base.pc+'%':'–'}</b><span>starting point</span></div>
+     <div class="stat"><b>${lastT?lastT.pc+'%':'–'}</b><span>${lastT?escH(lastT.t):'latest test'}</span></div>
+     <div class="stat"><b>${growth==null?'–':(growth>0?'+':'')+growth}</b><span>growth (points)</span></div>
+     <div class="stat"><b>${cnt('m')+cnt('s')}/${ALLSKILLS.length}</b><span>outcomes strong</span></div></div>
+   <div class="card mt"><b>📈 Marks over the year</b>${legendHTML(series, st)}
+     ${series.some(s=>s.pts.length)?lineChartSVG(series, {now:curWeek(), label:'Marks by strand over the year'}):'<p class="muted center">The graph fills in as work is marked.</p>'}
+     ${trendNote(st)}</div>
+   <div class="scards mt">${scards}</div>
+   <div class="card mt"><b>📝 Tests</b><p class="small muted">First try only. The Starting Point and End of Year checks are the same, so they show real growth.</p><div class="scrollx">${testTable}</div></div>
+   <div class="card mt"><b>📊 Term averages</b><p class="small muted">Every mark in each strand: tests, marked work, and weekly checks.</p><div class="scrollx">${termTable}</div></div>
+   ${wpm.length?`<div class="card mt"><b>🎙️ Reading speed</b><p class="small muted">Words read correctly in a minute, from each read-aloud.</p>${lineChartSVG([{k:'wpm', n:'Words a minute', c:'#0891b2', pts:wpm}], {min:0, max:wmax, unit:' wpm', grid:[0,40,80,120,160].filter(v=>v<=wmax), band:FLUENCY_TARGET, noTests:true, now:curWeek(), label:'Reading speed'})}</div>`:''}
+   <div class="card mt"><b>🎯 Learning outcomes</b><p class="small muted">Mastery of each "I can" outcome (0 to 100), worked out from every answer, with harder questions counting more. The line shows how it changed week by week.</p>
+     <div class="obands"><span style="--c:#127a43">${cnt('m')} mastered</span><span style="--c:#1fa65a">${cnt('s')} strong</span><span style="--c:#d48a00">${cnt('b')} building</span><span style="--c:#e5484d">${cnt('st')} starting</span><span style="--c:#9aa5b8">${cnt('none')} not started</span></div>
+     ${fchips('of', of, [['all','All'],['work','Needs work'],['strong','Strong'],['none','Not started']])}
+     ${outRows||'<p class="muted">Nothing here.</p>'}</div>
+   <div class="card mt"><b>📋 Every mark</b> <small class="muted">(${mList.length})</small>
+     ${fchips('mf', mf, [['all','All'],['test','Tests'],...STRANDS.map(S=>[S.k, S.ic+' '+S.n.split(' ')[0]])])}
+     <div class="mlist">${mRows||'<p class="muted">No marks yet.</p>'}</div>
+     ${mList.length>shown.length?`<button class="btn ghost w100 mt8 noprint" id="mall">Show all ${mList.length}</button>`:''}</div>`;
+}
+function wireProgress(st, redraw){
+  $$('[data-sl]').forEach(b=>b.onclick=()=>{ st.off[b.dataset.sl]=!st.off[b.dataset.sl]; redraw(); });
+  $$('[data-of]').forEach(b=>b.onclick=()=>{ st.of=b.dataset.of; redraw(); });
+  $$('[data-mf]').forEach(b=>b.onclick=()=>{ st.mf=b.dataset.mf; st.all=false; redraw(); });
+  $$('[data-tw]').forEach(b=>b.onclick=()=>{ st.raw=b.dataset.tw==='raw'; redraw(); });
+  $$('[data-srt]').forEach(b=>b.onclick=()=>{ st.sort=b.dataset.srt; redraw(); });
+  if ($('#mall')) $('#mall').onclick=()=>{ st.all=true; redraw(); };
+  if ($('#pprint2')) $('#pprint2').onclick=()=>window.print();
+}
+const keepScroll = f => () => { const y=window.scrollY; f(); window.scrollTo(0,y); };
+function screenProgress(p, back, self){
+  stopTimers(); const m=progressModel(p), st={off:{}, of:'all', mf:'all'};
+  const draw=keepScroll(()=>{ app.innerHTML = backTitle(self?'📈 My progress':`📈 ${escH(p.name)}`)+`<p class="muted small">${self?'Every mark you get and every skill you learn, all year.':`Every mark and learning outcome for ${escH(p.name)}.`}</p>`+progressHTML(m, st)+
+      `<button class="btn ghost w100 mt noprint" id="pprint2">🖨️ Print or save as PDF</button>`;
+    $('#bk').onclick=()=>back(); wireProgress(st, draw); });
+  draw();
+}
+
+/* ----- A class (or the whole grade) ----- */
+function classProgressHTML(ms, st, o={}){
+  if (!ms.length) return '<div class="card center mt"><p>No learners yet.</p></div>';
+  const upto=Math.max(curWeek(), 1, ...ms.flatMap(x=>x.m.items.map(i=>i.w))), win=st.raw?1:4;
+  const per=ms.map(x=>{ const pts=strandPoints(x.m.items); return {x, pts, tr:Object.fromEntries(STRANDS.map(S=>[S.k, new Map(strandTrend(pts,S.k,upto,win))]))}; });
+  const series=STRANDS.map(S=>{ const out=[]; for (let w=1; w<=upto; w++){ const v=per.map(q=>q.tr[S.k].get(w)).filter(v=>v!=null); if (v.length) out.push([w, avgN(v)]); }
+    return {k:S.k, n:S.n, ic:S.ic, c:S.c, pts:out, off:!!st.off[S.k]}; });
+  const A=ASSESS().map(t=>{ const rs=ms.map(x=>x.m.items.find(i=>i.id===t.id)).filter(Boolean);
+    return {t, n:rs.length, pc:avgN(rs.map(r=>r.pc)), parts:Object.fromEntries(['spell','lang','read'].map(k=>[k, avgN(rs.map(r=>r.parts[k]).filter(v=>v!=null))]))}; });
+  const pairs=ms.map(x=>testOf(x.m)).filter(t=>t.g!=null), gS=avgN(pairs.map(t=>t.b.pc)), gN=avgN(pairs.map(t=>t.l.pc));
+  const outs=ALLSKILLS.map(k=>{ const v=ms.map(x=>x.m.sk[k.id]).filter(s=>s&&s.m!=null); return {k, n:v.length, avg:v.length?avgN(v.map(s=>s.m)):null, strong:Math.round(v.filter(s=>s.m>=70).length/ms.length*100)}; });
+  const ofl=st.of||'work', oShow=outs.filter(x=>ofl==='all' || (ofl==='work'?(x.avg!=null&&x.avg<70):(x.avg==null))).sort((a,b)=>(a.avg==null)-(b.avg==null) || a.avg-b.avg);
+  const rows=per.map(({x,pts},i)=>{ const t=testOf(x.m); return {i, x, t, s:Object.fromEntries(STRANDS.map(S=>[S.k, avgN(pts.filter(q=>q.s===S.k).map(q=>q.pc))])), all:avgN(pts.map(q=>q.pc)), strong:Object.values(x.m.sk).filter(s=>s.m!=null&&s.m>=70).length}; });
+  const srt=st.sort||'name', sv=r=>srt==='growth'?r.t.g:srt==='all'?r.all:srt==='strong'?r.strong:r.s[srt];
+  rows.sort((a,b)=>srt==='name'?String((o.showClass?a.x.cls:'')+a.x.name).localeCompare((o.showClass?b.x.cls:'')+b.x.name):((sv(a)==null)-(sv(b)==null) || (sv(a)-sv(b))));
+  const strongAvg=avgN(rows.map(r=>r.strong)), col=t=>t.check?(t.id==='base'?'Start':'End'):'T'+t.term+' test';
+  return `
+   <div class="stats stats4">
+     <div class="stat"><b>${ms.length}</b><span>learners</span></div>
+     <div class="stat"><b>${gS!=null?gS+'%':'–'}</b><span>starting point${pairs.length?` (${pairs.length})`:''}</span></div>
+     <div class="stat"><b>${gN!=null?gN+'%':'–'}</b><span>latest test</span></div>
+     <div class="stat"><b>${gS!=null?((gN-gS>0?'+':'')+(gN-gS)):'–'}</b><span>growth (points)</span></div></div>
+   ${pairs.length?`<p class="small muted center">Growth compares the same ${pairs.length} learner${pairs.length===1?'':'s'}: their Starting Point Check against their latest test.</p>`:''}
+   <div class="card mt"><b>📈 ${escH(o.title||'Class')} marks over the year</b>${legendHTML(series, st)}
+     ${series.some(s=>s.pts.length)?lineChartSVG(series, {now:curWeek(), label:'Class marks by strand'}):'<p class="muted center">The graph fills in as work is marked.</p>'}
+     ${trendNote(st)}</div>
+   <div class="card mt"><b>📝 Test averages</b><p class="small muted">Average of first tries. n = learners who have written it.</p><div class="scrollx"><table class="ptable"><tr><th></th>${A.map(a=>`<th>${col(a.t)}<br><small class="muted">n=${a.n}</small></th>`).join('')}</tr>
+     ${[['spell','🔤 Spelling'],['lang','🧩 Language'],['read','📖 Reading']].map(([k,l])=>`<tr><td>${l}</td>${A.map(a=>`<td>${pcPill(a.parts[k])}</td>`).join('')}</tr>`).join('')}
+     <tr class="tot"><td><b>Total</b></td>${A.map(a=>`<td>${pcPill(a.pc)}</td>`).join('')}</tr></table></div></div>
+   <div class="card mt"><b>🎯 Learning outcomes: what to reteach</b><p class="small muted">Average mastery for each outcome, weakest first, and how many learners are strong (70+). On average a learner is strong in ${strongAvg??0} of ${ALLSKILLS.length} outcomes.</p>
+     ${fchips('of', ofl, [['work','Needs work'],['all','All outcomes'],['none','Not practised yet']])}
+     <div class="mt8">${oShow.map(x=>{ const c=mBand(x.avg)[1]; return `<div class="orow"><span class="grow"><b>${escH(x.k.name)}</b><br><small class="muted">${escH(x.k.out||'')}</small><br><small class="muted">${x.n} of ${ms.length} practised · ${x.strong}% strong</small><span class="skbar mt4"><i style="width:${x.strong}%;background:${c}"></i></span></span><span class="ochip" style="--c:${c}">${x.avg??'–'}<small>avg</small></span></div>`; }).join('')||'<p class="muted">Nothing here.</p>'}</div></div>
+   <div class="card mt"><b>👥 Learners</b><p class="small muted">Year averages per strand. Tap a name for the full report. Sort by:</p>
+     ${fchips('srt', srt, [['name','Name'],['growth','Growth'],['all','Overall'],...STRANDS.map(S=>[S.k, S.ic]),['strong','Outcomes']])}
+     <div class="scrollx"><table class="ptable"><tr><th>Learner</th>${o.showClass?'<th>Class</th>':''}<th>Start</th><th>Latest</th><th>Growth</th>${STRANDS.map(S=>`<th title="${S.n}">${S.ic}</th>`).join('')}<th>All</th><th>🎯</th></tr>
+     ${rows.map(r=>`<tr><td><button class="link" data-lp="${r.i}">${escH(r.x.name)}</button></td>${o.showClass?`<td>${escH(r.x.cls||'')}</td>`:''}<td>${pcPill(r.t.b?r.t.b.pc:null)}</td><td>${pcPill(r.t.l?r.t.l.pc:null)}</td><td>${growPill(r.t.g)}</td>${STRANDS.map(S=>`<td>${pcPill(r.s[S.k])}</td>`).join('')}<td>${pcPill(r.all)}</td><td><b>${r.strong}</b></td></tr>`).join('')}</table></div></div>`;
+}
+function screenProgressTeacher(){
+  stopTimers(); const ps=Object.values(DB.profiles), ms=ps.map(p=>({name:p.name, p, m:progressModel(p)})), st={off:{}, of:'work', sort:'name'};
+  const cloud=isCloudTeacher(), title=cloud?DB.cloud.name:'This device';
+  const draw=keepScroll(()=>{ app.innerHTML = backTitle('📈 Progress')+`<p class="muted small">${escH(title)} · every mark and learning outcome, all year.</p>
+      ${cloud?'<button class="btn w100 noprint" id="grade">🏫 Compare all my classes</button>':''}`+classProgressHTML(ms, st, {title:cloud?title:'Class'})+
+      `<button class="btn ghost w100 mt noprint" id="pprint2">🖨️ Print or save as PDF</button>`;
+    $('#bk').onclick=()=>screenTeacher(); if ($('#grade')) $('#grade').onclick=()=>screenGradeProgress();
+    $$('[data-lp]').forEach(b=>b.onclick=()=>screenProgress(ms[+b.dataset.lp].p, ()=>draw()));
+    wireProgress(st, draw); });
+  draw();
+}
+async function screenGradeProgress(){
+  stopTimers(); busy('Loading all your classes…'); const groups=[];
+  try { const t=(await CL.db.doc(`teachers/${CL.user.uid}`).get({source:'server'})).data()||{};
+    for (const c of (t.classes||[])){ try {
+      const [cd, qs]=await Promise.all([CL.db.doc(`classes/${c.code}`).get({source:'server'}), CL.db.collection(`classes/${c.code}/learners`).get({source:'server'})]);
+      const cl=cd.data()||{}, label=labelOf(c.name), ms=[];
+      qs.forEach(doc=>{ const d=doc.data(), info=(cl.learners||{})[doc.id]; if (!info) return; let p;
+        try { p=migrate(JSON.parse(d.profile||'null')||newProfile(info.name, info.col||'grey')); } catch(e){ p=newProfile(info.name, info.col||'grey'); }
+        p.name=info.name; applyTeacherFields(p, d); ms.push({name:p.name, cls:label, p, m:progressModel(p)}); });
+      groups.push({label, name:c.name, ms}); } catch(e){} }
+  } catch(e){ busy(); toast(cloudErr(e)); return screenProgressTeacher(); }
+  busy();
+  const all=groups.flatMap(g=>g.ms), st={off:{}, of:'work', sort:'name'}, cst={off:{}}, PAL=['#2563eb','#db2777','#059669','#d97706','#7c3aed','#0891b2','#64748b','#b45309'];
+  const draw=keepScroll(()=>{
+    const upto=Math.max(curWeek(), 1, ...all.flatMap(x=>x.m.items.map(i=>i.w))), win=st.raw?1:4;
+    const series=groups.map((g,i)=>{ const per=g.ms.map(x=>new Map(strandTrend(strandPoints(x.m.items), null, upto, win))), out=[];
+      for (let w=1; w<=upto; w++){ const v=per.map(q=>q.get(w)).filter(v=>v!=null); if (v.length) out.push([w, avgN(v)]); }
+      return {k:'c'+i, n:g.label, c:PAL[i%PAL.length], pts:out, off:!!cst.off['c'+i]}; });
+    const crow=g=>{ const T=testOf, pr=g.ms.map(x=>T(x.m)).filter(t=>t.g!=null), pts=g.ms.flatMap(x=>strandPoints(x.m.items));
+      const A=ASSESS().map(t=>avgN(g.ms.map(x=>x.m.items.find(i=>i.id===t.id)).filter(Boolean).map(r=>r.pc)));
+      return `<tr><td><b>${escH(g.label)}</b></td><td>${g.ms.length}</td>${A.map(v=>`<td>${pcPill(v)}</td>`).join('')}<td>${pr.length?growPill(avgN(pr.map(t=>t.l.pc))-avgN(pr.map(t=>t.b.pc))):'<span class="muted">–</span>'}</td>${STRANDS.map(S=>`<td>${pcPill(avgN(pts.filter(q=>q.s===S.k).map(q=>q.pc)))}</td>`).join('')}</tr>`; };
+    app.innerHTML = backTitle('🏫 Grade progress')+`<p class="muted small">All ${groups.length} class${groups.length===1?'':'es'} · ${all.length} learners · every mark and learning outcome.</p>
+     <div class="card mt"><b>📈 Classes compared</b><div class="legend">${series.map(s=>`<button data-cl="${s.k}" style="--c:${s.c}" class="${s.off?'off':''}">${escH(s.n)}</button>`).join('')}</div>
+       ${series.some(s=>s.pts.length)?lineChartSVG(series, {now:curWeek(), label:'Classes compared'}):'<p class="muted center">The graph fills in as work is marked.</p>'}
+       <p class="small muted">Each line is a class's average across all strands${st.raw?', week by week':', over the last 4 weeks'}.</p></div>
+     <div class="card mt"><b>🏫 Class by class</b><div class="scrollx"><table class="ptable"><tr><th>Class</th><th>n</th>${ASSESS().map(t=>`<th>${t.check?(t.id==='base'?'Start':'End'):'T'+t.term}</th>`).join('')}<th>Growth</th>${STRANDS.map(S=>`<th title="${S.n}">${S.ic}</th>`).join('')}</tr>
+       ${groups.map(crow).join('')}${groups.length>1?crow({label:'Grade', ms:all}):''}</table></div></div>
+     <h3 class="mt">The whole grade</h3>`+classProgressHTML(all, st, {showClass:true, title:'Grade'})+`<button class="btn ghost w100 mt noprint" id="pprint2">🖨️ Print or save as PDF</button>`;
+    $('#bk').onclick=()=>screenProgressTeacher();
+    $$('[data-cl]').forEach(b=>b.onclick=()=>{ cst.off[b.dataset.cl]=!cst.off[b.dataset.cl]; draw(); });
+    $$('[data-lp]').forEach(b=>b.onclick=()=>screenProgress(all[+b.dataset.lp].p, ()=>draw()));
+    wireProgress(st, draw); });
+  draw();
 }
 
 /* ================= TEACHER CORNER ================= */
@@ -7562,6 +7843,7 @@ function screenTeacher(){
    ${cloudBarHTML()}
    <div class="tools"><button class="tool" id="starter"><span>📽️</span><b>Class Starter</b><small>Big-screen quiz for the projector</small></button>
      <button class="tool" id="picker"><span>🎲</span><b>Name Picker</b><small>Randomly choose a learner</small></button>
+     <button class="tool" id="tprog"><span>📈</span><b>Progress</b><small>Every mark and learning outcome, by learner, class and grade</small></button>
      <button class="tool" id="tres"><span>📝</span><b>Test results</b><small>Marks, CAPS levels and what to reteach</small></button>
      <button class="tool" id="mmap"><span>🗺️</span><b>Mastery map</b><small>Every learner, every skill, at a glance</small></button>
      <button class="tool" id="winbox"><span>📥</span><b>Writing to mark${unmarkedWriting().length?` (${unmarkedWriting().length})`:''}</b><small>Rubric, comments and redraft requests</small></button>
@@ -7610,7 +7892,7 @@ function screenTeacher(){
      <li>Set a focus world each week to match what you are teaching.</li>
      <li>Use Class Starter at the start of a lesson for a quick 5-question warm-up.</li></ul></div>`;
   $('#bk').onclick=()=>teacherBack();
-  wireCloudBar(); $('#starter').onclick=()=>screenStarterSetup(); $('#picker').onclick=()=>screenPicker(); $('#tres').onclick=()=>screenTestResults(); $('#mmap').onclick=()=>screenMasteryMap(); $('#winbox').onclick=()=>screenWritingInbox(); $('#shared').onclick=()=>screenSharedWriting();
+  wireCloudBar(); $('#starter').onclick=()=>screenStarterSetup(); $('#picker').onclick=()=>screenPicker(); $('#tres').onclick=()=>screenTestResults(); $('#tprog').onclick=()=>screenProgressTeacher(); $('#mmap').onclick=()=>screenMasteryMap(); $('#winbox').onclick=()=>screenWritingInbox(); $('#shared').onclick=()=>screenSharedWriting();
   $('#tasg').onclick=()=>screenSetWork(); $('#tstudio').onclick=()=>screenMarkHub(); $('#tswitch').onclick=()=>screenSwitchboard(); $('#tbooks').onclick=()=>screenBooksTeacher(); $('#tquiz').onclick=()=>screenQuizMaker(); $('#tleague').onclick=()=>screenLeague(); $('#ttrack').onclick=()=>screenTrackerExport();
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
@@ -7626,6 +7908,7 @@ function screenPlayerDetail(n){
   stopTimers(); const p=DB.profiles[n];
   app.innerHTML = backTitle(`${escH(n)}`)+`
    <div class="row">${heronSVG(p.look,'h90')}<div class="stats grow" style="margin:0"><div class="stat"><b>${level(p.xp)}</b><span>level</span></div><div class="stat"><b>${totalStars(p)}</b><span>stars</span></div><div class="stat"><b>${feathers(p)}/8</b><span>feathers</span></div></div></div>
+   <button class="btn w100 mt8" id="pprog">📈 Full progress report</button>
    <div class="card mt"><b>🔤 Spelling tests</b><div class="pool l mt8">${Object.keys(p.spellTests).length?Object.entries(p.spellTests).sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).map(([k,v])=>`<span class="chip static">Wk ${YEAR[+k.slice(1)-1].tw} T${YEAR[+k.slice(1)-1].term}: <b>${v}/${SPELL_N(+k.slice(1))}</b></span>`).join(''):'<span class="muted">No tests yet.</span>'}</div></div>
    <div class="card mt"><label class="toggle"><span class="grow"><b>🔊 Reader</b><br><small class="muted">For learners who need a reader. Plume reads every text and question aloud automatically, sentence by sentence, including in big tests. Learners without a reader cannot use read-aloud in big tests (except for the spelling words).</small></span><input type="checkbox" id="rdr" ${p.reader?'checked':''}><i></i></label></div>
    ${masteryDetailHTML(p)}
@@ -7638,6 +7921,7 @@ function screenPlayerDetail(n){
    <div class="card mt"><p class="small muted">🩹 ${p.mistakes.length} mistakes waiting for review · 🔥 best streak ${p.bestStreak} · 🏁 race best ${p.races.best} · last active ${p.lastDay||'never'}</p>
      <button class="btn ghost" id="del">Remove this player</button></div>`;
   $$('[data-mkp]').forEach(b=>b.onclick=()=>screenMarkPiece(p.name, +b.dataset.mkp, ()=>screenPlayerDetail(p.name)));
+  $('#pprog').onclick=()=>screenProgress(p, ()=>screenPlayerDetail(n));
   $('#rdr').onchange=e=>{ p.reader=e.target.checked; if (p.reader) p.prefs.autoRead=true; save(); toast(p.reader?'🔊 Reader switched on for '+p.name:'Reader switched off'); };
   $('#bk').onclick=()=>screenTeacher();
   $('#del').onclick=e=>{ const b=e.currentTarget; if (b.dataset.armed){ delete DB.profiles[n]; if (DB.current===n) DB.current=null; save(); screenTeacher(); }
@@ -7929,7 +8213,7 @@ async function parentSignIn(code, entry, pin){
     let mag=[], magOk=true; try { const qs=await db.collection(`classes/${code}/magazine`).get(); qs.forEach(m=>mag.push(m.data())); } catch(e){ magOk=false; }
     const byNew=(a,b)=>String(b.at||b.d).localeCompare(String(a.at||a.d));
     out={child:entry.name, col:entry.col, cls:c.name||'', teacher:c.teacherName||'Your teacher',
-      mine:Object.values(pub).filter(x=>x&&x.par).sort(byNew), mag:mag.sort(byNew), magOk, week:f.week||null, orals:[]};
+      mine:Object.values(pub).filter(x=>x&&x.par).sort(byNew), mag:mag.sort(byNew), magOk, week:f.week||null, orals:[], prog:f.prog||null};
     for (const o of (f.orals||[])){ try { const a=await db.doc(`classes/${code}/audio/${o.aid}`).get(); out.orals.push(Object.assign({}, o, {src:a.exists?a.data().data:null})); } catch(e){ out.orals.push(o); } }
   } finally { try { await auth.signOut(); } catch(e){} busy(); }
   document.onkeydown=null; screenParent(out, out.mine.length?'mine':'week');
@@ -7968,10 +8252,11 @@ function screenParent(v, tab){
     :`<div class="card center"><p>The weekly summary will appear once ${escH(v.teacher)} syncs the class.</p></div>`;
   const talks=(v.orals||[]).length?`<div class="card mt"><b>🎤 Talks ${escH(v.child)} recorded</b>${v.orals.map(o=>`<div class="mt8"><b>${escH(o.title)}</b> <small class="muted">${escH(parentDate(o.d))}</small> <span class="scorepill">${o.score}/20</span>${o.c?`<p class="small">"${escH(o.c)}"</p>`:''}${o.src?`<audio controls src="${o.src}"></audio>`:'<small class="muted">Recording not available</small>'}</div>`).join('')}</div>`:'';
   app.innerHTML = `<div class="parenthead"><small>👪 Parent view · ${escH(v.cls)}</small><h2>${escH(v.child)}'s page</h2><small>From ${escH(v.teacher)}</small></div>
-   <div class="seg2 mt noprint"><button class="${tab==='week'?'on':''}" id="twk">This week</button><button class="${tab==='mine'?'on':''}" id="tmine">Writing (${v.mine.length})</button><button class="${tab==='mag'?'on':''}" id="tmag">Magazine (${v.mag.length})</button></div>
-   <div class="mt">${tab==='mag'?mag:tab==='week'?week+talks:mine}</div>
+   <div class="seg2 mt noprint"><button class="${tab==='week'?'on':''}" id="twk">This week</button><button class="${tab==='prog'?'on':''}" id="tprg">📈 Progress</button><button class="${tab==='mine'?'on':''}" id="tmine">Writing (${v.mine.length})</button><button class="${tab==='mag'?'on':''}" id="tmag">Magazine (${v.mag.length})</button></div>
+   <div class="mt">${tab==='mag'?mag:tab==='week'?week+talks:tab==='prog'?(v.prog?progressHTML(v.prog, v._pst||(v._pst={off:{}, of:'all', mf:'all'})):`<div class="card center"><p>The progress report will appear once ${escH(v.teacher)} syncs the class.</p></div>`):mine}</div>
    <div class="row mt noprint"><button class="btn ghost grow" id="pprint">🖨️ Print</button><button class="btn grow" id="pclose">Close parent view</button></div>
    <p class="small muted mt8 noprint">Only ${escH(v.child)}'s family can see the summary and writing tabs. Parent view can only read: nothing here can change ${escH(v.child)}'s work. You are already logged out, so nothing stays on this device after you close it.</p>`;
+  $('#tprg').onclick=()=>screenParent(v,'prog'); if (tab==='prog' && v.prog) wireProgress(v._pst, keepScroll(()=>screenParent(v,'prog')));
   $('#tmine').onclick=()=>screenParent(v,'mine'); $('#tmag').onclick=()=>screenParent(v,'mag'); $('#twk').onclick=()=>screenParent(v,'week');
   $('#pprint').onclick=()=>{ try { window.print(); } catch(e){ toast('Printing is not available here'); } };
   $('#pclose').onclick=()=>screenProfiles();
@@ -8086,7 +8371,7 @@ async function teacherPull(){
   Object.keys(DB.profiles).forEach(n=>{ if (DB.profiles[n]._uid) delete DB.profiles[n]; });
   Object.assign(DB.profiles, out); DB.classList=Object.values(c.learners||{}).map(x=>x.name).sort();
   try { const fs=await CL.db.collection(`classes/${code}/family`).get({source:'server'}); pushed._fam={};
-    fs.forEach(m=>{ const x=m.data(); pushed._fam[m.id]=JSON.stringify({child:x.child, cls:x.cls, teacher:x.teacher, published:x.published, week:x.week, orals:x.orals}); }); } catch(e){ pushed._fam=null; }
+    fs.forEach(m=>{ const x=m.data(); pushed._fam[m.id]=JSON.stringify({child:x.child, cls:x.cls, teacher:x.teacher, published:x.published, week:x.week, orals:x.orals, prog:x.prog}); }); } catch(e){ pushed._fam=null; }
   try { const ms=await CL.db.collection(`classes/${code}/magazine`).get({source:'server'}); pushed._mag={};
     ms.forEach(m=>{ const x=m.data(); pushed._mag[m.id]=JSON.stringify(magDoc(x.name, x)); }); } catch(e){ pushed._mag=null; }
   CL.pushed=pushed; DB.cloud.synced=Date.now(); save();
@@ -8112,7 +8397,7 @@ function weekSummary(p){
 }
 function familyDoc(p){ const pub={}; (p.writing||[]).forEach(w=>{ if (w.pub && w.pub.par) pub[pieceKey(w)]=w.pub; });
   const orals=(p.orals||[]).filter(o=>o.tm&&o.tm.par&&o.aid&&!o.gone).map(o=>({title:(ORALS.find(x=>x.id===o.task)||{}).title||'Oral', d:o.d, score:oralScore(o.tm), c:o.tm.c||'', aid:o.aid}));
-  return {child:p.name, cls:(CL.cls&&CL.cls.name)||'', teacher:teacherName(), published:pub, week:weekSummary(p), orals}; }
+  return {child:p.name, cls:(CL.cls&&CL.cls.name)||'', teacher:teacherName(), published:pub, week:weekSummary(p), orals, prog:JSON.parse(JSON.stringify(progressModel(p)))}; }
 async function familyPush(){
   if (!isCloudTeacher() || !CL.pushed || !CL.pushed._fam) return;
   const code=DB.cloud.code, batch=CL.db.batch(), next={}; let n=0;
