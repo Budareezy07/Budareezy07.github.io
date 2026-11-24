@@ -782,6 +782,21 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .pkh{font-weight:700;color:#1f2756;margin:2mm 0 1mm;font-size:9.4pt}
 
 .pkeep{break-inside:avoid}.pdiag{max-width:98mm}.pplan td{height:12.5mm}.plines.tall i{height:8.6mm}
+/* Pictures (Wikimedia Commons) */
+.pic{margin:6px 0 10px;border-radius:14px;overflow:hidden;background:#e8edf3;border:1px solid #e3e8ef}
+.pic img{display:block;width:100%;height:clamp(150px,38vw,250px);object-fit:cover}
+.pic.fit img{object-fit:contain;background:#fff}
+.pic figcaption{font-size:11px;line-height:1.35;color:#64748b;padding:4px 10px 5px;background:#f8fafc}
+.pic.wk{margin:0 0 10px}.pic.wk img{height:clamp(110px,28vw,170px)}
+.pcred{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid #eef2f6}
+.pcred:last-child{border-bottom:0}
+.pcred img{width:88px;height:62px;object-fit:cover;border-radius:9px;flex:none;background:#e8edf3}
+.pcred a{color:var(--sky);font-weight:700}
+.ppic{float:right;width:42%;margin:.4mm 0 2mm 4.5mm;break-inside:avoid}
+.ppic img{display:block;width:100%;height:40mm;object-fit:cover;border-radius:1.4mm;border:.2mm solid #d5dae3}
+.ppic.fit img{object-fit:contain;background:#fff}
+.ppic figcaption{font-size:6.4pt;line-height:1.25;color:#6b7280;margin-top:.8mm}
+.ppsg::after{content:"";display:block;clear:both}
 </style>
 </head>
 <body>
@@ -3607,6 +3622,78 @@ const ALL_PASSAGES = [...PASSAGES, POEM, ...NEW_PASSAGES, ...NEW_PASSAGES2, ...P
 const TP = id => TEST_PASSAGES.find(p=>p.id===id);
 const ALL_VISUAL = [...VISUAL, NEW_PASSAGES.find(p=>p.id==='splash')];
 const PS = id => ALL_PASSAGES.find(p=>p.id===id);
+/* Pictures for the reading texts. All from Wikimedia Commons, free licences only (CC0, public domain, CC BY, CC BY-SA).
+   [file name on Commons, author, licence, alt text]. Shown with a credit line, and listed on the Picture credits screen. */
+const PIC = {
+ heron:['Grey Heron, Ardea cinerea, at Pilanesberg National Park, Northwest Province, South Africa (28462959392).jpg','Derek Keats','CC BY 2.0','A grey heron standing at the edge of the water'],
+ heronpoem:['Grey heron (Ardea cinerea) flying 02.jpg','Alexis Lours','CC BY 4.0','A grey heron flying low over a river'],
+ lunchbox:['Laptop Lunches Kindergarten lunch with sandwich "ravioli", cucumbers & hummus, fruit (8575273574).jpg','Melissa','CC BY 2.0','A packed lunchbox with sandwiches, cucumber and fruit'],
+ baobab:['Baobab Tree (5386925510).jpg','David Siu','CC BY 2.0','A huge baobab tree with bare branches under a blue sky'],
+ matchday:['Basketball hoop and sky.jpg','Rpperini','CC BY-SA 4.0','A goal ring and net seen from below against the sky'],
+ birdfeeder:['Bird feeder (Private garden).jpg','Llewee','CC BY-SA 4.0','A bird feeder in a leafy garden'],
+ tortoise:['Leopard Tortoise (stigmochelys pardalis).jpg','Mathdrquinn','CC0','A leopard tortoise walking on red sand'],
+ jukskei:['South Africa-Johannesburg-Jukskei river-001.jpg','NJR ZA','CC BY-SA 3.0','The Jukskei River flowing over rocks in Johannesburg'],
+ sportsday:['Running Track on the Mill Lane Playing Fields - geograph.org.uk - 4080149.jpg','Ed of the South','CC BY-SA 2.0','A running track curving around a green field'],
+ penguins:['Simon’s Town (ZA), Boulders Beach, Penguin Colony -- 2024 -- 3415.jpg','Dietmar Rabich','CC BY-SA 4.0','African penguins on the sand at Boulders Beach'],
+ spellingbee:['Latin dictionary.jpg','Dr. Marcus Gossler','CC BY-SA 3.0','A large dictionary lying open on a desk'],
+ mandela:['Table mountain view from Robben Island (1).jpg','Nurunnaby Chowdhury (Hasive)','CC BY-SA 4.0','Table Mountain seen across the sea from Robben Island'],
+ splash:['Streitberg Freibad water slide 7023685.jpg','Ermell','CC BY-SA 4.0','A twisting blue water slide at a swimming pool'],
+ bean:['Navy Bean Seed to Seedling Germination.jpg','B. Domangue','CC BY-SA 4.0','A bean seed growing into a seedling, step by step'],
+ lights:['Candle flame closeup.jpg','domdomegg','CC BY 4.0','A candle flame glowing in the dark'],
+ watercycle:['The Water Cycle (SVS30580).png','NASA Scientific Visualization Studio','Public domain','A diagram of the water cycle'],
+ homework:['Wikipedia notebook pencil puzzles.jpg','Anntinomy','CC0','An open spiral notebook with blank pages'],
+ storm:['Lightning Pritzerbe 01 (MK).jpg','Mathias Krumbholz','CC BY-SA 3.0','Lightning striking during a night storm'],
+ jackal:['Canis mesomelas.jpg','Hans Hillewaert','CC BY-SA 4.0','A black-backed jackal standing in dry grass'],
+ bigfive:['Kruger National Park (ZA), Elefant -- 2024 -- 0106.jpg','Dietmar Rabich','CC BY-SA 4.0','An elephant crossing a road in the Kruger National Park'],
+ gogo:['Vetkoek and fish curry.jpg','Stasia007','CC BY-SA 4.0','Home-cooked vetkoek and curry on a plate'],
+ solar:['Solar Panels on Church Roof full.jpg','Bastique','CC BY 4.0','Solar panels on a roof'],
+ heart:['Heart diagram with arrows.jpg','Rachel Sanchez Thwing','CC BY 4.0','A diagram of the human heart'],
+ garden:['Kitchen garden at Los Poblanos.jpg','PralineCoffee','CC0','Rows of vegetable beds in a garden'],
+ cradle:['Sterkfontein Caves 46.jpg','Mike Peel','CC BY-SA 4.0','Rock walls inside the Sterkfontein Caves'],
+ gran:['Knitting needles and yarn (Unsplash).jpg','Olliss fomaolea','CC0','A ball of wool with knitting needles'],
+ recycle:['Waseda University recycling bins 20080625.jpg','Jorge','CC BY 2.0','A row of coloured recycling bins'],
+ treasure:['Top view of a compass on a map (Unsplash).jpg','Himesh Kumar Behera','CC0','A compass lying on an old map'],
+ kebabs:['Fruit Kebabs".jpg','IndayLiburan','CC BY 4.0','Fruit kebabs made with grapes and strawberries'],
+ readathon:['Bookshelves in Faculty of Arts Library, Chulalongkorn University.jpg','Geonuch','CC BY-SA 4.0','Tall shelves full of books in a library'],
+ dragonreview:['A pile of English grammar books.png','Brett','CC BY-SA 4.0','A pile of books'],
+ glow:['Lupines and Fireflies No. 4 (14505155544).jpg','Mike Lewinski','CC BY 2.0','Fireflies glowing at night among flowers'],
+ lastday:['HK 292 Tai Po Road SCAD Hong Kong classroom interior high table chairs April-2012.JPG','Sasa 38300','CC BY-SA 3.0','An empty classroom with tables and chairs'],
+ solarsystem:['Solar System graphic by NASA (wide).png','NASA','Public domain','The Sun and the planets of our solar system'],
+ newgirl:['Empty classroom 2020.jpg','Dobrislava','CC BY-SA 4.0','An empty classroom with desks in rows'],
+ marimba:['Marimba-Antonko-AMC12.jpg','Vassia Atanassova - Spiritia','CC BY-SA 3.0','A marimba with long wooden bars'],
+ sainventions:['Dolos.jpg','Adam Brink','CC BY-SA 3.0','Concrete dolosse protecting a harbour wall'],
+ rockpools:['Tide pool - Cape Enrage.jpg','The Cosmonaut','CC BY-SA 2.5 ca','A rock pool on a rocky shore'],
+ postcard:['Drakensbergen Amphitheater 04.jpg','Ad Meskens','CC BY-SA 4.0','The Amphitheatre cliffs in the Drakensberg'],
+ moonglow:['Full Moon Luc Viatour.jpg','Luc Viatour','CC BY-SA 3.0','The full moon'],
+ phones:['Smartphone di varie marche.png','The Tech Cheat','CC BY-SA 4.0','Three smartphones lying on a table'],
+ crossing:['Crosswalk of Market at Third, San Francisco.jpg','Dllu','CC BY-SA 4.0','A zebra crossing seen from above'],
+ weather1:['Frost fog.jpg','W.carter','CC BY-SA 4.0','A frosty, foggy morning in an open field'],
+ weather2:['Kruger National Park (ZA), Landschaft -- 2024 -- 0031.jpg','Dietmar Rabich','CC BY-SA 4.0','Bushveld under a cloudy sky in the Kruger National Park'],
+ snare:['Impala (Aepyceros melampus) female with red-billed oxpecker Kruger.jpg','Charles J. Sharp','CC BY-SA 4.0','An impala in the bush with an oxpecker on its back'],
+ camp:['Camping tent on tarp.jpg','Eden Aviv','CC0','A tent pitched among trees'],
+ adverts:['Blank Lamar Bulletin Board.jpg','Kevin Payravi','CC BY-SA 4.0','An empty billboard in a field, waiting for an advert'],
+};
+const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean']);   /* diagrams: show whole, never crop */
+const picsOn = () => DB.pics!==false;
+const picURL = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width='+(w||960);
+const picPage = f => 'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(f.replace(/ /g,'_'));
+function licURL(l){ if (/^CC0/.test(l)) return 'https://creativecommons.org/publicdomain/zero/1.0/';
+  const m=String(l).match(/^CC (BY(?:-SA)?) ([\d.]+)(?: ([a-z]{2}))?$/i); return m?`https://creativecommons.org/licenses/${m[1].toLowerCase()}/${m[2]}/${m[3]?m[3].toLowerCase()+'/':''}`:''; }
+const picCredit = p => `Picture: ${p[1]} · ${p[2]} · Wikimedia Commons`;
+/* Picture at the top of a reading text. Plain-text credit here (no links for children to tap); full links on the Picture credits screen. */
+function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
+  return `<figure class="pic${PIC_FIT.has(id)?' fit':''}${cls?' '+cls:''}"><img src="${picURL(p[0])}" alt="${escH(p[3])}" loading="lazy" decoding="async" onerror="this.parentNode.remove()"><figcaption>${escH(picCredit(p))}</figcaption></figure>`; }
+function screenPicCredits(back){
+  stopTimers(); back=back||(()=>screenStart());
+  const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
+  const rows=Object.entries(PIC).map(([id,p])=>{ const ps=PS(id);
+    return `<div class="pcred"><img src="${picURL(p[0],250)}" alt="${escH(p[3])}" loading="lazy" onerror="this.style.visibility='hidden'"><div class="grow"><b>${escH(ps?ps.title:id)}</b><br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
+  app.innerHTML = backTitle('🖼️ Picture credits')+`
+   <div class="card"><p class="small">The pictures with our reading texts come from <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>. Every one is free to use under the licence shown. Thank you to the photographers and artists who share their work.</p>
+   <p class="small muted mt8">Tap a name to see the original picture, or a licence to read it. Pictures need the internet. Without it, the texts simply show without them.</p></div>
+   <div class="card mt">${rows}</div>`;
+  $('#bk').onclick=back;
+}
 
 const WEEKS_PER_TERM = 13;   // Heronbridge 2027: 13 teaching weeks a term
 /* Weekly plan, following the Grade 5 English planning used at HeronBridge (three terms of 13 teaching weeks).
@@ -5440,10 +5527,10 @@ function screenStart(){
    <button class="logincard rolec mt8" id="rlearn"><span class="mic">🎒</span><span class="grow"><b>I'm a learner</b><small>Play, learn and see your progress</small></span>▶</button>
    <button class="logincard rolec parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>I'm a parent</b><small>See your child's work and progress</small></span>▶</button>
    <button class="logincard rolec teacher mt8" id="tc"><span class="mic">🍎</span><span class="grow"><b>I'm a teacher</b><small>Classes, marking and reports</small></span>▶</button>
-   ${storeNote()}`;
+   ${storeNote()}<div class="center mt"><button class="link small" id="pcred">Picture credits</button></div>`;
   $('#rlearn').onclick=()=>screenProfiles(); if ($('#cont')) $('#cont').onclick=()=>screenHome();
   $('#plogin').onclick=()=>screenClassLogin('', 'parent');
-  $('#tc').onclick=()=>screenTeacherGate();
+  $('#tc').onclick=()=>screenTeacherGate(); $('#pcred').onclick=()=>screenPicCredits(()=>screenStart());
 }
 function screenProfiles(){
   stopTimers(); applyPrefs();
@@ -5630,7 +5717,7 @@ function passageHTML(ps, open){
   const slow = P() && P().prefs.slow;
   const ctrl = readOK() ? `<div class="readbar"><button class="btn small" id="rp-go">🔊 Read it to me</button><button class="btn small ghost" id="rp-slow">${slow?'🐢 Slow':'🐇 Normal speed'}</button></div><p class="small muted rtip">Tip: tap any sentence to hear it from there.</p>`
     : !canSpeak ? `<p class="small muted">🔇 Read-aloud doesn't work in this viewer. Open Heron Word Quest in Chrome or Safari to have texts read to you.</p>` : '';
-  return `<details class="passage" ${open?'open':''}><summary>📖 ${escH(ps.title)} <small class="muted">(tap to show/hide)</small></summary>${ctrl}${body}</details>`;
+  return `<details class="passage" ${open?'open':''}><summary>📖 ${escH(ps.title)} <small class="muted">(tap to show/hide)</small></summary>${picHTML(ps.id)}${ctrl}${body}</details>`;
 }
 function qSpeech(q){
   let t = stripTags(q.prompt).replace(/([^.!?:])$/,'$1.')+' ';
@@ -6092,6 +6179,8 @@ function screenSettings(){
      ${!canSpeak?'<p class="small muted">🔇 Read-aloud does not work in this viewer. Open Heron Word Quest in Chrome or Safari.</p>':''}
      <label class="toggle"><span class="grow"><b>Sound effects</b><br><small class="muted">For everyone on this device.</small></span><input type="checkbox" id="sndt" ${DB.sound?'checked':''}><i></i></label>
      <label class="toggle"><span class="grow"><b>Music in games</b><br><small class="muted">Plays during Heron Race and boss battles. For everyone on this device.</small></span><input type="checkbox" id="must" ${DB.music!==false?'checked':''}><i></i></label>
+     <label class="toggle"><span class="grow"><b>Pictures with reading texts</b><br><small class="muted">Free pictures from Wikimedia Commons. Turn off to save data. For everyone on this device.</small></span><input type="checkbox" id="pict" ${DB.pics!==false?'checked':''}><i></i></label>
+     <p class="small"><button class="link small" id="pcred">🖼️ Picture credits</button></p>
      <div class="volrow"><b>Volume</b><span>🔈</span><input type="range" id="volr" min="0.1" max="1" step="0.05" value="${DB.vol==null?.8:DB.vol}" aria-label="Volume"><span>🔊</span></div>
      ${DB.classSound==='off'?'<p class="small muted">🔇 Your teacher has turned sound off for the class.</p>':DB.classSound==='quiet'?'<p class="small muted">🤫 Your teacher has set the class to quiet sound.</p>':''}</div>
    ${canSpeak?`<div class="card mt"><b>🗣️ Reading voice</b><p class="small muted">Voices come from this phone, tablet or computer, so the choice is different on each device. Try a few and pick the clearest one. This applies to everyone on this device.</p>
@@ -6106,6 +6195,8 @@ function screenSettings(){
   $('#sndt').onchange=e=>{ DB.sound=e.target.checked; save(); if (DB.sound) sfx.good(); };
   $('#must').onchange=e=>{ DB.music=e.target.checked; save(); };
   $('#volr').onchange=e=>{ DB.vol=+e.target.value; save(); sfx.good(); };
+  $('#pict').onchange=e=>{ DB.pics=e.target.checked; save(); };
+  $('#pcred').onclick=()=>screenPicCredits(()=>screenSettings());
   if ($('#vsel')){ fillVoices();
     $('#vsel').onchange=()=>{ DB.voice=$('#vsel').value||null; save(); speak(VOICE_SAMPLE); };
     $('#vtest').onclick=()=>speak(VOICE_SAMPLE); }
@@ -7679,7 +7770,7 @@ function screenWeek(w){
      <p class="small b mt8">⭐ Stretch words</p><div class="spellgrid stretch">${sw.stretch.map(([wd])=>`<button class="spellw" data-say="${escH(wd)}">${canSpeak?'🔊 ':''}${escH(wd)}</button>`).join('')}</div>
      <div class="row mt8"><button class="btn ghost grow" id="sp-prac">✏️ Practise</button><button class="btn gold grow" id="sp-test">📝 Spelling test</button></div>
      <p class="small muted">Tap a word to hear it. Practise first, then take the test: Plume reads each word and you type it. Results show at the end.</p></div>
-   <div class="card mt"><b>📖 Reading: ${escH(ps.title)}</b> <small class="muted">(${escH(ps.type)})</small>${r.read!=null?` <span class="pill okpill">Best: ${r.read}/${ps.qs.length}</span>`:''}
+   <div class="card mt">${picHTML(ps.id,'wk')}<b>📖 Reading: ${escH(ps.title)}</b> <small class="muted">(${escH(ps.type)})</small>${r.read!=null?` <span class="pill okpill">Best: ${r.read}/${ps.qs.length}</span>`:''}
      <p class="muted small">${ps.qs.length} questions about this week's text, then 2 answers in full sentences (one is your opinion).</p><button class="btn w100" id="rd">Read and answer ▶</button><button class="btn ghost w100 mt8" id="rqm">❓ Make your own questions${(p.qmake||{})['w'+w+':read']?' ✅':''}</button></div>
    ${(nw=>nw?`<div class="card mt"><b>${nw.n.icon} Class novel: ${escH(nw.n.title)}</b>${r.nov!=null?` <span class="pill okpill">First try: ${r.novFirst}/5</span>`:''}<p class="muted small">This week read <b>${escH(nw.k.ch)}</b>, then answer 5 questions.</p><button class="btn w100" id="wnv">Open the class novel ▶</button></div>`:'')(novelWeek(w))}
    ${(s=>!novelWeek(w)&&s?`<div class="card mt"><b>💡 Thinking map</b>${mapDone(p,w)?' <span class="pill okpill">Done</span>':''}<p class="muted small">${MAPS[s.m].n}: ${escH(s.t)}. Show your thinking about this week's reading.</p><button class="btn w100" id="wmap">${MAPS[s.m].ic} Open the map ▶</button></div>`:'')(novelMap(w))}
@@ -9065,7 +9156,8 @@ const pBlk = (sec, html) => `<div class="pblk" data-sec="${sec}">${html}</div>`;
 const pSec = (t, right) => `<div class="psec"><span>${t}</span>${right?`<span>${right}</span>`:''}</div>`;
 function pPassage(ps){
   const line = l => { if (isHeadLine(l)) return `<b>${pE(l)}</b>`; const sp=l.match(/^([A-Z][A-Z0-9 .']{1,30}):\s+(.*)$/); return sp?`<b>${pE(sp[1])}:</b> ${pE(sp[2])}`:pE(l); };
-  return `<div class="ppsg ${ps.type==='poem'?'poem':''}"><div class="ppsgh"><b>${pE(ps.title)}</b><span>${pE(ps.type||'')}</span></div>${ps.text.map(x=>`<p>${x.split('\n').map(line).join('<br>')}</p>`).join('')}</div>`;
+  const pc=PIC[ps.id]&&picsOn()?PIC[ps.id]:null, fig=pc?`<figure class="ppic${PIC_FIT.has(ps.id)?' fit':''}"><img src="${picURL(pc[0],500)}" alt="" onerror="this.parentNode.remove()"><figcaption>${pE(picCredit(pc))}</figcaption></figure>`:'';
+  return `<div class="ppsg ${ps.type==='poem'?'poem':''}"><div class="ppsgh"><b>${pE(ps.title)}</b><span>${pE(ps.type||'')}</span></div>${fig}${ps.text.map(x=>`<p>${x.split('\n').map(line).join('<br>')}</p>`).join('')}</div>`;
 }
 /* One question on paper, and its answer for the memo */
 function pQ(q, n, marks){
@@ -9350,7 +9442,11 @@ function openDoc(doc){
   const sync=()=>{ const off=new Set([...ov.querySelectorAll('[data-ps]')].filter(c=>!c.checked).map(c=>c.dataset.ps)); ov.querySelectorAll('.pdoc [data-sec]').forEach(el=>el.classList.toggle('poff', !!el.dataset.sec && off.has(el.dataset.sec)));
     ov.querySelectorAll('.psheet').forEach(sh=>{ const bl=sh.querySelectorAll('.pblk'); if (bl.length && !sh.dataset.sec) sh.classList.toggle('poff', [...bl].every(b=>b.classList.contains('poff'))); }); };
   ov.querySelectorAll('[data-ps]').forEach(c=>c.onchange=sync);
-  const go=mode=>{ document.body.classList.remove('p-learner','p-memo'); if (mode) document.body.classList.add(mode); try { window.print(); } catch(e){ toast('Printing is not available here'); } };
+  const go=mode=>{ document.body.classList.remove('p-learner','p-memo'); if (mode) document.body.classList.add(mode);
+    const pr=()=>{ try { window.print(); } catch(e){ toast('Printing is not available here'); } }, wait=[...ov.querySelectorAll('.pdoc img')].filter(i=>!i.complete);
+    if (!wait.length) return pr();
+    toast('Loading pictures…'); let done=false; const fin=()=>{ if (!done){ done=true; pr(); } };
+    Promise.all(wait.map(i=>new Promise(r=>{ i.addEventListener('load',r,{once:true}); i.addEventListener('error',r,{once:true}); }))).then(fin); setTimeout(fin, 6000); };
   ov.querySelector('#pgo').onclick=()=>go(hasKey?'p-learner':'');
   if (ov.querySelector('#pmemo')) ov.querySelector('#pmemo').onclick=()=>go('p-memo');
   if (ov.querySelector('#pnew')) ov.querySelector('#pnew').onclick=()=>openDoc(Object.assign(doc.regen(), {}));
@@ -9520,7 +9616,8 @@ function screenTeacher(){
      <button class="tool" id="tbooks"><span>📚</span><b>Reading log${pendingBooks().length?` (${pendingBooks().length})`:''}</b><small>Check books learners have read</small></button>
      <button class="tool" id="tquiz"><span>✏️</span><b>My quizzes</b><small>Write your own questions for all your classes</small></button>
      <button class="tool" id="tleague"><span>🏆</span><b>Class league</b><small>This week's points for each of your classes</small></button>
-     <button class="tool" id="ttrack"><span>📊</span><b>Marks for tracker</b><small>Term marks to paste into your spreadsheet</small></button></div></details>
+     <button class="tool" id="ttrack"><span>📊</span><b>Marks for tracker</b><small>Term marks to paste into your spreadsheet</small></button>
+     <button class="tool" id="tpics"><span>🖼️</span><b>Picture credits</b><small>Where every picture comes from, and its free licence</small></button></div></details>
    <div class="card mt scrollx"><div class="row"><b class="grow">${isCloudTeacher()?"Class progress (online class)":"Class progress on this device"}</b><button class="btn small ghost" id="csv">📋 Copy report</button></div>
      <p class="muted small"><b>This week (Term ${YEAR[curWeek()-1].term}, Week ${YEAR[curWeek()-1].tw}: ${escH(YEAR[curWeek()-1].theme)})</b>: 🔤 spelling test, 📖 reading score, 🧩 quiz, tasks done. Test column shows the latest big test (official mark). Accuracy per world. Green 80%+, amber 60–79%, red below 60%. Tap a name for detail and writing. "Copy report" pastes straight into Excel or Google Sheets.</p>
      <table><tr><th>Player</th><th>Lvl</th><th>★</th><th>🪶</th>${WORLDS.map(w=>`<th title="${w.name}">${w.icon}</th>`).join('')}<th>Needs work</th><th>Wk ${YEAR[curWeek()-1].tw}</th><th>Test</th></tr>
@@ -9563,7 +9660,7 @@ function screenTeacher(){
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#mtools').ontoggle=()=>{ DB.toolsOpen=$('#mtools').open; save(); };
-  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre();
+  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre(); $('#tpics').onclick=()=>screenPicCredits(()=>screenTeacher());
   if ($('#tw-pp')) $('#tw-pp').onclick=()=>openDoc(pWeekDoc(curWeek())); if ($('#tw-wp')) $('#tw-wp').onclick=()=>openDoc({title:`Week ${YEAR[curWeek()-1].tw} plan`, sheets:[pWeekPlanSheet(curWeek())]});
   if ($('#tw-wr')) $('#tw-wr').onclick=()=>screenWritingInbox(); if ($('#tw-st')) $('#tw-st').onclick=()=>screenMarkHub();
   if ($('#tw-bk')) $('#tw-bk').onclick=()=>screenBooksTeacher(); if ($('#tw-pr')) $('#tw-pr').onclick=()=>screenProgressTeacher();
