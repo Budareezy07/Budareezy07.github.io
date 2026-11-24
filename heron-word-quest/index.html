@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Heron Word Quest</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Lexend:wght@400;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1f2756;--sky:#2f80ed;--gold:#f5b700;--cream:#fff8ec;--ink:#1d2433;--muted:#5b6478;--good:#1fa65a;--bad:#e5484d;
   --head:'Baloo 2','Nunito',system-ui,sans-serif}
@@ -656,6 +656,132 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 @media (prefers-reduced-motion:reduce){.fx-sky,#fxcv{display:none}*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.001s!important}}
 @media print{.fx-sky,#fxcv,.fx-plume,.fx-streak{display:none!important}}
 
+/* ----- Print documents: HeronBridge letterhead ----- */
+#pover{position:fixed;inset:0;z-index:60;overflow:auto;background:#e8ecf2;-webkit-overflow-scrolling:touch}
+.pwrap{max-width:1180px;margin:0 auto;padding:14px 12px 60px}
+.ptool .card{max-width:760px;margin:0 auto}.ptool .title{max-width:760px;margin:0 auto 12px}
+.pbtns{display:flex;flex-wrap:wrap;gap:8px}.pbtns .btn{flex:1 1 auto}
+.pchecks{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:15px;font-weight:700}.pchecks input{transform:scale(1.2);margin-right:4px}
+.pbtn{font-size:20px}
+.pdoc{font-family:'Lexend',system-ui,sans-serif;color:#1d2433}
+.psheet{background:#fff;width:210mm;box-sizing:border-box;margin:16px auto;padding:10mm 11mm;border-radius:4px;box-shadow:0 6px 24px rgba(20,40,75,.16);font-size:10.4pt;line-height:1.42;overflow-x:auto}
+.psheet.land{width:297mm}.psheet.poff,.pkeyb.poff{display:none}
+.pt{width:100%;border-collapse:collapse}.pt>thead>tr>td,.pt>tfoot>tr>td,.pt>tbody>tr>td{padding:0;border:0}
+.phead{display:flex;align-items:center;gap:3.2mm;padding-bottom:2.2mm;border-bottom:2.4px solid #1f2756;position:relative;margin-bottom:5mm}
+.phead::after{content:'';position:absolute;left:0;right:0;bottom:-3.6px;border-bottom:1px solid #a4924c}
+.pcrest{width:13mm;height:13mm;object-fit:contain;flex:none}
+.pschool{flex:1;display:flex;flex-direction:column;line-height:1.2}
+.pschool b{font-family:'Libre Baskerville',Georgia,'Times New Roman',serif;font-size:12.5pt;letter-spacing:.07em;text-transform:uppercase;color:#1f2756;font-weight:700}
+.pschool span{font-size:7.6pt;color:#6b7280;letter-spacing:.14em;text-transform:uppercase;margin-top:.8mm}
+.pkind{text-align:right;display:flex;flex-direction:column;line-height:1.25}
+.pkind b{font-size:8pt;letter-spacing:.18em;text-transform:uppercase;color:#a4924c;font-weight:700}
+.pkind span{font-size:8.2pt;color:#1f2756;font-weight:600;margin-top:.6mm}
+.pfoot{display:flex;justify-content:space-between;gap:4mm;border-top:1px solid #a4924c;margin-top:6mm;padding-top:1.6mm;font-size:7.2pt;color:#6b7280;letter-spacing:.05em}
+.pxtitle{font-family:'Libre Baskerville',Georgia,serif;font-size:16.5pt;color:#1f2756;margin:0 0 1.2mm;font-weight:700;line-height:1.2}
+.psub{margin:0 0 3.5mm;color:#4b5563;font-size:9.6pt}
+.pkeytag{display:inline-block;font-size:7.5pt;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#a4924c;border:1px solid #a4924c;border-radius:1mm;padding:.6mm 2mm;margin-bottom:2mm}
+.plearner{display:flex;gap:4mm;margin:1mm 0 5mm;font-size:9pt;font-weight:600;color:#1f2756}
+.plearner span{display:flex;align-items:flex-end;gap:2mm;flex:2.4}.plearner span.sm{flex:1}
+.plearner i{flex:1;border-bottom:1px solid #1d2433;height:5.5mm}
+.plearner .mk{flex:1.1;border:1.4px solid #1f2756;border-radius:1.5mm;padding:1mm 2.5mm;align-items:center}.plearner .mk i{border-bottom:0}
+.psec{display:flex;justify-content:space-between;align-items:baseline;margin:5mm 0 2.6mm;padding:1.4mm 3mm;border-left:3px solid #a4924c;background:#f5f2e8;font-weight:700;color:#1f2756;font-size:10.6pt;break-after:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.psec span+span{font-size:8.6pt;color:#6b7280;font-weight:600}
+.pinst{font-size:9.3pt;color:#374151;margin:0 0 2.5mm;font-style:italic}
+.pq{display:flex;gap:2.4mm;margin:0 0 3.8mm;break-inside:avoid}
+.pqn{flex:none;min-width:6.5mm;font-weight:700;color:#1f2756}.pqb{flex:1;min-width:0}
+.pmk{flex:none;font-size:8.4pt;color:#6b7280;padding-top:.4mm}
+.pqp{margin-bottom:1.2mm}
+.pxclue{font-style:italic;margin:1mm 0 1.6mm;padding:.4mm 0 .4mm 3mm;border-left:2px solid #c9cfd9;color:#1d2433}
+.psent{font-size:11pt;margin:1.4mm 0;line-height:1.7}
+.popts{list-style:none;padding:0;margin:1mm 0 0;display:grid;grid-template-columns:1fr;gap:1.3mm 5mm}
+.popts.c2{grid-template-columns:1fr 1fr}.popts.c4{grid-template-columns:repeat(4,1fr)}
+.popts li{display:flex;gap:2mm;align-items:flex-start}
+.pol{display:inline-grid;place-items:center;width:4.8mm;height:4.8mm;border:1px solid #6b7280;border-radius:50%;font-size:7.6pt;flex:none;font-weight:700;color:#1f2756;margin-top:.2mm}
+.plines i{display:block;height:8.2mm;border-bottom:1px solid #a3abb9}.plines.tall i{height:9mm}
+.pans{display:flex;gap:2mm;align-items:flex-end;margin-top:1mm}.pans span{font-size:9pt;font-weight:600}.pans i{flex:1;height:7mm;border-bottom:1px solid #a3abb9;max-width:95mm}
+.pbank{display:flex;flex-wrap:wrap;gap:1.6mm 4mm;margin:1.6mm 0;padding:2mm 3mm;border:1px dashed #a3abb9;border-radius:1.5mm;font-weight:600}
+.ptab,.pgrid,.pxmatch{width:100%;border-collapse:collapse;margin:1.5mm 0 2mm}
+.ptab th,.ptab td,.pgrid th,.pgrid td{border:1px solid #a3abb9;padding:1.5mm 2.2mm;text-align:left;vertical-align:top}
+.ptab th,.pgrid th{background:#eef1f6;color:#1f2756;font-size:8.8pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ptab .n{width:9mm;text-align:center}.ptab .r{text-align:right}
+.pgrid td{height:8.5mm}
+.pspell td{height:7.6mm}.pspell th:nth-child(2){width:32mm}
+.pplan th{width:52mm;font-weight:600}.pplan td{height:15mm}
+.pbox{display:inline-block;width:5.5mm;height:5.5mm;border:1px solid #1d2433;vertical-align:middle;margin-right:2.2mm;flex:none}
+.porder div{display:flex;align-items:center;margin:1.4mm 0}
+.pxmatch td{padding:1.2mm 2mm;vertical-align:top;width:50%;border:0}
+.ppsg{border:1px solid #c9cfd9;border-radius:1.8mm;padding:3.2mm 4.6mm 1.4mm;margin:1mm 0 4mm}
+.ppsgh{display:flex;justify-content:space-between;align-items:baseline;gap:4mm;border-bottom:1px solid #e3e7ee;padding-bottom:1.6mm;margin-bottom:2.4mm}
+.ppsgh b{font-family:'Libre Baskerville',Georgia,serif;font-size:12.2pt;color:#1f2756}
+.ppsgh span{font-size:7.6pt;text-transform:uppercase;letter-spacing:.12em;color:#a4924c;font-weight:700;white-space:nowrap}
+.ppsg p{margin:0 0 2.2mm}.ppsg.poem p{margin-left:6mm;line-height:1.6}
+.plesson{border:1.4px solid #1f2756;border-radius:2mm;margin:0 0 3mm;break-inside:avoid;overflow:hidden}
+.plh{display:flex;flex-direction:column;padding:2.2mm 3.6mm;background:#1f2756;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.plh b{font-size:11pt}.plh span{font-size:8.4pt;opacity:.9}
+.plr{padding:2.6mm 3.6mm;font-size:10pt}
+.plx{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #d8dde6}
+.plx>div{padding:2.2mm 3.6mm;font-size:9.2pt}.plx>div+div{border-left:1px solid #d8dde6}
+.plx>div>b{display:block;font-size:7.6pt;letter-spacing:.12em;text-transform:uppercase;color:#a4924c;margin-bottom:.6mm}
+.plx span{display:block}
+.pxprompt{border:1.4px solid #a4924c;border-radius:2mm;padding:2.6mm 3.6mm;margin:0 0 3mm;font-size:10.6pt}
+.pxprompt b{display:block;font-size:7.6pt;letter-spacing:.14em;text-transform:uppercase;color:#a4924c;margin-bottom:.8mm}
+.pdiag{max-width:125mm;margin:0 auto 1mm}.pdiag .dgfig{border:0;padding:0;margin:0;max-width:none}
+.pcheck{display:grid;grid-template-columns:1fr 1fr;gap:1.6mm 5mm;font-size:9.2pt}.pcheck>span{display:flex;align-items:center}
+.ptestl{columns:2;column-gap:10mm;padding-left:7mm;margin:2mm 0}.ptestl li{break-inside:avoid;padding:1.2mm 0;font-weight:700;color:#1f2756}
+.ptestl li i{display:block;height:7.5mm;border-bottom:1px solid #a3abb9}
+.pkeyb{margin:0 0 4mm;break-inside:avoid-page}.pkeyb h3{font-size:10.6pt;color:#1f2756;margin:0 0 1.6mm;padding-bottom:1mm;border-bottom:1px solid #e3e7ee}
+.pkeyl{margin:0;padding-left:8mm;columns:2;column-gap:8mm;font-size:9.2pt}.pkeyl li{break-inside:avoid;margin-bottom:1mm}
+.pmap{width:100%;height:auto;display:block;margin:2mm auto 0;max-height:150mm}
+.pqm{border:1px solid #c9cfd9;border-radius:2mm;margin-bottom:3.5mm;break-inside:avoid}
+.pqmh{display:flex;flex-direction:column;padding:2mm 3.4mm;border-bottom:1px solid #e3e7ee}.pqmh b{color:#1f2756}.pqmh span{font-size:8.8pt;color:#4b5563}
+.pqmr{padding:1.2mm 3.4mm 2mm}.pqmr>span{font-size:8pt;font-weight:700;color:#a4924c;text-transform:uppercase;letter-spacing:.1em}
+.pcover th{width:22mm}.pinstr{margin:0 0 2mm;padding-left:5mm;font-size:9.3pt}
+.pmarks td{text-align:center;height:9mm}.pmarks th{text-align:center}
+.pcards{display:grid;grid-template-columns:1fr 1fr;gap:3mm}.pcards>div{border:1.2px dashed #a3abb9;border-radius:2mm;padding:3mm 3.6mm;break-inside:avoid;font-size:9.6pt}
+.pcards b{display:block;color:#1f2756;margin-bottom:1mm}.pcards p{margin:0 0 1mm}.pcards ol{margin:0;padding-left:5mm}
+.pblock{break-inside:avoid-page}
+.pyear th{width:30mm}.pyear td{width:33%;font-size:9pt}.pgridy td{font-size:8.6pt;padding:1.2mm 2mm}.pgridy .pdt{display:block;color:#6b7280;font-size:7.4pt}
+.ptag{display:inline-block;font-size:7pt;font-weight:700;color:#a4924c;border:1px solid #a4924c;border-radius:1mm;padding:0 1.2mm;letter-spacing:.06em;text-transform:uppercase}
+.pterm{font-size:8.4pt}.pterm td,.pterm th{padding:1.4mm 1.8mm}.pterm .n{width:16mm}
+.pnote{color:#6b7280;font-style:italic}
+.pwinfo th{width:26mm}.pouts{margin:0 0 2mm;padding-left:5mm;columns:2;column-gap:8mm;font-size:9.2pt}.pouts li{break-inside:avoid;margin-bottom:.8mm}
+.pcaps th{width:34mm;font-size:8.8pt}.pcaps p{margin:0 0 1mm;font-size:9.2pt}.pdays th{width:14mm}.pdays td{font-size:9.2pt}
+.pmarksheet td{height:7.5mm;font-size:9pt}.pmarksheet th{font-size:8pt}
+.pscreen .card{box-shadow:none;border:1px solid #d8dde6;border-radius:2mm;break-inside:avoid}.pscreen{font-family:'Lexend',system-ui,sans-serif;font-size:10pt}
+.pscreen h2,.pscreen h3{color:#1f2756}
+.small{font-size:9pt}
+@page{size:A4;margin:9mm 10mm 11mm;@bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Lexend,sans-serif;font-size:7pt;color:#6b7280}}
+@page land{size:A4 landscape;margin:8mm 10mm 10mm}
+@media print{
+  body.pmode{background:#fff!important}
+  body.pmode>*:not(#pover){display:none!important}
+  body.pmode #pover{position:static;overflow:visible;background:#fff}
+  body.pmode .pwrap{max-width:none;padding:0;margin:0}
+  body.pmode .ptool{display:none!important}
+  body.pmode .psheet{box-shadow:none;border-radius:0;margin:0;padding:0;width:auto!important;zoom:1!important;break-before:page;overflow:visible}
+  body.pmode .psheet:first-child{break-before:auto}
+  body.pmode .psheet.land{page:land}
+  body.pmode .psheet.poff,body.pmode .pkeyb.poff{display:none!important}
+  body.p-learner .psheet.pkey{display:none!important}
+  body.p-memo .psheet:not(.pkey){display:none!important}
+}
+
+.pcompact{font-size:9.2pt;line-height:1.36}.pcompact .psec{margin:3.2mm 0 1.6mm;padding:1mm 2.6mm;font-size:9.8pt}.pcompact .pxtitle{font-size:15pt}.pcompact .psub{margin-bottom:2.4mm}
+.pcompact .ptab th,.pcompact .ptab td{padding:1.1mm 1.8mm}.pcompact .plines i{height:7mm}.pcompact .pouts,.pcompact .pcaps p,.pcompact .pdays td{font-size:8.7pt}
+.pcompact .pyear td{font-size:8pt}.pcompact .pyear th{font-size:8pt}.pcompact .pgridy td{font-size:7.6pt;padding:.7mm 1.6mm;line-height:1.25}.pcompact .pgridy .pdt{font-size:6.8pt}.pcompact .pgridy th{padding:.8mm 1.6mm}
+
+.pcompact .pfoot{margin-top:3mm}.pcompact .phead{margin-bottom:3.5mm}
+.pcompact .pyear td,.pcompact .pyear th{font-size:7.5pt;line-height:1.26;padding:.9mm 1.6mm}
+.pcompact .pgridy td{font-size:7.2pt;padding:.45mm 1.4mm;line-height:1.18}.pcompact .pgridy .pdt{font-size:6.4pt}
+.pcompact .pcaps p{margin:0 0 .5mm}.pcompact .pouts li{margin-bottom:.3mm}.pcompact .pdays td,.pcompact .pdays th{padding:.8mm 1.6mm}
+.pdays th{width:15mm;white-space:nowrap}.pcompact .pcaps th{width:30mm}
+.pcompact.psheet{font-size:9pt}.pcompact .pouts,.pcompact .pcaps p,.pcompact .pdays td{font-size:8.45pt;line-height:1.32}.pcompact .pwinfo td,.pcompact .pwinfo th{font-size:8.6pt}
+
+.pdict{display:flex;gap:5mm;align-items:flex-end}.pdict .pxclue{flex:1.5;margin:0}.pdict .pans{flex:1;margin:0}
+.pblk.poff,.pdoc .poff{display:none}.pblock2{margin-bottom:2mm}.pblock2+.pblock2{margin-top:5mm}
+.pkh{font-weight:700;color:#1f2756;margin:2mm 0 1mm;font-size:9.4pt}
+
+.pkeep{break-inside:avoid}.pdiag{max-width:98mm}.pplan td{height:12.5mm}.plines.tall i{height:8.6mm}
 </style>
 </head>
 <body>
@@ -5220,7 +5346,7 @@ const thLevel = th => th<1.6 ? 1 : th<2.6 ? 2 : 3;
 const curLv = sid => { const p=typeof P==='function'&&P(); if (!p) return startLv(); const m=p.mast&&p.mast[sid];
   if (m && m.n>=6) return thLevel(m.th); return (p.lvl&&p.lvl[sid])||startLv(); };
 const unlockedLv = sid => { const p=P(); return Math.max(curLv(sid), Math.min(3,(p&&p.best[sid]||0)+1)); };
-const backTitle = (t, extra='') => `<div class="title"><button class="x" id="bk" aria-label="Back">←</button><h2 class="grow">${t}</h2>${extra}</div>`;
+const backTitle = (t, extra='') => `<div class="title"><button class="x" id="bk" aria-label="Back">←</button><h2 class="grow">${t}</h2>${extra}${(typeof PRT!=='undefined')&&(PRT.teacher||PRT.parent)?'<button class="x pbtn noprint" id="pthis" aria-label="Print this page" title="Print this page">🖨️</button>':''}</div>`;
 
 /* ---------- Badges ---------- */
 const BADGES = [
@@ -5305,6 +5431,7 @@ function stopTimers(){
 /* ================= PLAYERS ================= */
 /* ----- First screen: who are you? ----- */
 function screenStart(){
+  PRT.teacher=false; PRT.parent=false;
   stopTimers(); applyPrefs(); const cur=DB.current&&DB.profiles[DB.current];
   app.innerHTML = `
    <div class="hero">${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div></div>
@@ -5477,6 +5604,7 @@ function screenLearn(sid, lvPick){
    <div class="card mt outcome"><b>🎯 ${escH(k.out)}</b><div class="lvlist">${k.lvl.map((d,i)=>`<div>${LVI[i]} <b>${LVN[i]}:</b> ${escH(d)}</div>`).join('')}</div></div>
    <div class="row mt">${canSpeak?'<button class="btn ghost grow" id="read">🔊 Read it to me</button>':''}<button class="btn grow" id="go" style="background:${w.color}">Play ${LVI[(lvPick||curLv(sid))-1]} ${LVN[(lvPick||curLv(sid))-1]} ▶</button></div>
    ${!k.round?`<button class="btn ghost w100 mt8" id="smart">🎯 Smart practice: questions adjust to you</button>`:''}`;
+  addPrintBtn(()=>openDoc(pSkillDoc(sid)), 'Print this lesson and practice');
   $('#bk').onclick=()=>screenWorld(w.id);
   if ($('#read')) $('#read').onclick=()=>speak(k.learn.rule+'. '+k.learn.tip+'. Examples: '+k.learn.ex.join('. '));
   $('#go').onclick=()=>startRound(sid, lvPick||curLv(sid));
@@ -7080,6 +7208,7 @@ function screenModel(id, back){
    <div class="card model">${m.text.map((t,i)=>i===0?`<h3>${escH(t)}</h3>`:`<p>${escH(t)}</p>`).join('')}</div>
    <div class="card mt"><b>What makes it work</b><div class="list mt8">${m.notes.map(([f,e])=>`<div class="item"><span class="grow"><b>${escH(f)}</b><br><small>${escH(e)}</small></span></div>`).join('')}</div></div>
    <button class="btn gold w100 mt" id="mq">🔎 Feature spotter quiz (4 questions)</button>`;
+  addPrintBtn(()=>openDoc(pModelDoc(id)), 'Print this model text');
   $('#bk').onclick=()=>(back||screenModels)();
   $('#mq').onclick=()=>{ R={mode:'model', model:id, qs:shuffle(m.qs.map(s=>{ const a=s.split('|'); return mc(escH(a[0]), a[1], a.slice(2), `The answer is <b>${escH(a[1])}</b>.`); })), i:0, correct:0, streak:0, points:0, back:()=>screenModel(id, back)}; renderRoundQ(); };
 }
@@ -7352,6 +7481,7 @@ function screenListenText(id){
        ${recorderHTML(LISTEN_REC_MAX)}<div id="lres"></div>
        <label class="lbl mt8">Or upload a recording of someone else (MP3 or M4A, under 650 KB)</label><input type="file" id="lup" accept="audio/*" class="name">
        ${own?'<button class="btn ghost w100 mt8" id="ldel">🤖 Go back to the built-in voice</button>':''}`}</div>`;
+  addPrintBtn(()=>openDoc(pListenDoc(id)), 'Print the listening task');
   $('#bk').onclick=()=>{ listenStop(); screenListenTeacher(); };
   $('#ltry').onclick=()=>{ if (LS.speaking){ listenStop(); LS.speaking=false; $('#ltry').textContent='🔊 Hear the built-in voice'; return; } LS.speaking=true; $('#ltry').textContent='⏹ Stop'; listenSpeak(x.text, ()=>{ LS.speaking=false; if ($('#ltry')) $('#ltry').textContent='🔊 Hear the built-in voice'; }); };
   if (!isCloudTeacher()) return;
@@ -7558,6 +7688,7 @@ function screenWeek(w){
    ${y.write?`<div class="card mt"><b>✍️ Writing task</b><button class="item mt8" id="wt"><span class="em">${WT(y.write).icon}</span><span class="grow"><b>${escH(WT(y.write).title)}</b><br><small class="muted">${escH(y.prompt||WT(y.write).type)}${r.write?' · ✅ done':''}</small></span>▶</button></div>`:''}
    <div class="card mt"><div class="row"><b class="grow">🧩 Weekly quiz</b>${r.quiz!=null?`<span class="pill okpill">Best: ${r.quiz}/10</span>`:''}</div>
      <p class="muted small">10 mixed questions: 4 of this week's spelling words (2 of them stretch words) and 6 from this week's skills, at your level. Do it at the end of the week.</p><button class="btn w100" id="qz">Start the quiz 🧩</button></div>`;
+  addPrintBtn(()=>openDoc(pWeekDoc(w)), "Print this week's worksheets");
   $('#bk').onclick=()=>screenHome();
   $$('[data-say]').forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $('#sp-prac').onclick=()=>startSpell(w,false); $('#sp-test').onclick=()=>startSpell(w,true);
@@ -7586,6 +7717,7 @@ function screenYear(){
      return `<button class="item yrow ${y.w===cw?'now':''} ${open?'':'locked'}" data-yw="${y.w}" ${open?'':'disabled'}><span class="em">${open?y.icon:'🔒'}</span>
        <span class="grow"><small class="muted b">Week ${y.tw}${weekDate(y.w)?' · '+weekDate(y.w):''}${y.w===cw?' · THIS WEEK':''}</small>${testForWeek(y.w)?` <span class="pill testpill">📝 ${testForWeek(y.w).kind} test</span>`:''}<br><b>${escH(y.theme)}</b><br><small class="muted">${escH(SPELL_WEEKS[y.w-1].pat)} · ${y.skills.map(s=>escH(SK(s).name)).join(' · ')}</small>${y.lang?`<br><small class="muted">📋 ${escH(y.lang)}</small>`:''}</span>
        <span class="wkpct sm">${st.done}/${st.total}</span></button>`; }).join('')}</div>`).join('')}`;
+  addPrintBtn(()=>openDoc(pYearPlanner()), 'Print the year planner');
   $('#bk').onclick=()=>screenHome();
   $$('[data-yw]').forEach(b=>b.onclick=()=>screenWeek(+b.dataset.yw));
   $$('[data-tst]').forEach(b=>b.onclick=()=>screenTest(b.dataset.tst, ()=>screenYear()));
@@ -7628,6 +7760,7 @@ function screenTask(id, w){
   const persist=()=>{ d.text=tx.value; clearTimeout(timer); timer=setTimeout(save,700); };
   tx.oninput=()=>{ persist(); upd(); };
   $$('.plan').forEach(inp=>inp.oninput=()=>{ d.plan[+inp.dataset.pi]=inp.value; persist(); upd(); });
+  addPrintBtn(()=>openDoc({title:WT(id).title, sheets:pWritingSheets(id, w).sheets}), 'Print this writing task');
   $('#bk').onclick=()=>{ save(); w?screenWeek(w):screenTasks(); };
   if ($('#say')) $('#say').onclick=()=>speak(tx.value||'Write something first!');
   const copts={poem:/poem|acrostic/i.test(t.id+' '+t.type)}; let warned=false;
@@ -7698,6 +7831,7 @@ function screenTest(id, back){
        :open?`<button class="btn gold w100 mt8" id="go">${r?'Practise it again ↻':chk?'Start the check ▶':'Start the test ▶'}</button>`:`<p class="muted b mt8">🔒 This ${chk?'check':'test'} opens in Term ${t.term}, Week ${wk}.</p>`}
      ${r&&r.last&&r.last.length?`<button class="btn ghost w100 mt8" id="rv">🔍 See corrections from my last try</button>`:''}
    </div>`;
+  addPrintBtn(()=>openDoc(pTestDoc(TBY(id))), 'Print the question paper and memo', true);
   $('#bk').onclick=()=>back();
   if ($('#go')) $('#go').onclick=()=>startTest(id, back);
   if ($('#rv')) $('#rv').onclick=()=>screenTestReview(id, back);
@@ -8433,6 +8567,7 @@ function screenNovel(w, back){
    ${(s=>s?`<button class="item mt8 mapitem" id="nvmap"><span class="em">${mapDone(p,w)?'✅':MAPS[s.m].ic}</span><span class="grow"><small class="muted b">💡 Thinking map · ${escH(MAPS[s.m].does)}</small><br><b>${MAPS[s.m].n}: ${escH(s.t)}</b></span><span>▶</span></button>`:'')(novelMap(w))}
    <button class="item mt8" id="nvqm"><span class="em">${(p.qmake||{})['w'+w+':nov']?'✅':'❓'}</span><span class="grow"><small class="muted b">Be the teacher · optional</small><br><b>Make your own questions</b></span><span>▶</span></button>
    <h3 class="mt">The reading plan</h3><div class="list mt8">${rows}</div>`;
+  addPrintBtn(()=>openDoc(pNovelDoc(nw.n.term-1)), 'Print the novel questions');
   $('#bk').onclick=()=>bk();
   $('#nvgo').onclick=()=>startNovelQuiz(w, ()=>screenNovel(w, bk));
   if ($('#nvmap')) $('#nvmap').onclick=()=>screenMap(w, ()=>screenNovel(w, bk)); $('#nvqm').onclick=()=>screenQuestionMaker(w, 'nov', ()=>screenNovel(w, bk));
@@ -8589,6 +8724,7 @@ function screenMap(w, back){
   const upd=()=>{ const n=mapFilled(cur), need=mapNeed(s); $('#mapn').textContent=n>=need?`✅ ${n} boxes filled. Ready to save!`:`${n} of ${need} boxes filled.`; };
   $$('.tmin').forEach(inp=>inp.oninput=()=>{ const k=inp.dataset.mk, i=+inp.dataset.mi; (cur[k]||(cur[k]=[]))[i]=inp.value; upd(); });
   upd();
+  addPrintBtn(()=>openDoc({title:'Thinking map', sheets:[pMapSheet(w)].filter(Boolean)}), 'Print this thinking map');
   $('#bk').onclick=()=>(back||screenHome)();
   $('#mapsv').onclick=()=>{ const n=mapFilled(cur), need=mapNeed(s); if (n<need){ toast(`Fill at least ${need} boxes first.`); return; }
     const first=!(p.maps&&p.maps[key]&&p.maps[key].done); (p.maps||(p.maps={}))[key]={m:s.m, v:cur, d:today(), done:true};
@@ -8625,6 +8761,7 @@ function screenQuestionMaker(w, src, back){
      <div class="qmfb" id="qmfb${i}"></div></div>`; }).join('')}
    ${old.star?`<div class="fb good mt"><p>⭐ ${escH(teacherName())} starred your questions!</p></div>`:''}
    <button class="btn gold w100 mt" id="qmsv">💾 Check and save</button>`;
+  addPrintBtn(()=>openDoc({title:'Question maker', sheets:[pQMakerSheet(w)]}), 'Print the question maker');
   $('#bk').onclick=()=>(back||screenHome)();
   $('#qmsv').onclick=()=>{ let bad=0; const out=vals.map((x,i)=>{ const q=$(`.qmq[data-i="${i}"]`).value.trim(), a=$(`.qma[data-i="${i}"]`).value.trim(), r=qmCheck(x.lv,q,a);
       $('#qmfb'+i).innerHTML = (r.ok?'':fsListHTML(r.msgs.map(m=>({ok:false,m}))))+(!r.fit&&q?`<p class="small">💡 Hmm, does this really sound like a ${TL(x.lv).n} question? Check the tip above. You can still save it.</p>`:'');
@@ -8899,6 +9036,384 @@ function dgBloom(){
   return dgSvg(360, top+6*h+12, b, "Bloom's taxonomy and the app's thinking levels");
 }
 const bloomFig = () => dgFig("How the thinking levels fit together", dgBloom(), "Low on the pyramid: the answer is in the text. Higher up: you work it out, judge it, or make something new.");
+/* ================= PRINTING: HeronBridge letterhead for worksheets, tests, planners and reports ================= */
+const PRT = {teacher:false};
+const SCHOOL = 'Curro HeronBridge College';
+const pYr = () => calYear() || new Date().getFullYear();
+const pE = s => escH(String(s==null?'':s));
+const pNoEmoji = s => String(s||'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu,'').replace(/\s{2,}/g,' ').trim();
+const pClean = h => pNoEmoji(String(h||'').replace(/<(?!\/?(b|i|u|br|em|strong|sup|sub)\b)[^>]*>/gi,'')).replace(/^(<br>\s*)+/,'');
+const pSN = id => pE(pNoEmoji(SK(id).name));
+const pPaper = h => String(h).replace(/Tap a word, then tap its group\.?/g,'Write each word in the correct column.').replace(/Tap one, then tap its group\.?/g,'Write each one in the correct column.')
+  .replace(/Tap the words in the right order\.?/g,'Write the words in the right order.').replace(/Tap them from first to last\.?/g,'Number them from first to last.')
+  .replace(/\bTap (the|one|a|an)\b/g,'Underline $1').replace(/\btap\b/g,'underline');
+const pLt = i => String.fromCharCode(97+i);
+const pCap = s => String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1);
+const pLines = (n, tall) => `<div class="plines ${tall?'tall':''}">${'<i></i>'.repeat(n)}</div>`;
+function pWkDays(w){ const yr=calYear(), x=yr&&calWeeks(yr)[w-1]; if (!x) return null; const c=SCHOOL_CAL[yr], t=x.term-1, o=dParse(c.opens[t]), e=dParse(c.closes[t]);
+  const a=new Date(Math.max(x.mon.getTime(), o.getTime())), b=new Date(x.mon); b.setDate(b.getDate()+4); return [a, b>e?e:b]; }
+const pRange = w => { const r=pWkDays(w); if (!r) return ''; const [a,b]=r; return a.getMonth()===b.getMonth()?`${a.getDate()} to ${b.getDate()} ${CAL_M[b.getMonth()]}`:`${dMon(a)} to ${dMon(b)}`; };
+const pWk = w => { const y=YEAR[w-1]; return `Term ${y.term} · Week ${y.tw}${pRange(w)?' · '+pRange(w):''}`; };
+const pHead = (kind, info) => `<div class="phead">${BADGE?`<img class="pcrest" src="${BADGE}" alt="">`:''}<div class="pschool"><b>${SCHOOL}</b><span>Primary School · Grade 5 English</span></div><div class="pkind"><b>${pE(kind)}</b><span>${pE(info||'')}</span></div></div>`;
+const pFoot = foot => `<div class="pfoot"><span>${pE(foot||'Heron Word Quest')}</span><span>${pE(teacherName())} · Grade 5 English · ${pYr()}</span></div>`;
+const pLearner = marks => `<div class="plearner"><span>Name<i></i></span><span class="sm">Class<i></i></span><span class="sm">Date<i></i></span>${marks?`<span class="mk">Mark<i></i>/ ${marks}</span>`:''}</div>`;
+function pSheet(o){
+  return {key:!!o.key, sec:o.sec||'', h:`<section class="psheet${o.land?' land':''}${o.key?' pkey':''}${o.cls?' '+o.cls:''}" data-sec="${o.sec||''}"><table class="pt"><thead><tr><td>${pHead(o.kind, o.info)}</td></tr></thead><tfoot><tr><td>${pFoot(o.foot)}</td></tr></tfoot><tbody><tr><td class="pbody">
+    ${o.key?'<div class="pkeytag">Teacher copy · not for learners</div>':''}${o.title?`<h1 class="pxtitle">${o.title}</h1>`:''}${o.sub?`<p class="psub">${o.sub}</p>`:''}${o.learner?pLearner(o.marks):''}${o.body}</td></tr></tbody></table></section>`};
+}
+const pBlk = (sec, html) => `<div class="pblk" data-sec="${sec}">${html}</div>`;
+const pSec = (t, right) => `<div class="psec"><span>${t}</span>${right?`<span>${right}</span>`:''}</div>`;
+function pPassage(ps){
+  const line = l => { if (isHeadLine(l)) return `<b>${pE(l)}</b>`; const sp=l.match(/^([A-Z][A-Z0-9 .']{1,30}):\s+(.*)$/); return sp?`<b>${pE(sp[1])}:</b> ${pE(sp[2])}`:pE(l); };
+  return `<div class="ppsg ${ps.type==='poem'?'poem':''}"><div class="ppsgh"><b>${pE(ps.title)}</b><span>${pE(ps.type||'')}</span></div>${ps.text.map(x=>`<p>${x.split('\n').map(line).join('<br>')}</p>`).join('')}</div>`;
+}
+/* One question on paper, and its answer for the memo */
+function pQ(q, n, marks){
+  const pr = s => `<div class="pqp">${pPaper(s)}</div>`, clue = q.clue&&!q.speak ? `<div class="pxclue">${pE(q.clue)}</div>` : '';
+  let h='', a='';
+  if (q.type==='mc'){ const o=q.options, short=o.every(x=>String(x).length<=13), mid=o.every(x=>String(x).length<=34);
+    h=pr(pClean(q.prompt))+clue+`<ol class="popts ${short&&o.length>=3?'c4':mid?'c2':''}">${o.map((x,i)=>`<li><span class="pol">${pLt(i)}</span><span>${pE(x)}</span></li>`).join('')}</ol>`;
+    a=`<b>${pLt(o.indexOf(q.answer))}</b> ${pE(q.answer)}`; }
+  else if (q.type==='tap'){ h=pr(pClean(q.prompt).replace(/\bTap\b/g,'Underline').replace(/\btap\b/g,'underline'))+`<div class="psent">${q.tokens.map(t=>pE(t.pre+t.w+t.p)).join(' ')}</div>`; a=`Underline: <b>${pE(q.answer)}</b>`; }
+  else if (q.type==='type'){
+    h = q.speak ? `<div class="pdict"><div class="pxclue">${pE(q.clue)}</div><div class="pans"><span>Word</span><i></i></div></div>` : pr(pClean(q.prompt))+clue+`<div class="pans"><i></i></div>`;
+    a=`<b>${pE(q.answer)}</b>${q.alts&&q.alts.length?` <small>(also accept: ${q.alts.map(pE).join(', ')})</small>`:''}`; }
+  else if (q.type==='sort'){ const rows=Math.ceil(q.items.length/q.buckets.length)+1;
+    h=pr(pClean(q.prompt))+`<div class="pbank">${shuffle(q.items.slice()).map(x=>`<span>${pE(x.w)}</span>`).join('')}</div><table class="pgrid"><tr>${q.buckets.map(b=>`<th>${pE(b)}</th>`).join('')}</tr>${Array.from({length:rows},()=>`<tr>${q.buckets.map(()=>'<td></td>').join('')}</tr>`).join('')}</table>`;
+    a=q.buckets.map((b,i)=>`<b>${pE(b)}:</b> ${q.items.filter(x=>x.b===i).map(x=>pE(x.w)).join(', ')}`).join('<br>'); }
+  else if (q.type==='order'){
+    if (q.long){ h=pr(pClean(q.prompt))+`<p class="pinst">Number them in the right order.</p><div class="porder">${q.order.map(k=>`<div><span class="pbox"></span>${pE(q.items[k])}</div>`).join('')}</div>`; a=q.items.map((x,i)=>`${i+1}. ${pE(x)}`).join('<br>'); }
+    else { h=pr(pClean(q.prompt))+`<div class="pbank">${q.order.map(k=>`<span>${pE(q.items[k])}</span>`).join('')}</div>`+pLines(1); a=`<b>${pE(q.answer)}</b>`; } }
+  else if (q.type==='match'){ const right=shuffle(q.pairs.map((_,i)=>i));
+    h=pr(pClean(q.prompt))+`<p class="pinst">Write the correct letter in each box.</p><table class="pxmatch">${q.pairs.map((p,i)=>`<tr><td><span class="pbox"></span>${i+1}. ${pE(p[0])}</td><td><b>${pLt(i)}</b> ${pE(q.pairs[right[i]][1])}</td></tr>`).join('')}</table>`;
+    a=q.pairs.map((p,i)=>`${i+1} = <b>${pLt(right.indexOf(i))}</b>`).join(' · '); }
+  else if (q.type==='edit'){ h=pr(`Proofread! Find the ${q.n===1?'mistake':q.n+' mistakes'} and write the sentence correctly.`)+`<div class="psent">${pE(q.tokens.map(t=>t.w).join(' '))}</div>`+pLines(2); a=`<b>${pE(q.answer)}</b>`; }
+  else if (q.type==='sent'){ h=pr(`<b>Answer in a full sentence.</b> ${pClean(q.qtext||q.prompt)}`)+pLines(q.open?3:2);
+    a=q.open?'Own opinion with a reason from the text, in a full sentence.':`${pE(q.answer)} <small>(in a full sentence, with a capital letter and a full stop)</small>`; }
+  else { h=pr(pClean(q.prompt))+pLines(1); a=pE(q.answer||''); }
+  return {q:`<div class="pq"><span class="pqn">${n}.</span><div class="pqb">${h}</div>${marks?`<span class="pmk">(${marks})</span>`:''}</div>`, a:`<li value="${n}">${a}</li>`};
+}
+/* A list of questions, printing each reading text once, before its first question */
+function pQs(qs, start=1, marks){ let last=null; const out=[], keys=[];
+  qs.forEach((q,i)=>{ if (q.passage && q.passage.title!==last){ last=q.passage.title; out.push(pPassage(q.passage)); } const r=pQ(q, start+i, marks); out.push(r.q); keys.push(r.a); });
+  return {h:out.join(''), k:`<ol class="pkeyl">${keys.join('')}</ol>`};
+}
+const pKeyBlock = (title, html, sec) => `<div class="pkeyb" data-sec="${sec||''}"><h3>${title}</h3>${html}</div>`;
+function pSkillQs(sid, per){ const k=SK(sid), out=[], seen=new Set();
+  [1,2,3].forEach(L=>{ let got=0, g=0;
+    while (got<per && g++<150){ let qs; try { qs=k.round?k.round(L):[makeQ(sid,L)]; } catch(e){ continue; }
+      for (const q of qs){ if (got>=per) break; if (q.type==='type'&&q.speak&&sid!=='sp-bee') continue; q.skill=sid; q.lv=L; const key=qKey(q); if (seen.has(key)) continue; seen.add(key); out.push(q); got++; } } });
+  return out; }
+const pLesson = k => `<div class="plesson"><div class="plh"><b>${pE(pNoEmoji(k.name))}</b><span>${pE(k.out)}</span></div><div class="plr">${pClean(k.learn.rule)}</div>
+  <div class="plx"><div><b>Remember</b>${pClean(k.learn.tip)}</div><div><b>Examples</b>${k.learn.ex.map(e=>`<span>${pClean(e)}</span>`).join('')}</div></div></div>`;
+
+/* ----- The week's worksheets ----- */
+function pSpellingSheets(w){
+  const sw=SPELL_WEEKS[w-1], y=YEAR[w-1];
+  const tab = ws => `<table class="ptab pspell"><tr><th class="n">#</th><th>Word</th><th>Look, say, cover, write</th><th>Write it again</th><th class="n">✓</th></tr>${ws.map(([wd],i)=>`<tr><td class="n">${i+1}</td><td><b>${pE(wd)}</b></td><td></td><td></td><td></td></tr>`).join('')}</table>`;
+  const sheet = pSheet({kind:'Spelling', info:pWk(w), sec:'spell', learner:true, title:'Spelling', sub:`This week's pattern: <b>${pE(sw.pat)}</b>`,
+    body:tab(sw.words)+(sw.stretch&&sw.stretch.length?pSec('Stretch words')+tab(sw.stretch):'')+pSec('Use your words')+`<p class="pinst">Choose four words from your list. Write a sentence for each one.</p>`+pLines(4)});
+  const all=spellAll(sw);
+  const test = pSheet({kind:'Spelling test', info:pWk(w), sec:'spelltest', learner:true, marks:all.length, title:'Spelling test', sub:'Listen to your teacher. Write each word carefully.',
+    body:`<ol class="ptestl">${all.map(()=>'<li><i></i></li>').join('')}</ol>`});
+  const key = pKeyBlock('Spelling test: words to read aloud', `<ol class="pkeyl">${all.map(([wd,s])=>`<li><b>${pE(wd)}</b> · <i>${pE(s)}</i></li>`).join('')}</ol>`, 'spelltest');
+  return {sheets:[sheet, test], key};
+}
+const readQs = w => { const ps=PS(YEAR[w-1].passage); return [...ps.qs.map(([q,a,o,e])=>Object.assign(mc(q,a,o,e),{skill:'r-comp'})), ...fsPick(ps,1).map(x=>sentQ(ps,x)), judgeQ(ps)].map(q=>Object.assign(q,{passage:null})); };
+function pReadingSheets(w){
+  const y=YEAR[w-1], ps=PS(y.passage), r=pQs(readQs(w)), dq=DEEP_Q[DEEP_KIND(ps.type)]||DEEP_Q.info;
+  const s1=pSheet({kind:'Reading', info:pWk(w), sec:'read', learner:true, marks:10, title:`Reading: ${pE(ps.title)}`, sub:`${pE(pCap(ps.type))} · Read the text carefully, then answer the questions.`, body:pPassage(ps)+pSec('Questions')+r.h});
+  const s2=pSheet({kind:'Reading', info:pWk(w), sec:'deep', learner:true, title:'Think deeper', sub:`About “${pE(ps.title)}”. Answer in full sentences, using details from the text.`,
+    body:dq.map((q,i)=>`<div class="pq"><span class="pqn">${i+1}.</span><div class="pqb"><div class="pqp">${pE(q)}</div>${pLines(4)}</div></div>`).join('')});
+  return {sheets:[s1, s2], key:pKeyBlock(`Reading: ${pE(ps.title)}`, r.k, 'read')};
+}
+function pGrammarHTML(w){
+  const y=YEAR[w-1], per=y.skills.length===1?3:2; let n=1; const hs=[], ks=[];
+  y.skills.forEach(sid=>{ const k=SK(sid), qs=pSkillQs(sid, per), r=pQs(qs, n); n+=qs.length;
+    hs.push(`<div class="pblock2">${pLesson(k)}${pSec(`Practice: ${pE(pNoEmoji(k.name))}`, `${qs.length} questions`)}${r.h}</div>`); ks.push(`<p class="pkh">${pE(pNoEmoji(k.name))}</p>${r.k}`); });
+  return {h:hs.join(''), key:pKeyBlock('Language', ks.join(''), 'gram')};
+}
+function pNovelSheet(w){ const nw=novelWeek(w); if (!nw) return null;
+  const qs=[...nw.k.q.map(([q,a,o,e])=>mc(q,a,o,e)), fsKeysQ(nw.k.fs[0], nw.k.fs[1], nw.k.fs[2])], r=pQs(qs);
+  return {h:pSec('Read the chapters, then answer the questions', `${qs.length} marks`)+r.h, key:pKeyBlock(`${pE(nw.n.title)}: ${pE(nw.k.ch)}`, r.k, 'novel')};
+}
+/* Thinking Maps drawn for paper */
+function pMapSVG(s){
+  const W=700, T=(x,y,t,o={})=>dgT(x,y,t,Object.assign({s:15,c:'#1f2756',w:o.w||150},o)), C=(x,y,r,f)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f||'#fff'}" stroke="#1f2756" stroke-width="2"/>`,
+    Rr=(x,y,w,h,f,dash)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${f||'#fff'}" stroke="#1f2756" stroke-width="2" ${dash?'stroke-dasharray="7 5"':''}/>`,
+    L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#1f2756" stroke-width="1.6"/>`,
+    A=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#1f2756" stroke-width="2.2" marker-end="url(#pma)"/>`,
+    svg=(h,b)=>`<svg class="pmap" viewBox="0 0 ${W} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f2756"/></marker></defs>${b}</svg>`;
+  if (s.m==='circle') return svg(470, Rr(10,10,680,450,'#fff',true)+T(30,40,'Frame: where did my ideas come from?',{a:'start',s:13,c:'#6b7280',w:400,b:600})+C(350,245,195)+C(350,245,70,'#f6f3ea')+T(350,250,s.c,{w:120,s:16}));
+  if (s.m==='bubble'){ let b=''; const pts=[0,60,120,180,240,300].map(a=>[350+235*Math.cos(a*Math.PI/180), 235+165*Math.sin(a*Math.PI/180)]);
+    pts.forEach(([x,y])=>{ b+=L(350,235,x,y); }); b+=C(350,235,78,'#f6f3ea')+T(350,240,s.c,{w:130,s:16}); pts.forEach(([x,y])=>{ b+=C(x,y,62); }); return svg(470,b); }
+  if (s.m==='double'){ let b=''; const A1=[200,235], B1=[500,235], mid=[[350,90],[350,235],[350,380]], la=[[60,140],[60,330]], rb=[[640,140],[640,330]];
+    mid.forEach(([x,y])=>{ b+=L(A1[0],A1[1],x,y)+L(B1[0],B1[1],x,y); }); la.forEach(([x,y])=>b+=L(A1[0],A1[1],x,y)); rb.forEach(([x,y])=>b+=L(B1[0],B1[1],x,y));
+    b+=C(A1[0],A1[1],70,'#f6f3ea')+T(A1[0],A1[1]+5,s.a,{w:110,s:15})+C(B1[0],B1[1],70,'#f6f3ea')+T(B1[0],B1[1]+5,s.b,{w:110,s:15});
+    [...mid,...la,...rb].forEach(([x,y])=>b+=C(x,y,52)); b+=T(350,30,'The same',{s:12,c:'#6b7280'})+T(60,72,`Only ${s.a}`,{s:11.5,c:'#6b7280',w:120})+T(640,72,`Only ${s.b}`,{s:11.5,c:'#6b7280',w:120});
+    return svg(450,b); }
+  if (s.m==='tree'){ const n=s.cats.length, cw=(W-40)/n; let b=Rr(250,12,200,56,'#f6f3ea')+T(350,46,s.c,{w:180,s:16})+L(350,68,350,92)+L(20+cw/2,92,20+cw*(n-.5),92);
+    s.cats.forEach((c,i)=>{ const x=20+cw*i+cw/2; b+=L(x,92,x,112)+Rr(x-cw/2+10,112,cw-20,46,'#eef1f6')+T(x,141,c,{w:cw-30,s:14.5}); [0,1,2].forEach(j=>b+=L(x-cw/2+20,205+j*62,x+cw/2-20,205+j*62)); b+=L(x,158,x,180); });
+    return svg(345,b); }
+  if (s.m==='brace'){ const n=s.n||4; let b=Rr(20,170,190,90,'#f6f3ea')+T(115,220,s.c,{w:170,s:16});
+    b+=`<path d="M265 20 Q235 20 235 60 L235 190 Q235 215 215 215 Q235 215 235 240 L235 370 Q235 410 265 410" fill="none" stroke="#1f2756" stroke-width="3"/>`;
+    const gap=390/n; for (let i=0;i<n;i++) b+=Rr(290,25+i*gap,390,gap-18); return svg(430,b); }
+  if (s.m==='flow'){ const n=s.n||5, bw=(W-20-(n-1)*28)/n; let b='';
+    for (let i=0;i<n;i++){ const x=10+i*(bw+28); b+=Rr(x,40,bw,330)+`<circle cx="${x+18}" cy="58" r="13" fill="#1f2756"/>`+T(x+18,63,String(i+1),{s:13,c:'#fff'}); if (i<n-1) b+=A(x+bw+3,205,x+bw+25,205); }
+    return svg(390,b); }
+  if (s.m==='multi'){ let b=Rr(255,170,190,100,'#f6f3ea')+T(350,225,s.c,{w:170,s:15.5})+T(110,26,'Causes',{s:14,c:'#6b7280'})+T(590,26,'Effects',{s:14,c:'#6b7280'});
+    [0,1,2].forEach(i=>{ const y=45+i*130; b+=Rr(10,y,200,105)+A(212,y+52,252,220)+Rr(490,y,200,105)+A(447,220,487,y+52); }); return svg(440,b); }
+  if (s.m==='bridge'){ const ex=s.ex||['','','','']; let b=T(20,30,`Relating factor: ______ ${s.rel||''} ______`,{a:'start',s:14,w:660,b:600});
+    const pair=(x,top,bot)=>Rr(x,70,140,60)+T(x+70,106,top,{w:120,s:14})+L(x+10,150,x+130,150)+Rr(x,170,140,60)+T(x+70,206,bot,{w:120,s:14});
+    b+=pair(10,ex[0],ex[1])+pair(190,ex[2],ex[3])+pair(370,'','')+pair(550,'','');
+    [170,350,530].forEach(x=>b+=`<path d="M${x-12} 150 L${x+10} 110 L${x+32} 150" fill="none" stroke="#a4924c" stroke-width="2.5"/>`+T(x+10,175,'as',{s:13,c:'#a4924c'}));
+    return svg(250,b); }
+  return '';
+}
+function pMapSheet(w){ const s=novelMap(w); if (!s) return null; const M=MAPS[s.m], src=s.src==='read'?`About this week's reading: ${pE(PS(YEAR[w-1].passage).title)}`:(novelWeek(w)?`About the class novel: ${pE(novelWeek(w).n.title)}, ${pE(novelWeek(w).k.ch)}`:'About the class novel');
+  return pSheet({kind:'Thinking Map', info:pWk(w), sec:'map', learner:true, title:`${M.n}: ${pE(s.t)}`, sub:`${pE(M.does)} · ${src}`, body:`<p class="pinst">${pE(M.how)}</p>${pMapSVG(s)}`}); }
+function pQMakerHTML(w){ const nw=novelWeek(w), src=nw?`${pE(nw.n.title)}, ${pE(nw.k.ch)}`:pE(PS(YEAR[w-1].passage).title);
+  const lv=[['Find it','find','The answer is right there in the text.'],['Work it out','infer','Use clues from the text to work out the answer.'],['Judge it','judge','Give your opinion, with a reason.']];
+  return `<div class="pkeep">`+pSec('Make your own questions', `About: ${src}`)+`<p class="pinst">Write one question at each level, and its answer.</p>`+lv.map(([n,k,d])=>`<div class="pqm"><div class="pqmh"><b>${n}</b><span>${d} Try: <i>${pE(QM_STARTS[k].ex)}</i></span></div><div class="pqmr"><span>My question</span>${pLines(1)}</div><div class="pqmr"><span>My answer</span>${pLines(1)}</div></div>`).join('')+'</div>'; }
+const pQMakerSheet = w => pSheet({kind:'Question maker', info:pWk(w), learner:true, title:'Make your own questions', body:pQMakerHTML(w)});
+function pWritingSheets(id, w, sec='write'){
+  const t=WT(id), prompt=(w&&YEAR[w-1].prompt)||t.prompt, info=w?pWk(w):t.type; let checks=[];
+  try { checks=t.checks('', ['']).map(c=>c[0]); } catch(e){}
+  const s1=pSheet({kind:'Writing', info, sec, learner:true, title:pE(t.title), sub:pE(t.type),
+    body:`<div class="pxprompt"><b>Your task</b>${pE(prompt)}</div>${WRITE_DIAG[id]?`<div class="pdiag">${WRITE_DIAG[id]()}</div>`:''}${pSec('Plan it')}<table class="ptab pplan">${t.plan.map(p=>`<tr><th>${pE(p)}</th><td></td></tr>`).join('')}</table>`});
+  const s2=pSheet({kind:'Writing', info, sec, title:`${pE(t.title)}: my writing`, sub:`Aim for at least ${t.min} words.`,
+    body:pLines(t.min>=70?19:16, true)+pSec('Check your work')+`<div class="pcheck">${checks.map(c=>`<span><span class="pbox"></span>${pE(c)}</span>`).join('')}<span><span class="pbox"></span>I read my writing again and fixed my spelling and punctuation</span></div>`});
+  return {sheets:[s1, s2], key:pKeyBlock(`Writing: ${pE(t.title)}. Marking rubric`, pRubric(), sec)};
+}
+const pRubric = () => `<table class="ptab prub"><tr><th>Criteria</th>${[1,2,3,4,5].map(i=>`<th class="n">${i}</th>`).join('')}</tr>${RUBRIC.map(([k,n])=>`<tr><td>${pE(n)}</td>${[1,2,3,4,5].map(()=>'<td></td>').join('')}</tr>`).join('')}<tr><td><b>Total</b></td><td colspan="5" class="r"><b>/ 25</b></td></tr></table><p class="small">1 Not yet · 2 Developing · 3 Achieved · 4 Good · 5 Excellent</p>`;
+function pQuizSheet(w){ const y=YEAR[w-1], sw=SPELL_WEEKS[w-1];
+  const sp=[...sample(sw.words,2), ...sample(sw.stretch,2)].map(([wd,s])=>typeQ('Listen, then spell the word', wd, '', {speak:wd, clue:blankWord(s,wd)}));
+  const nS=y.skills.length, sk=y.skills.flatMap((sid,si)=>{ const cnt=Math.floor(6/nS)+(si<6%nS?1:0); return sample(pSkillQs(sid, 2), cnt); });
+  const r=pQs([...sp, ...sk]);
+  return {sheets:[pSheet({kind:'Weekly quiz', info:pWk(w), sec:'quiz', learner:true, marks:10, title:'Weekly quiz', sub:`${pE(y.theme)}: spelling and this week's language.`, body:`<p class="pinst">Questions 1 to 4: listen to your teacher, then write the word.</p>`+r.h})],
+    key:pKeyBlock('Weekly quiz', `<p class="small">Read questions 1 to 4 aloud: ${sp.map(q=>`<b>${pE(q.answer)}</b> (<i>${pE(q.clue.replace('______', q.answer))}</i>)`).join(', ')}.</p>`+r.k, 'quiz')};
+}
+const WEEK_SECS = [['spell','Spelling'],['read','Reading'],['deep','Think deeper'],['gram','Language'],['novel','Class novel'],['map','Thinking map'],['qm','Question maker'],['write','Writing'],['quiz','Weekly quiz'],['spelltest','Spelling test']];
+function pWeekDoc(w){
+  const y=YEAR[w-1], ps=PS(y.passage), info=pWk(w), nw=novelWeek(w), keys=[];
+  const sp=pSpellingSheets(w); keys.push(sp.key);
+  const r=pQs(readQs(w)), dq=DEEP_Q[DEEP_KIND(ps.type)]||DEEP_Q.info; keys.push(pKeyBlock(`Reading: ${pE(ps.title)}`, r.k, 'read'));
+  const qm=pBlk('qm', pQMakerHTML(w));
+  const readSheet=pSheet({kind:'Reading', info, learner:true, marks:10, title:`Reading: ${pE(ps.title)}`, sub:`${pE(pCap(ps.type))} · Read the text carefully, then answer the questions.`,
+    body:pBlk('read', pPassage(ps)+pSec('Questions','10 marks')+r.h)+pBlk('deep', pSec('Think deeper','Answer in full sentences')+dq.map((q,i)=>`<div class="pq"><span class="pqn">${i+1}.</span><div class="pqb"><div class="pqp">${pE(q)}</div>${pLines(3)}</div></div>`).join(''))+(nw?'':qm)});
+  const g=pGrammarHTML(w); keys.push(g.key);
+  const gramSheet=pSheet({kind:'Language', info, sec:'gram', learner:true, title:'Language', sub:`This week: ${pE(y.lang||'')}`, body:g.h});
+  let novelSheet=null; if (nw){ const n=pNovelSheet(w); keys.push(n.key); novelSheet=pSheet({kind:'Class novel', info, learner:true, title:pE(nw.n.title), sub:`${pE(nw.k.ch)} · by ${pE(nw.n.by)}`, body:pBlk('novel', n.h)+qm}); }
+  const wr=pWritingSheets(y.write, w); keys.push(wr.key);
+  const qz=pQuizSheet(w); keys.push(qz.key);
+  const sheets=[sp.sheets[0], readSheet, gramSheet, novelSheet, pMapSheet(w), ...wr.sheets, ...qz.sheets, sp.sheets[1]].filter(Boolean);
+  const key=pSheet({kind:'Memo', info, key:true, title:`Answer key: Week ${y.tw}, ${pE(y.theme)}`, sub:info, body:keys.join('')});
+  const used=['spell','read','deep','gram',nw?'novel':null,'map','qm','write','quiz','spelltest'].filter(Boolean);
+  return {title:`Week ${y.tw} worksheets`, sheets:[...sheets, key], secs:WEEK_SECS.filter(([k])=>used.includes(k)), regen:()=>pWeekDoc(w)};
+}
+
+/* ----- Tests and checks ----- */
+function pTestDoc(t){
+  const qs=buildTest(t), A=qs.filter(q=>q.sec==='A'), B=qs.filter(q=>q.sec==='B'), C=qs.filter(q=>q.sec==='C'), ps=C[0]&&C[0].passage;
+  const ra=pQs(A,1,1), rb=pQs(B,A.length+1,1), rc=pQs(C.map(q=>Object.assign({},q,{passage:null})),A.length+B.length+1,1), tot=qs.length;
+  const info=t.check?(t.id==='base'?'Term 1 · Week 1':`Term 3 · Week ${YEAR[t.week-1].tw}`):`Term ${t.term} · Week 8${pRange(t.week)?' · '+pRange(t.week):''}`;
+  const cover=`<table class="ptab pcover"><tr><th>Time</th><td>45 minutes</td><th>Total</th><td><b>${tot} marks</b></td></tr>
+    <tr><th>Sections</th><td colspan="3">A: Spelling (${A.length}) · B: Language (${B.length}) · C: Reading (${C.length})</td></tr></table>
+    <ul class="pinstr"><li>Answer <b>all</b> the questions in pen.</li><li>Read every question carefully before you answer.</li><li>For multiple choice, circle the letter of the best answer.</li><li>Check your work when you have finished.</li></ul>`;
+  const marksBox=`<table class="ptab pmarks"><tr><th>Section A</th><th>Section B</th><th>Section C</th><th>Total</th><th>%</th><th>Level</th></tr><tr><td>/ ${A.length}</td><td>/ ${B.length}</td><td>/ ${C.length}</td><td><b>/ ${tot}</b></td><td></td><td></td></tr></table>`;
+  const paper=pSheet({kind:t.check?t.kind+' check':'Formal assessment', info, learner:true, marks:tot, title:pE(t.title), sub:t.check?'Spelling, language and reading from across Grade 5. Just do your best.':`Covers Term ${t.term}, weeks 1 to 7.`,
+    body:cover+pSec('Section A: Spelling',`${A.length} marks`)+`<p class="pinst">Your teacher will read each word and a sentence. Write the word on the line.</p>${ra.h}`+pSec('Section B: Language',`${B.length} marks`)+rb.h+pSec('Section C: Reading',`${C.length} marks`)+`<p class="pinst">Read the text, then answer the questions.</p>${ps?pPassage(ps):''}${rc.h}${pSec('Marks')}${marksBox}`});
+  const levels=`<table class="ptab"><tr><th>Mark out of ${tot}</th><th>%</th><th>CAPS level</th></tr>${CAPS_LEVELS.map(([m,l,d],i)=>{ const hi=i?CAPS_LEVELS[i-1][0]-1:100; return `<tr><td>${Math.ceil(m*tot/100)} to ${Math.floor(hi*tot/100)}</td><td>${m} to ${hi}</td><td>${l} · ${pE(d)}</td></tr>`; }).join('')}</table>`;
+  const memo=pSheet({kind:'Memorandum', info, key:true, title:`Memorandum: ${pE(t.title)}`, sub:`${tot} marks · 1 mark per question`,
+    body:pKeyBlock('Section A: read each word, then the sentence, then the word again', `<ol class="pkeyl">${A.map(q=>`<li><b>${pE(q.answer)}</b> · <i>${pE(q.clue.replace('______', q.answer))}</i></li>`).join('')}</ol>`)
+      +pKeyBlock('Section B: Language', rb.k)+pKeyBlock('Section C: Reading', rc.k)+pKeyBlock('Converting marks to CAPS levels', levels)});
+  return {title:t.title, sheets:[paper, memo], regen:t.check?null:()=>pTestDoc(t)};
+}
+/* ----- Listening ----- */
+function pListenDoc(id){ const x=LISTEN.find(l=>l.id===id);
+  const qs=[...x.qs.map(s=>{ const [q,a,...w]=s.split('|'); return mc(q,a,w); }), ...(x.note?[typeQ(x.note[0], x.note[1], '')]:[])], r=pQs(qs);
+  return {title:x.title, sheets:[
+    pSheet({kind:'Listening', info:`Term ${x.term} · ${x.kind}`, learner:true, marks:qs.length, title:`Listening: ${pE(x.title)}`, sub:'Your teacher will read the text twice. You will not see the words. Make notes while you listen.', body:pSec('My notes')+pLines(6)+pSec('Questions')+r.h}),
+    pSheet({kind:'Teacher script', info:`Term ${x.term} · ${x.kind}`, key:true, title:`Listening script: ${pE(x.title)}`, sub:'Read the text aloud twice, at a steady pace. Pause between readings.', body:`<div class="ppsg"><p>${pE(x.text)}</p></div>`+pKeyBlock('Answers', r.k)})]};
+}
+/* ----- Class novel booklets ----- */
+function pNovelDoc(ti){ const n=NOVELS[ti], keys=[]; let num=1;
+  const weeks=n.wk.map((k,i)=>k?{k, w:ti*WEEKS_PER_TERM+i+1}:null).filter(Boolean);
+  const plan=`<table class="ptab"><tr><th>Week</th><th>Dates</th><th>Read</th><th class="n">✓</th></tr>${weeks.map(({k,w})=>`<tr><td>Week ${YEAR[w-1].tw}</td><td>${pRange(w)||'&nbsp;'}</td><td>${pE(k.ch)}</td><td></td></tr>`).join('')}</table>`;
+  const body=weeks.map(({k,w})=>{ const qs=[...k.q.map(([q,a,o,e])=>mc(q,a,o,e)), fsKeysQ(k.fs[0],k.fs[1],k.fs[2])], r=pQs(qs, num); num+=qs.length; keys.push(pKeyBlock(`Week ${YEAR[w-1].tw}: ${pE(k.ch)}`, r.k)); return `<div class="pblock">${pSec(`Week ${YEAR[w-1].tw}: ${pE(k.ch)}`, pRange(w))}${r.h}</div>`; }).join('');
+  return {title:n.title, regen:()=>pNovelDoc(ti), sheets:[
+    pSheet({kind:'Class novel', info:`Term ${n.term} · ${pE(n.theme)}`, learner:true, title:pE(n.title), sub:`by ${pE(n.by)} · Term ${n.term} theme: ${pE(n.theme)}`, body:pSec('My reading plan')+plan}),
+    pSheet({kind:'Class novel', info:`Term ${n.term}`, title:`${pE(n.title)}: chapter questions`, body}),
+    pSheet({kind:'Memo', info:`Term ${n.term}`, key:true, title:`Answer key: ${pE(n.title)}`, body:keys.join('')})]};
+}
+/* ----- Skill lessons and practice ----- */
+function pSkillDoc(sid){ const k=SK(sid), r=pQs(pSkillQs(sid, 4));
+  return {title:pNoEmoji(k.name), regen:()=>pSkillDoc(sid), sheets:[pSheet({kind:'Language practice', info:(WORLDS.find(x=>x.skills.includes(k))||{}).name||'', learner:true, title:pE(pNoEmoji(k.name)), sub:'Bronze, silver and gold questions', body:pLesson(k)+pSec('Practice')+r.h}),
+    pSheet({kind:'Memo', key:true, title:`Answer key: ${pE(pNoEmoji(k.name))}`, body:r.k})]}; }
+function pHandbookDoc(){
+  return {title:'Grade 5 language handbook', sheets:WORLDS.map(wd=>pSheet({kind:'Language handbook', info:wd.name, title:pE(wd.name), sub:`${wd.skills.length} lessons`, body:wd.skills.map(pLesson).join('')}))};
+}
+/* ----- Writing, models, paragraphs and quick writes ----- */
+const pWritingDoc = id => { const r=pWritingSheets(id, null, ''); return {title:WT(id).title, sheets:[...r.sheets, pSheet({kind:'Memo', key:true, title:`${pE(WT(id).title)}: marking rubric`, body:r.key})]}; };
+function pModelDoc(id){ const m=MODELS.find(x=>x.id===id), qs=(m.qs||[]).map(s=>{ const [q,a,...w]=s.split('|'); return mc(q,a,w); }), r=pQs(qs);
+  return {title:m.title, sheets:[pSheet({kind:'Model text', info:pE(m.title), learner:true, marks:qs.length, title:`Model text: ${pE(m.title)}`, sub:'Read this example. Notice how it is built, then answer the questions.',
+    body:`<div class="ppsg"><div class="ppsgh"><b>${pE(m.text[0])}</b><span>${pE(m.title)}</span></div>${m.text.slice(1).map(t=>`<p>${pE(t)}</p>`).join('')}</div>`+pSec('Questions')+r.h}),
+    pSheet({kind:'Memo', key:true, title:`Answer key: ${pE(m.title)}`, body:r.k})]}; }
+function pParasDoc(){ const keys=[];
+  const cards=PARAS.map((p,i)=>{ const ord=shuffle(p.s.map((_,j)=>j)); keys.push(`<li><b>${pE(p.t)}:</b> ${ord.map(j=>j+1).map(String).join(', ')}<br><small>${p.s.map(pE).join(' ')}</small></li>`);
+    return `<div class="pblock">${pSec(`${i+1}. ${pE(p.t)}`)}<p class="pinst">Number the sentences to build the paragraph.</p><div class="porder">${ord.map(j=>`<div><span class="pbox"></span>${pE(p.s[j])}</div>`).join('')}</div>${p.prompt?`<p class="pinst"><b>Now you:</b> ${pE(p.prompt)}</p>`:''}</div>`; });
+  return {title:'Paragraph puzzles', regen:()=>pParasDoc(), sheets:[pSheet({kind:'Paragraph puzzles', learner:true, title:'Paragraph puzzles', sub:'Topic sentence first, then the details, then a closing sentence.', body:cards.join('')}),
+    pSheet({kind:'Memo', key:true, title:'Answer key: paragraph puzzles', body:`<p class="small">The numbers show the order the learner should write next to each sentence, from top to bottom.</p><ol class="pkeyl">${keys.join('')}</ol>`})]}; }
+const pQWDoc = () => ({title:'Quick-write prompts', sheets:[pSheet({kind:'Quick writes', title:'Quick-write prompts', sub:'Cut out the cards. Write for 10 minutes without stopping.', body:`<div class="pcards">${QW.map((q,i)=>`<div><b>${i+1}</b>${pE(q)}</div>`).join('')}</div>`})]});
+/* ----- Orals ----- */
+function pOralDoc(term){ const os=ORALS.filter(o=>o.term===term), names=Object.keys(DB.profiles||{}).sort(), rows=names.length?names:Array(30).fill('');
+  return {title:`Term ${term} orals`, sheets:[
+    pSheet({kind:'Orals', info:`Term ${term}`, title:`Term ${term} oral tasks`, sub:'Prepare your talk using the plan. You will be marked on the four criteria below.',
+      body:`<div class="pcards two">${os.map(o=>`<div><b>${pE(o.title)}</b><p>${pE(o.brief)}</p><ol>${o.plan.map(x=>`<li>${pE(x)}</li>`).join('')}</ol></div>`).join('')}</div>${pSec('How you will be marked')}<table class="ptab">${ORAL_RUBRIC.map(([k,n])=>`<tr><td>${pE(n)}</td><td class="r">/ 5</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="r"><b>/ 20</b></td></tr></table>`}),
+    pSheet({kind:'Oral marks', info:`Term ${term}`, land:true, key:true, title:`Term ${term} oral marking sheet`, sub:'1 Not yet · 2 Developing · 3 Achieved · 4 Good · 5 Excellent',
+      body:`<table class="ptab pmarksheet"><tr><th>Learner</th><th>Task</th>${ORAL_RUBRIC.map(([k,n])=>`<th class="n">${pE(n.split(':')[0])}<br><small>/5</small></th>`).join('')}<th class="n">Total<br><small>/20</small></th><th>Comment</th></tr>${rows.map(n=>`<tr><td>${pE(n)}</td><td></td>${ORAL_RUBRIC.map(()=>'<td></td>').join('')}<td></td><td></td></tr>`).join('')}</table>`})]};
+}
+/* ----- Teacher quizzes ----- */
+function pTQuizDoc(id){ const qz=(DB.quizzes||[]).find(q=>q.id===id), qs=qz.qs.map(q=>q.w&&q.w.length?mc(q.q,q.a,q.w):typeQ(pE(q.q),q.a,'')), r=pQs(qs);
+  return {title:qz.title, regen:()=>pTQuizDoc(id), sheets:[pSheet({kind:'Class quiz', learner:true, marks:qs.length, title:pE(qz.title), body:r.h}), pSheet({kind:'Memo', key:true, title:`Answer key: ${pE(qz.title)}`, body:r.k})]}; }
+
+/* ----- Planners ----- */
+const pListenWeek = w => { const y=YEAR[w-1], slots=[2,3,4,5,6,7,9,10,11,12], i=slots.indexOf(y.tw); return i<0?null:LISTEN.filter(x=>x.term===y.term)[i]||null; };
+const pOralWeek = w => { const y=YEAR[w-1], i=[3,6,10,12].indexOf(y.tw); return i<0?null:ORALS.filter(o=>o.term===y.term)[i]||null; };
+function pAssess(w){ const y=YEAR[w-1], out=[]; const t=TESTS.find(t=>t.week===w); if (t) out.push(`<b>${pE(t.title)}</b> (30 marks)`);
+  if (w===CHECKS[0].week) out.push('<b>Starting Point Check</b> (baseline)'); if (w===CHECKS[1].week) out.push('<b>End of Year Check</b>');
+  out.push('Spelling test', 'Weekly quiz'); if (novelWeek(w)) out.push('Novel quiz'); const o=pOralWeek(w); if (o) out.push(`Oral: ${pE(o.title)}`); return out; }
+const pNovelWeeks = ti => { const ws=NOVELS[ti].wk.map((k,i)=>k?i+1:0).filter(Boolean); return ws.length===WEEKS_PER_TERM?'All term':`Weeks ${ws[0]} to ${ws[ws.length-1]}`; };
+const pTermDates = t => { const yr=calYear(); if (!yr) return ''; const c=SCHOOL_CAL[yr]; return `${dMon(dParse(c.opens[t-1]))} to ${dMon(dParse(c.closes[t-1]))} ${yr}`; };
+function pYearPlanner(){
+  const terms=[1,2,3], TW=t=>YEAR.filter(y=>y.term===t), uq=a=>[...new Set(a)];
+  const row=(label, f)=>`<tr><th>${label}</th>${terms.map(t=>`<td>${f(t)}</td>`).join('')}</tr>`;
+  const glance=`<table class="ptab pyear"><tr><th></th>${terms.map(t=>`<th>Term ${t}</th>`).join('')}</tr>
+    ${row('Dates', t=>`${pTermDates(t)}<br><small>13 teaching weeks${t===2?' · half-term break in the week of 28 June':''}</small>`)}
+    ${row('Theme', t=>`<b>${pE(TERM_THEMES[t-1])}</b>`)}
+    ${row('Class novel', t=>{ const n=NOVELS[t-1]; return `<i>${pE(n.title)}</i>, ${pE(n.by)}<br><small>${pNovelWeeks(t-1)}</small>`; })}
+    ${row('Formal assessment', t=>[t===1?'Starting Point Check (week 1)':'', `${TESTS[t-1].title} (week 8${pRange(TESTS[t-1].week)?', '+pRange(TESTS[t-1].week):''})`, t===3?`End of Year Check (week ${YEAR[CHECKS[1].week-1].tw})`:''].filter(Boolean).join('<br>'))}
+    ${row('Text types', t=>uq(TW(t).map(y=>y.theme)).map(pE).join(' · '))}
+    ${row('Writing tasks', t=>uq(TW(t).map(y=>WT(y.write).title)).map(pE).join(' · '))}
+    ${row('Language', t=>uq(TW(t).flatMap(y=>y.skills)).filter(s=>!/^r-/.test(s)).map(s=>pSN(s)).join(' · '))}
+    ${row('Listening', t=>LISTEN.filter(x=>x.term===t).map(x=>pE(x.title)).join(' · '))}
+    ${row('Orals', t=>ORALS.filter(o=>o.term===t).map(o=>pE(o.title)).join(' · '))}</table>`;
+  const grid=`<table class="ptab pgridy"><tr><th class="n">Wk</th>${terms.map(t=>`<th>Term ${t}</th>`).join('')}</tr>${Array.from({length:WEEKS_PER_TERM},(_,i)=>`<tr><td class="n"><b>${i+1}</b></td>${terms.map(t=>{ const w=(t-1)*WEEKS_PER_TERM+i+1, y=YEAR[w-1], nw=novelWeek(w), ts=TESTS.find(x=>x.week===w);
+    return `<td><small class="pdt">${pRange(w)}</small><b>${pE(y.theme)}</b>${ts?' <span class="ptag">Test</span>':''}<br><small>${pE(WT(y.write).title)}${nw?` · ${pE(nw.k.ch)}`:''}</small></td>`; }).join('')}</tr>`).join('')}</table>`;
+  return {title:'Year planner', sheets:[pSheet({kind:'Year planner', info:`${pYr()}`, land:true, cls:'pcompact', title:`Grade 5 English Year Planner ${pYr()}`, sub:'Home Language · CAPS · following the HeronBridge Grade 5 planning', body:glance}),
+    pSheet({kind:'Year planner', info:`${pYr()}`, land:true, cls:'pcompact', title:'The year, week by week', body:grid})]};
+}
+function pTermPlanner(t){
+  const ws=YEAR.filter(y=>y.term===t), n=NOVELS[t-1];
+  const rows=ws.map(y=>{ const w=y.w, ps=PS(y.passage), nw=novelWeek(w), sw=SPELL_WEEKS[w-1], li=pListenWeek(w), o=pOralWeek(w);
+    return `<tr><td class="n"><b>${y.tw}</b><br><small>${pRange(w)}</small></td><td><b>${pE(y.theme)}</b><br><small>${pE(ps.title)}</small></td><td>${nw?pE(nw.k.ch):'<small>No novel this week</small>'}</td>
+      <td>${y.skills.map(s=>pSN(s)).join('<br>')}${y.lang?`<br><small class="pnote">${pE(y.lang)}</small>`:''}</td><td>${pE(sw.pat)}</td><td>${pE(WT(y.write).title)}</td>
+      <td><small>${li?'Listening: '+pE(li.title):''}${li&&o?'<br>':''}${o?'Oral: '+pE(o.title):''}</small></td><td><small>${pAssess(w).join('<br>')}</small></td></tr>`; }).join('');
+  return {title:`Term ${t} planner`, sheets:[pSheet({kind:'Term planner', info:`Term ${t} · ${pTermDates(t)}`, land:true, title:`Term ${t} Planner`, sub:`Theme: <b>${pE(TERM_THEMES[t-1])}</b> · Class novel: <i>${pE(n.title)}</i> (${pNovelWeeks(t-1).toLowerCase()}) · ${pE(TESTS[t-1].title)} in week 8`,
+    body:`<table class="ptab pterm"><tr><th class="n">Week</th><th>Text type and reading</th><th>Class novel</th><th>Language</th><th>Spelling</th><th>Writing</th><th>Listening and speaking</th><th>Assessment</th></tr>${rows}</table>`})]};
+}
+function pWeekPlanSheet(w){
+  const y=YEAR[w-1], ps=PS(y.passage), nw=novelWeek(w), sw=SPELL_WEEKS[w-1], t=WT(y.write), s=novelMap(w), li=pListenWeek(w), o=pOralWeek(w), lang=y.skills.filter(k=>!/^r-/.test(k)), read=y.skills.filter(k=>/^r-/.test(k));
+  const outs=[...y.skills.map(k=>SK(k).out), `I can write ${/^[aeiou]/i.test(t.type)?'an':'a'} ${t.type.toLowerCase()}, using the right structure and features.`, `I can read and answer questions about ${/^[aeiou]/i.test(ps.type)?'an':'a'} ${ps.type}.`];
+  const caps=[['Listening and speaking', [li?`Listening comprehension: <b>${pE(li.title)}</b> (${pE(li.kind.toLowerCase())}). Text read twice, then 6 questions.`:'Class discussion of the reading text and the novel.', o?`Oral: <b>${pE(o.title)}</b>. ${pE(o.brief)}`:''].filter(Boolean)],
+    ['Reading and viewing', [`Text: <b>${pE(ps.title)}</b> (${pE(ps.type)}). Comprehension: 8 questions, a full-sentence answer and a Judge it question.`, nw?`Class novel: <i>${pE(nw.n.title)}</i>, ${pE(nw.k.ch)}. Novel quiz.`:'', s?`Thinking map: ${MAPS[s.m].n}, “${pE(s.t)}”.`:'', read.length?`Reading skills: ${read.map(k=>pSN(k)).join(', ')}.`:''].filter(Boolean)],
+    ['Writing and presenting', [`<b>${pE(t.title)}</b>: ${pE(y.prompt||t.prompt)}`, 'Process: plan, draft, check against the checklist, edit and publish.']],
+    ['Language structures and conventions', [`${lang.map(k=>`<b>${pSN(k)}</b>`).join(', ')||'Revision'}.${y.lang?` <small class="pnote">(${pE(y.lang)})</small>`:''}`, `Spelling: <b>${pE(sw.pat)}</b>. ${spellAll(sw).map(x=>pE(x[0])).join(', ')}.`]]];
+  const day=[['Introduce', `Introduce the text type: ${pE(y.theme.toLowerCase())}. Read “${pE(ps.title)}” together and point out its features. Start the spelling list.`],
+    ['Language', `Teach ${lang[0]?pE(pNoEmoji(SK(lang[0]).name)):'the language focus'}. Learners practise in the app or on the worksheet.`],
+    ['Reading', `${lang[1]?`Teach ${pE(pNoEmoji(SK(lang[1]).name))}${lang[2]?` and ${pE(pNoEmoji(SK(lang[2]).name))}`:''}. `:''}Comprehension questions on “${pE(ps.title)}”.`],
+    [nw?'Novel':'Thinking', nw?`Read ${pE(nw.k.ch)} of <i>${pE(nw.n.title)}</i>. Thinking map${s?`: ${MAPS[s.m].n}`:''}, then learners make their own questions.`:`Thinking map${s?`: ${MAPS[s.m].n}, “${pE(s.t)}”`:''}. Learners make their own questions about the text.`],
+    ['Writing', `Plan and draft: ${pE(t.title)}. Spelling test and weekly quiz.`]];
+  const app=['Spelling list and test','Reading text and questions',...y.skills.map(k=>pNoEmoji(SK(k).name)),nw?'Class novel quiz':null,s?'Thinking map':null,'Writing task','Weekly quiz'].filter(Boolean);
+  return pSheet({kind:'Week plan', info:pWk(w), sec:'w'+w, cls:'pcompact', title:`Week ${y.tw}: ${pE(y.theme)}`, sub:`Term ${y.term} · ${pRange(w)||'dates to be confirmed'} · Theme: ${pE(TERM_THEMES[y.term-1])}`,
+    body:`<table class="ptab pwinfo"><tr><th>Reading text</th><td>${pE(ps.title)}</td><th>Writing</th><td>${pE(t.title)}</td></tr><tr><th>Class novel</th><td>${nw?`${pE(nw.k.ch)}`:'No novel this week'}</td><th>Assessment</th><td>${pAssess(w).join(', ')}</td></tr><tr><th>Resources</th><td colspan="3"><small>Heron Word Quest: ${app.map(pE).join(' · ')}. Worksheets for this week are in the Print centre.</small></td></tr></table>
+      ${pSec('Learning outcomes')}<ul class="pouts">${outs.map(x=>`<li>${pE(x)}</li>`).join('')}</ul>
+      ${pSec('CAPS skills')}<table class="ptab pcaps">${caps.map(([h,xs])=>`<tr><th>${h}</th><td>${xs.map(x=>`<p>${x}</p>`).join('')}</td></tr>`).join('')}</table>
+      ${pSec('Suggested lesson sequence')}<table class="ptab pdays">${day.map(([h,x],i)=>`<tr><th class="n">Day ${i+1}</th><td><b>${h}</b> · ${x}</td></tr>`).join('')}</table>
+      ${pSec('Notes and reflection')}${pLines(3)}`});
+}
+const pWeekPlanner = t => ({title:`Term ${t} week-by-week planner`, sheets:YEAR.filter(y=>y.term===t).map(y=>pWeekPlanSheet(y.w)), secs:YEAR.filter(y=>y.term===t).map(y=>['w'+y.w, `Week ${y.tw}`])});
+
+/* ----- The print preview (an overlay, so the screen underneath stays as it was) ----- */
+function openDoc(doc){
+  closeDoc(); document.body.classList.add('pmode');
+  const sheets=doc.sheets.filter(s=>PRT.teacher||!s.key), hasKey=sheets.some(s=>s.key);
+  const ov=document.createElement('div'); ov.id='pover';
+  ov.innerHTML=`<div class="pwrap"><div class="ptool noprint"><div class="title"><button class="x" id="pxk" aria-label="Back">←</button><h2 class="grow">🖨️ ${pE(doc.title)}</h2></div>
+    <div class="card"><div class="pbtns">${hasKey?`<button class="btn gold" id="pgo">🖨️ Print for learners</button><button class="btn navy" id="pmemo">🖨️ Print the memo</button>`:`<button class="btn gold" id="pgo">🖨️ Print</button>`}${doc.regen?'<button class="btn ghost" id="pnew">🔀 New questions</button>':''}</div>
+      ${doc.secs&&doc.secs.length>1?`<details class="mt8"><summary class="small b">Choose what to print (${doc.secs.length})</summary><div class="pchecks">${doc.secs.map(([k,l])=>`<label><input type="checkbox" data-ps="${k}" checked> ${pE(l)}</label>`).join('')}</div></details>`:''}
+      <p class="small muted mt8">In the print box: choose <b>A4</b>, switch <b>off</b> “Headers and footers”, and switch <b>on</b> “Background graphics”. Choose “Save as PDF” to keep a copy.${hasKey?' The memo pages (marked “Teacher copy”) print separately.':''}</p></div></div>
+    <div class="pdoc" id="pdoc">${sheets.map(s=>s.h).join('')}</div></div>`;
+  document.body.appendChild(ov); ov.scrollTop=0;
+  const fit=()=>{ const pd=ov.querySelector('.pdoc'); if (!pd) return; const avail=pd.clientWidth; ov.querySelectorAll('.psheet').forEach(s=>{ const full=s.classList.contains('land')?1123:794; s.style.zoom=String(Math.min(1, (avail-6)/full)); }); };
+  fit(); ov._fit=fit; window.addEventListener('resize', fit);
+  const sync=()=>{ const off=new Set([...ov.querySelectorAll('[data-ps]')].filter(c=>!c.checked).map(c=>c.dataset.ps)); ov.querySelectorAll('.pdoc [data-sec]').forEach(el=>el.classList.toggle('poff', !!el.dataset.sec && off.has(el.dataset.sec)));
+    ov.querySelectorAll('.psheet').forEach(sh=>{ const bl=sh.querySelectorAll('.pblk'); if (bl.length && !sh.dataset.sec) sh.classList.toggle('poff', [...bl].every(b=>b.classList.contains('poff'))); }); };
+  ov.querySelectorAll('[data-ps]').forEach(c=>c.onchange=sync);
+  const go=mode=>{ document.body.classList.remove('p-learner','p-memo'); if (mode) document.body.classList.add(mode); try { window.print(); } catch(e){ toast('Printing is not available here'); } };
+  ov.querySelector('#pgo').onclick=()=>go(hasKey?'p-learner':'');
+  if (ov.querySelector('#pmemo')) ov.querySelector('#pmemo').onclick=()=>go('p-memo');
+  if (ov.querySelector('#pnew')) ov.querySelector('#pnew').onclick=()=>openDoc(Object.assign(doc.regen(), {}));
+  ov.querySelector('#pxk').onclick=closeDoc;
+}
+function closeDoc(){ const o=document.getElementById('pover'); if (o){ if (o._fit) window.removeEventListener('resize', o._fit); o.remove(); } document.body.classList.remove('pmode','p-learner','p-memo'); }
+window.addEventListener('afterprint', ()=>document.body.classList.remove('p-learner','p-memo'));
+/* Print whatever is on screen (progress, results, reports), on the letterhead */
+function printScreen(){
+  const h=$('#app .title h2'), title=pNoEmoji(h?h.textContent:'Heron Word Quest'), c=app.cloneNode(true);
+  const live=[...app.querySelectorAll('canvas')]; c.querySelectorAll('canvas').forEach((cv,i)=>{ try { const im=document.createElement('img'); im.src=live[i].toDataURL(); im.style.maxWidth='100%'; cv.replaceWith(im); } catch(e){ cv.remove(); } });
+  c.querySelectorAll('.title, .noprint, button.btn, button.x, .pbtn, input, select, textarea, .toast, script, audio, video').forEach(e=>e.remove());
+  c.querySelectorAll('button').forEach(b=>{ const d=document.createElement('div'); d.className=b.className; d.innerHTML=b.innerHTML; b.replaceWith(d); });
+  c.querySelectorAll('details').forEach(d=>d.setAttribute('open',''));
+  c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+  openDoc({title, sheets:[pSheet({kind:'Report', info:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}), title:pE(title), body:`<div class="pscreen">${c.innerHTML}</div>`})]});
+}
+document.addEventListener('click', e=>{ if (e.target.closest && e.target.closest('#pthis')) printScreen(); });
+
+/* ----- Print centre and planners on the teacher side ----- */
+function screenPrintCentre(back){
+  stopTimers(); PRT.teacher=true; const bk=back||screenTeacher, w=curWeek();
+  const opt=(v,l,sel)=>`<option value="${v}" ${sel?'selected':''}>${pE(l)}</option>`;
+  app.innerHTML = backTitle('🖨️ Print centre')+`<p class="muted">Everything prints on HeronBridge letterhead, on A4. Open anything to see the pages first. Answer keys and memos print separately.</p>
+   ${plannerCardHTML()}
+   <div class="card mt"><b>📦 A week's worksheets</b><p class="small muted">Spelling, reading, language, the novel, the thinking map, the question maker, writing, the weekly quiz and the spelling test, with an answer key.</p>
+     <select class="name" id="pcw">${YEAR.map(y=>opt(y.w, `T${y.term} W${y.tw} · ${y.theme}`, y.w===w)).join('')}</select>
+     <div class="pbtns mt8"><button class="btn gold" id="pcweek">Open the week's worksheets</button><button class="btn ghost" id="pcwp">Week plan</button></div></div>
+   <div class="card mt"><b>📝 Tests and checks</b><p class="small muted">Question paper and memorandum, 30 marks each.</p><div class="pbtns">${[CHECKS[0], ...TESTS, CHECKS[1]].map(t=>`<button class="btn ghost" data-pt="${t.id}">${pE(t.title)}</button>`).join('')}</div></div>
+   <div class="card mt"><b>📚 Class novels</b><p class="small muted">Reading plan, every week's chapter questions and an answer key.</p><div class="pbtns">${NOVELS.map((n,i)=>`<button class="btn ghost" data-pn="${i}">${n.icon} ${pE(n.title)}</button>`).join('')}</div></div>
+   <div class="card mt"><b>👂 Listening</b><p class="small muted">Learner answer sheet, plus your script and memo.</p><select class="name" id="pcl">${[1,2,3].map(t=>`<optgroup label="Term ${t}">${LISTEN.filter(x=>x.term===t).map(x=>opt(x.id, `${x.title} (${x.kind})`)).join('')}</optgroup>`).join('')}</select><button class="btn ghost w100 mt8" id="pclgo">Open</button></div>
+   <div class="card mt"><b>🎤 Orals</b><p class="small muted">Task cards and a marking sheet with your class list.</p><div class="pbtns">${[1,2,3].map(t=>`<button class="btn ghost" data-po="${t}">Term ${t}</button>`).join('')}</div></div>
+   <div class="card mt"><b>🧩 Language lessons</b><p class="small muted">Any skill: the lesson, 12 practice questions and answers.</p><select class="name" id="pcs">${WORLDS.map(wd=>`<optgroup label="${pE(wd.name)}">${wd.skills.map(k=>opt(k.id, k.name)).join('')}</optgroup>`).join('')}</select>
+     <div class="pbtns mt8"><button class="btn ghost" id="pcsgo">Open the lesson</button><button class="btn ghost" id="pchb">📘 The whole handbook</button></div></div>
+   <div class="card mt"><b>✍️ Writing</b><p class="small muted">Any writing task with its diagram, planning frame, lined pages, checklist and rubric.</p><select class="name" id="pcwt">${WRITING_TASKS.map(t=>opt(t.id, t.title)).join('')}</select>
+     <div class="pbtns mt8"><button class="btn ghost" id="pcwtgo">Open the task</button></div>
+     <select class="name mt8" id="pcm">${MODELS.map(m=>opt(m.id, 'Model text: '+m.title)).join('')}</select><div class="pbtns mt8"><button class="btn ghost" id="pcmgo">Open the model text</button><button class="btn ghost" id="pcpz">Paragraph puzzles</button><button class="btn ghost" id="pcqw">Quick-write cards</button></div></div>
+   ${(DB.quizzes||[]).length?`<div class="card mt"><b>✏️ My quizzes</b><div class="pbtns">${DB.quizzes.map(q=>`<button class="btn ghost" data-pq="${pE(q.id)}">${pE(q.title)}</button>`).join('')}</div></div>`:''}
+   <div class="card mt"><b>📈 Reports</b><p class="small muted">Progress pages, test results and the mastery map each have a 🖨️ button at the top. It prints that page on the letterhead.</p>
+     <div class="pbtns"><button class="btn ghost" id="pcr1">Class progress</button><button class="btn ghost" id="pcr2">Test results</button><button class="btn ghost" id="pcr3">Mastery map</button></div></div>`;
+  $('#bk').onclick=()=>bk(); wirePlannerCard();
+  $('#pcweek').onclick=()=>openDoc(pWeekDoc(+$('#pcw').value)); $('#pcwp').onclick=()=>{ const w=+$('#pcw').value; openDoc({title:`Week ${YEAR[w-1].tw} plan`, sheets:[pWeekPlanSheet(w)]}); };
+  $$('[data-pt]').forEach(b=>b.onclick=()=>openDoc(pTestDoc(TBY(b.dataset.pt))));
+  $$('[data-pn]').forEach(b=>b.onclick=()=>openDoc(pNovelDoc(+b.dataset.pn)));
+  $('#pclgo').onclick=()=>openDoc(pListenDoc($('#pcl').value));
+  $$('[data-po]').forEach(b=>b.onclick=()=>openDoc(pOralDoc(+b.dataset.po)));
+  $('#pcsgo').onclick=()=>openDoc(pSkillDoc($('#pcs').value)); $('#pchb').onclick=()=>openDoc(pHandbookDoc());
+  $('#pcwtgo').onclick=()=>openDoc(pWritingDoc($('#pcwt').value)); $('#pcmgo').onclick=()=>openDoc(pModelDoc($('#pcm').value));
+  $('#pcpz').onclick=()=>openDoc(pParasDoc()); $('#pcqw').onclick=()=>openDoc(pQWDoc());
+  $$('[data-pq]').forEach(b=>b.onclick=()=>openDoc(pTQuizDoc(b.dataset.pq)));
+  $('#pcr1').onclick=()=>screenProgressTeacher(); $('#pcr2').onclick=()=>screenTestResults(); $('#pcr3').onclick=()=>screenMasteryMap();
+}
+const plannerCardHTML = pc => `<div class="card mt tplan"><b>📅 My planners</b><p class="small muted">Built from the Grade 5 planning and the ${pYr()} calendar. Open one to read it, or print it.</p>
+   <button class="btn gold w100" id="tp-y">🗓️ Year planner</button>
+   <p class="small b mt8">Term planners</p><div class="pbtns">${[1,2,3].map(t=>`<button class="btn ghost" data-tpt="${t}">Term ${t}</button>`).join('')}</div>
+   <p class="small b mt8">Week-by-week planners</p><div class="pbtns">${[1,2,3].map(t=>`<button class="btn ghost" data-tpw="${t}">Term ${t}</button>`).join('')}</div>${pc?'<button class="btn navy w100 mt8" id="tp-pc">🖨️ Print centre: worksheets, tests and more</button>':''}</div>`;
+function wirePlannerCard(){ PRT.teacher=true;
+  if ($('#tp-y')) $('#tp-y').onclick=()=>openDoc(pYearPlanner());
+  $$('[data-tpt]').forEach(b=>b.onclick=()=>openDoc(pTermPlanner(+b.dataset.tpt)));
+  $$('[data-tpw]').forEach(b=>b.onclick=()=>openDoc(pWeekPlanner(+b.dataset.tpw))); }
+
+function addPrintBtn(fn, label, teacherOnly){ if (teacherOnly && !PRT.teacher) return; const t=$('#app .title'); if (!t) return; const old=t.querySelector('#pthis'); if (old) old.remove();
+  const b=document.createElement('button'); b.className='x pbtn pact noprint'; b.setAttribute('aria-label', label); b.title=label; b.textContent='🖨️'; b.onclick=fn; t.appendChild(b); }
 /* ----- Start here: the one next thing to do ----- */
 function nextTask(p){
   const w=curWeek(), y=YEAR[w-1], r=p.yr['w'+w]||{}, back=()=>screenHome(), st=weekStatus(p,w), step=`Step ${Math.min(st.total, st.done+1)} of ${st.total} this week`;
@@ -8931,6 +9446,7 @@ function teacherWeekHTML(){
     <div class="tw3 mt8"><div><b>${all.length}/${ps.length}</b><small>finished the week</small></div><div><b>${ps.length-none.length}/${ps.length}</b><small>started</small></div>
       ${t?`<div><b>${tDone}/${ps.length}</b><small>${t.check?(t.id==='base'?'Starting Point':'End of Year'):'Term '+t.term+' test'} done</small></div>`:''}</div>
     ${none.length?`<p class="small mt8"><b>Not started yet:</b></p><div class="nslist">${none.slice(0,16).map(x=>`<button class="nschip" data-d="${escH(x.p.name)}">${escH(x.p.name)}</button>`).join('')}${none.length>16?`<small class="muted">and ${none.length-16} more</small>`:''}</div>`:'<p class="small mt8">✅ Everyone has started this week\'s work.</p>'}
+    <div class="twbtns mt8"><button class="btn ghost" id="tw-pp">🖨️ This week's worksheets</button><button class="btn ghost" id="tw-wp">📋 Week plan</button></div>
     <div class="twbtns mt8"><button class="btn ${wr?'gold':'ghost'}" id="tw-wr">📥 Writing to mark${wr?` (${wr})`:': none'}</button>
       ${studioOn()||sq?`<button class="btn ${sq?'gold':'ghost'}" id="tw-st">🎧 Studio to mark${sq?` (${sq})`:': none'}</button>`:''}
       ${bk?`<button class="btn ghost" id="tw-bk">📚 Books to check (${bk})</button>`:''}</div>
@@ -8984,13 +9500,14 @@ function classCSV(){
 const encode = o => 'HWQ1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const decode = s => JSON.parse(decodeURIComponent(escape(atob(s.trim().replace(/^HWQ1:/,'')))));
 function screenTeacher(){
-  stopTimers();
+  stopTimers(); PRT.teacher=true;
   const names=Object.keys(DB.profiles);
   app.innerHTML = backTitle('🍎 Teacher corner')+`
    ${cloudBarHTML()}
    ${teacherWeekHTML()}
+   ${plannerCardHTML(true)}
    <details class="moretools mt" id="mtools" ${DB.toolsOpen?'open':''}><summary>🧰 All tools <small class="muted">(marking, progress, tests, quizzes and more)</small></summary>
-   <div class="tools"><button class="tool" id="starter"><span>📽️</span><b>Class Starter</b><small>Big-screen quiz for the projector</small></button>
+   <div class="tools"><button class="tool" id="tprint"><span>🖨️</span><b>Print centre</b><small>Worksheets, tests, memos, planners and reports</small></button><button class="tool" id="starter"><span>📽️</span><b>Class Starter</b><small>Big-screen quiz for the projector</small></button>
      <button class="tool" id="picker"><span>🎲</span><b>Name Picker</b><small>Randomly choose a learner</small></button>
      <button class="tool" id="tprog"><span>📈</span><b>Progress</b><small>Every mark and learning outcome, by learner, class and grade</small></button>
      <button class="tool" id="tres"><span>📝</span><b>Test results</b><small>Marks, CAPS levels and what to reteach</small></button>
@@ -9046,6 +9563,8 @@ function screenTeacher(){
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#mtools').ontoggle=()=>{ DB.toolsOpen=$('#mtools').open; save(); };
+  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre();
+  if ($('#tw-pp')) $('#tw-pp').onclick=()=>openDoc(pWeekDoc(curWeek())); if ($('#tw-wp')) $('#tw-wp').onclick=()=>openDoc({title:`Week ${YEAR[curWeek()-1].tw} plan`, sheets:[pWeekPlanSheet(curWeek())]});
   if ($('#tw-wr')) $('#tw-wr').onclick=()=>screenWritingInbox(); if ($('#tw-st')) $('#tw-st').onclick=()=>screenMarkHub();
   if ($('#tw-bk')) $('#tw-bk').onclick=()=>screenBooksTeacher(); if ($('#tw-pr')) $('#tw-pr').onclick=()=>screenProgressTeacher();
   $('#sv').onclick=()=>{ DB.teacher=$('#tn').value.trim()||'Mr Radloff'; DB.focus=$('#fw').value||null;
@@ -9383,6 +9902,7 @@ function parentFeedbackHTML(tm, teacher){
     ${tm.c?`<p class="tfc">"${escH(tm.c)}"</p>`:''}<small class="muted">1 Not yet · 2 Developing · 3 Achieved · 4 Good · 5 Excellent</small></div>`;
 }
 function screenParent(v, tab){
+  PRT.parent=true;
   stopTimers();
   const piece=(x, forMag)=>`<div class="wpiece ${forMag?'magpiece':''} mt8">
       ${forMag?`<h3>${escH(x.kind)} by ${escH(x.name)}</h3>`:`<small class="muted b">${escH(x.kind)}</small>`}
