@@ -340,6 +340,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 .wrongrow{background:#fff6f0}
 .pre,.wpiece p{white-space:pre-wrap}
 .taskprompt{border-left:6px solid var(--hb)}
+.dgfig{background:#fff;border:2px solid #e3e8f2;border-radius:16px;padding:10px 12px;margin:12px auto 0;max-width:560px}.dgfig figcaption{font-weight:800;color:var(--navy);margin-bottom:6px}.dgm{width:100%;height:auto;display:block}.dgnote{margin:6px 0 0}.dgmore{margin-top:10px}.dgmore summary{cursor:pointer;font-weight:800;color:var(--navy)}
 textarea.writebox{min-height:120px}
 @media(max-width:380px){.wktiles{grid-template-columns:1fr 1fr}}
 
@@ -5275,6 +5276,7 @@ function screenLearn(sid, lvPick){
   app.innerHTML = backTitle(`📘 ${k.name}`) + `
    <div class="learn"><div class="plume">${PLUME('h84')}</div>
      <div class="bubble"><small class="up b" style="color:${w.color}">Professor Plume explains</small><p>${k.learn.rule}</p></div></div>
+   ${SKILL_DIAG[sid]?SKILL_DIAG[sid]():''}
    <div class="tipbox mt"><b>💡 Remember it!</b><p>${k.learn.tip}</p></div>
    <div class="card mt"><b>Examples</b><ul class="ex">${k.learn.ex.map(e=>`<li>${e}</li>`).join('')}</ul></div>
    <div class="card mt outcome"><b>🎯 ${escH(k.out)}</b><div class="lvlist">${k.lvl.map((d,i)=>`<div>${LVI[i]} <b>${LVN[i]}:</b> ${escH(d)}</div>`).join('')}</div></div>
@@ -7407,6 +7409,7 @@ function screenTask(id, w){
   stopTimers(); const p=P(), t=WT(id), dk=w?id+'@'+w:id, d=p.drafts[dk]||(p.drafts[dk]={plan:[],text:''}), prompt=(w&&YEAR[w-1].prompt)||t.prompt;
   app.innerHTML = backTitle(`${t.icon} ${escH(t.title)}`)+`
    <div class="card taskprompt"><small class="up b muted">${escH(t.type)}${w?` · Term ${YEAR[w-1].term}, Week ${YEAR[w-1].tw}`:''}</small><p class="f18">${escH(prompt)}</p></div>
+   ${WRITE_DIAG[t.id]?WRITE_DIAG[t.id]():''}
    <div class="card mt"><b>1. Plan it 🗺️</b>${t.plan.map((l,i)=>`<label class="lbl">${escH(l)}</label><input class="name plan" data-pi="${i}" value="${escH(d.plan[i]||'')}" autocomplete="off" spellcheck="false">`).join('')}</div>
    <div class="card mt"><b>2. Write it ✍️</b><p class="small muted">${t.acrostic?'Write one line for each letter of your word.':'Use your plan. Leave an empty line between paragraphs.'}</p>
      <textarea id="tx" class="writebox" rows="10" spellcheck="false" placeholder="Start writing here…">${escH(d.text)}</textarea>
@@ -7758,7 +7761,7 @@ function thinkingCardHTML(models, ms){
   if (!one && ms){ const g=ms.map(x=>{ const t=(x.m.tl||{}), f=t.find&&t.find[1]>=3?t.find[0]/t.find[1]:null, i=t.infer&&t.infer[1]>=3?t.infer[0]/t.infer[1]:null; return {name:x.name, gap:f!=null&&i!=null?Math.round((f-i)*100):null}; }).filter(x=>x.gap!=null&&x.gap>=20).sort((a,b)=>b.gap-a.gap).slice(0,6);
     if (g.length) weak=`<p class="small mt8"><b>Strong at finding, weaker at working it out:</b> ${g.map(x=>escH(x.name)).join(', ')}</p>`; }
   return `<div class="card mt"><b>🧠 Thinking levels</b><p class="small muted">How ${one?'often':'often the class'} gets reading questions right at each level of Bloom's and Barrett's taxonomies.</p>${rows}
-    <div class="tlrow"><span class="tlchip" style="--c:${C.c}">${C.ic} ${C.n}</span><span class="grow"><small class="muted">Bloom's: Create · ${maps} thinking map${maps===1?'':'s'}, ${qm} set${qm===1?'':'s'} of own questions, ${wr} piece${wr===1?'':'s'} of writing</small></span></div>${weak}</div>`;
+    <div class="tlrow"><span class="tlchip" style="--c:${C.c}">${C.ic} ${C.n}</span><span class="grow"><small class="muted">Bloom's: Create · ${maps} thinking map${maps===1?'':'s'}, ${qm} set${qm===1?'':'s'} of own questions, ${wr} piece${wr===1?'':'s'} of writing</small></span></div>${weak}<details class="dgmore"><summary>📐 How the levels fit together</summary>${bloomFig()}</details></div>`;
 }
 /* ----- One learner: every mark, every outcome ----- */
 function progressHTML(m, st){
@@ -8238,7 +8241,7 @@ function screenNovel(w, back){
 /* ================= THINKING: Bloom's and Barrett's levels, and Thinking Maps ================= */
 const TLV = [
  {k:'find',   ic:'🔍', n:'Find it',      bloom:'Remember',               barrett:'Literal',     c:'#2563eb'},
- {k:'infer',  ic:'🧩', n:'Work it out',  bloom:'Understand and Analyse', barrett:'Inferential', c:'#7c3aed'},
+ {k:'infer',  ic:'🧩', n:'Work it out',  bloom:'Understand, Apply, Analyse', barrett:'Inferential', c:'#7c3aed'},
  {k:'judge',  ic:'⚖️', n:'Judge it',     bloom:'Evaluate',               barrett:'Evaluation',  c:'#db2777'},
  {k:'create', ic:'💡', n:'Create it',    bloom:'Create',                 barrett:'Appreciation',c:'#059669'}];
 const TL = k => TLV.find(x=>x.k===k);
@@ -8388,6 +8391,7 @@ function screenQuestionMaker(w, src, back){
   const vals=['find','infer','judge'].map(lv=>old.qs.find(x=>x.lv===lv)||{lv, q:'', a:''});
   app.innerHTML = backTitle('❓ Make your own questions')+`
    <p class="muted small">Be the teacher! Write three questions about <b>${escH(what)}</b>, one at each thinking level, and give the answer to each.</p>
+   <details class="dgmore" id="qmbloom"><summary>📐 What do the levels mean?</summary>${bloomFig()}</details>
    ${vals.map((x,i)=>{ const L=TL(x.lv), S=QM_STARTS[x.lv]; return `<div class="card mt qmcard" style="--c:${L.c}"><div class="row"><span class="tlchip" style="--c:${L.c}">${L.ic} ${L.n}</span><small class="muted grow right">${L.bloom}</small></div>
      <p class="small muted mt4">${escH(S.tip)}<br><i>Example: ${escH(S.ex)}</i></p>
      <label class="lbl">My question</label><input class="name qmq" data-i="${i}" value="${escH(x.q)}" placeholder="Type your question…" autocomplete="off">
@@ -8412,6 +8416,241 @@ function mapsTeacherHTML(p){
   const list=Object.entries(p.maps||{}).filter(([,x])=>x&&x.done).map(([k,x])=>[+k.slice(1),x]).sort((a,b)=>b[0]-a[0]).slice(0,3); if (!list.length) return '';
   return `<div class="card mt"><b>🗺️ Thinking maps</b><p class="small muted">The latest maps, newest first.</p>${list.map(([w,x])=>{ const s=novelMap(w); return s?`<div class="mt8"><small class="muted b">${wkLabel(w)} · ${MAPS[s.m].n}: ${escH(s.t)}</small>${mapHTML(s, x.v, true)}</div>`:''; }).join('')}</div>`;
 }
+/* ----- Diagrams: text shapes, grammar pictures and Bloom's pyramid ----- */
+/* ================= DIAGRAMS: drawn in SVG so they stay sharp on any screen ================= */
+const DG = {navy:'#1f2756', gold:'#f0a92a', goldL:'#fff4d6', purple:'#7c3aed', purpleL:'#efe7ff', pink:'#db2777', pinkL:'#fde7f1', blue:'#2563eb', blueL:'#e3ecff', teal:'#0f766e', tealL:'#dcf5ef', green:'#15803d', greenL:'#e3f6e9', grey:'#64748b', line:'#cbd5e1', paper:'#ffffff', soft:'#f4f6fb', red:'#dc2626'};
+const dgEsc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function dgWrap(t, maxW, size){ const per=Math.max(4, Math.floor(maxW/(size*0.56))), out=[]; let line='';
+  String(t).split(' ').forEach(w=>{ if ((line+' '+w).trim().length>per && line){ out.push(line); line=w; } else line=(line+' '+w).trim(); }); if (line) out.push(line); return out; }
+function dgT(x, y, t, o={}){ const s=o.s||13, lines=o.w?dgWrap(t,o.w,s):[String(t)], lh=s*1.22;
+  return `<text x="${x}" y="${y}" font-size="${s}" font-weight="${o.b===false?500:o.b||700}" fill="${o.c||DG.navy}" text-anchor="${o.a||'middle'}"${o.i?' font-style="italic"':''} font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">${lines.map((l,i)=>`<tspan x="${x}" dy="${i?lh:0}">${dgEsc(l)}</tspan>`).join('')}</text>`; }
+const dgLines = (t, w, s) => (w?dgWrap(t,w,s||13):[t]).length;
+const dgSvg = (w, h, body, label) => `<svg viewBox="0 0 ${w} ${h}" class="dgm" role="img" aria-label="${dgEsc(label)}">${body}</svg>`;
+const dgFig = (title, svg, note) => `<figure class="dgfig"><figcaption>📐 ${title}</figcaption>${svg}${note?`<p class="small muted dgnote">${note}</p>`:''}</figure>`;
+const dgArrow = (x1,y1,x2,y2,c=DG.grey,w=2) => { const a=Math.atan2(y2-y1,x2-x1), L=8, p1=[x2-L*Math.cos(a-0.45), y2-L*Math.sin(a-0.45)], p2=[x2-L*Math.cos(a+0.45), y2-L*Math.sin(a+0.45)];
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/><path d="M${x2},${y2}L${p1[0].toFixed(1)},${p1[1].toFixed(1)}L${p2[0].toFixed(1)},${p2[1].toFixed(1)}Z" fill="${c}"/>`; };
+const dgBox = (x,y,w,h,fill,stroke,r=10) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke||'none'}" stroke-width="2"/>`;
+const dgBar = (x,y,w,c=DG.line,h=6) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${c}"/>`;
+
+/* ----- Writing: the shape of each text type ----- */
+function dgMountain(){
+  const P=[[34,212],[82,166],[128,120],[180,58],[248,140],[318,212]], st=[['Orientation','Who? Where? When?'],['Complication','A problem starts.'],['Rising action','Things get harder.'],['Climax','The most exciting moment.'],['Resolution','The problem is solved.'],['Ending','How it ends, and how the characters feel.']];
+  const cols=[DG.blue,DG.purple,DG.pink,DG.red,DG.teal,DG.green];
+  let b=`<defs><linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9e3ff"/><stop offset="1" stop-color="#f7f5ff"/></linearGradient></defs>
+   <path d="M10,222 L${P.map(p=>p.join(',')).join(' L')} L350,222 Z" fill="url(#mtn)"/><polyline points="${P.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${DG.navy}" stroke-width="3" stroke-linejoin="round"/>
+   <line x1="6" y1="222" x2="354" y2="222" stroke="${DG.line}" stroke-width="2"/>`;
+  const lab=[[34,240,'middle'],[98,186,'start'],[144,140,'start'],[180,38,'middle'],[262,140,'start'],[318,240,'middle']];
+  P.forEach(([x,y],i)=>{ b+=`<circle cx="${x}" cy="${y}" r="11" fill="${cols[i]}" stroke="#fff" stroke-width="2"/>`+dgT(x,y+4.5,i+1,{s:12,c:'#fff'}); const [lx,ly,a]=lab[i]; b+=dgT(lx,ly,st[i][0],{s:12.5,a,c:cols[i]}); });
+  let y=268; st.forEach(([t,d],i)=>{ const col=i%2, row=Math.floor(i/2), x=col?186:10, yy=y+row*44; b+=`<circle cx="${x+9}" cy="${yy+3}" r="8" fill="${cols[i]}"/>`+dgT(x+9,yy+7,i+1,{s:10,c:'#fff'})+dgT(x+22,yy+7,t,{s:12,a:'start',c:cols[i]})+dgT(x+22,yy+22,d,{s:11,a:'start',b:false,w:140,c:DG.grey}); });
+  return dgSvg(360,400,b,'Story mountain');
+}
+function dgBurger(layers, label){ // layers: [{t, d, kind:'bun-top'|'fill'|'bun-bottom', c}]
+  let y=10, b=''; const X=30, W=300;
+  layers.forEach(L=>{ const h=L.kind==='fill'?46:56;
+    if (L.kind==='bun-top') b+=`<path d="M${X},${y+h} Q${X},${y} ${X+W/2},${y} Q${X+W},${y} ${X+W},${y+h} Z" fill="#e8a54b" stroke="#b9741f" stroke-width="2"/>${[60,110,170,230,270].map((sx,i)=>`<ellipse cx="${X+sx}" cy="${y+16+(i%2)*8}" rx="4" ry="2.2" fill="#fff6dd"/>`).join('')}`;
+    else if (L.kind==='bun-bottom') b+=`<path d="M${X},${y} L${X+W},${y} Q${X+W},${y+h} ${X+W-34},${y+h} L${X+34},${y+h} Q${X},${y+h} ${X},${y} Z" fill="#e8a54b" stroke="#b9741f" stroke-width="2"/>`;
+    else b+=dgBox(X-6,y+2,W+12,h-4,L.c,'rgba(0,0,0,.12)',14);
+    b+=dgT(X+W/2, y+(L.kind==='bun-top'?h-24:L.kind==='bun-bottom'?22:20), L.t, {s:13.5, c:L.kind==='fill'?'#fff':DG.navy})+dgT(X+W/2, y+(L.kind==='bun-top'?h-8:L.kind==='bun-bottom'?38:36), L.d, {s:11, b:false, c:L.kind==='fill'?'#fff':'#5a3a12'});
+    y+=h+4; });
+  return dgSvg(360, y+6, b, label);
+}
+function dgPage(blocks, label, H){ // a sheet of paper with labelled parts, and notes on the right that never overlap
+  const PX=10, PW=200, NX=222, NW=132, NS=11.5, LH=NS*1.22; let b='', notes=[];
+  blocks.forEach(k=>{ const x=PX+(k.x||14), w=k.w||(PW-28);
+    if (k.lines) for (let i=0;i<k.lines;i++) b+=dgBar(x, k.y+i*12, i===k.lines-1&&!k.full?w*0.65:w, k.c||DG.line, 6);
+    if (k.text) b+=dgT(k.a==='end'?x+w:k.a==='middle'?x+w/2:x, k.y+(k.ty||10), k.text, {s:k.s||12, a:k.a||'start', c:k.tc||DG.navy, b:k.bold===false?500:700, i:k.it});
+    if (k.box) b+=dgBox(x, k.y, w, k.h, k.fill||DG.soft, k.stroke||DG.line, 8)+(k.boxText?dgT(x+w/2, k.y+k.h/2+4-(dgLines(k.boxText,w-12,k.bs||12)-1)*7, k.boxText, {s:k.bs||12, c:k.btc||DG.grey, w:w-12}):'');
+    if (k.note) notes.push({ax:x+w+4, ay:k.y+(k.mh||5), want:(k.ny||k.y), t:k.note, c:k.nc||DG.navy, lc:k.nc||DG.gold}); });
+  notes.sort((a,b)=>a.want-b.want); let bottom=0;
+  notes.forEach(n=>{ const h=dgLines(n.t,NW,NS)*LH; n.y=Math.max(n.want, bottom+6); bottom=n.y+h; });
+  const HH=Math.max(H, bottom+14);
+  notes.forEach(n=>{ b+=`<line x1="${n.ax}" y1="${n.ay}" x2="${NX-4}" y2="${n.y+4}" stroke="${n.lc}" stroke-width="1.6"/><circle cx="${n.ax}" cy="${n.ay}" r="3" fill="${n.lc}"/>`+dgT(NX, n.y+8, n.t, {s:NS, a:'start', w:NW, c:n.c}); });
+  return dgSvg(360, HH, `<rect x="${PX}" y="8" width="${PW}" height="${HH-16}" rx="8" fill="#fff" stroke="${DG.line}" stroke-width="2"/><path d="M${PX+PW-26},8 L${PX+PW},34" stroke="${DG.line}" stroke-width="2"/>`+b, label);
+}
+function dgTimeline(){
+  const st=[['Orientation','Who was there, where and when.',DG.blue,''],['Event 1','What happened first.',DG.purple,'First,'],['Event 2','What happened next.',DG.purple,'Next,'],['Event 3','What happened after that.',DG.purple,'After that,'],['Personal comment','How you felt, or what you learned.',DG.green,'Finally,']];
+  let b=`<line x1="40" y1="20" x2="40" y2="${20+(st.length-1)*62}" stroke="${DG.navy}" stroke-width="4" stroke-linecap="round"/>`;
+  st.forEach(([t,d,c,cn],i)=>{ const y=20+i*62; b+=`<circle cx="40" cy="${y}" r="12" fill="${c}" stroke="#fff" stroke-width="3"/>`+dgT(62,y+5,t,{s:14,a:'start',c})+dgT(62,y+22,d,{s:11.5,a:'start',b:false,c:DG.grey,w:190});
+    if (cn) b+=dgBox(262,y-11,88,22,DG.goldL,DG.gold,11)+dgT(306,y+4,cn,{s:11.5,c:'#8a5a00'}); });
+  b+=dgT(306,8,'Time words',{s:10.5,c:DG.grey});
+  return dgSvg(360, 20+(st.length-1)*62+48, b, 'Recount timeline');
+}
+function dgPoem(){
+  let b=dgT(110,22,'Title',{s:14}), y=44; const rh=['A','B','A','B'];
+  [0,1].forEach(s=>{ const y0=y; for (let i=0;i<4;i++){ b+=dgBar(26,y,150+(i%2?-20:10),DG.line,7)+`<circle cx="${190+(i%2?-20:10)}" cy="${y+3.5}" r="9" fill="${i%2?DG.pinkL:DG.purpleL}"/>`+dgT(190+(i%2?-20:10),y+7.5,rh[i],{s:10.5,c:i%2?DG.pink:DG.purple}); y+=18; }
+    b+=`<path d="M16,${y0-4} L10,${y0-4} L10,${y-10} L16,${y-10}" fill="none" stroke="${DG.teal}" stroke-width="2.5"/>`; y+=16; });
+  b+=dgT(250,52,'A line is one row of words.',{s:11.5,a:'start',w:104})+`<line x1="246" y1="48" x2="206" y2="48" stroke="${DG.gold}" stroke-width="1.6"/>`;
+  b+=dgT(250,100,'A stanza is a group of lines, like a verse.',{s:11.5,a:'start',w:104,c:DG.teal});
+  b+=dgT(250,160,'Rhyme: lines with the same letter end with the same sound.',{s:11.5,a:'start',w:104,c:DG.purple});
+  b+=dgT(180,y+6,'Tools: simile (like/as), metaphor, personification, onomatopoeia (buzz!), alliteration.',{s:11,b:false,w:330,c:DG.grey});
+  return dgSvg(360, y+36, b, 'Poem layout');
+}
+function dgAcrostic(){
+  const word='HERON', lines=['Hunting in the shallows,','Eyes fixed on the water,','Ready to strike,','One quick stab,','Now the fish is gone!'];
+  let b=''; [...word].forEach((L,i)=>{ const y=16+i*40; b+=dgBox(14,y,34,34,DG.navy,null,8)+dgT(31,y+24,L,{s:20,c:'#fff'})+
+    `<text x="58" y="${y+22}" font-size="13" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" fill="${DG.navy}"><tspan font-weight="900" fill="${DG.pink}">${L}</tspan><tspan font-weight="500">${dgEsc(lines[i].slice(1))}</tspan></text>`; });
+  b+=`<path d="M240,22 L248,22 L248,190 L240,190" fill="none" stroke="${DG.gold}" stroke-width="2.5"/>`+dgT(256,80,'Each line starts with the next letter of the word.',{s:11.5,a:'start',w:100})+dgT(256,140,'Every line is about the topic.',{s:11.5,a:'start',w:100,c:DG.teal});
+  return dgSvg(360, 220, b, 'Acrostic poem');
+}
+const WRITE_DIAG = {
+ story:()=>dgFig('The shape of a story: the story mountain', dgMountain(), 'Plan one sentence for each step. The climax is the top of the mountain.'),
+ recount:()=>dgFig('The shape of a recount', dgTimeline(), 'Write in the past tense and in the order it happened.'),
+ about:()=>dgFig('The shape of a paragraph: the burger', dgBurger([{kind:'bun-top',t:'Topic sentence',d:'Tell the reader what the paragraph is about.'},{kind:'fill',t:'Detail 1',d:'An interesting fact or example',c:DG.green},{kind:'fill',t:'Detail 2',d:'Another detail',c:'#dc5a2a'},{kind:'fill',t:'Detail 3',d:'Something surprising',c:'#7a3e1d'},{kind:'bun-bottom',t:'Closing sentence',d:'Sum it up in a new way.'}],'Paragraph burger')),
+ describe:()=>dgFig('The shape of a descriptive paragraph', dgBurger([{kind:'bun-top',t:'Topic sentence',d:'Name the place and the main feeling.'},{kind:'fill',t:'👀 See and 👂 hear',d:'Colours, shapes, sounds',c:DG.green},{kind:'fill',t:'👃 Smell and 👅 taste',d:'Use strong adjectives',c:'#dc5a2a'},{kind:'fill',t:'✋ Touch and feel',d:'Textures, temperature, a simile',c:'#7a3e1d'},{kind:'bun-bottom',t:'Closing sentence',d:'How the place makes you feel.'}],'Descriptive paragraph'), 'Use all five senses, strong adjectives and at least one simile.'),
+ persuade:()=>dgFig('The shape of persuasive writing', dgBurger([{kind:'bun-top',t:'My opinion',d:'Say clearly what you think.'},{kind:'fill',t:'Reason 1 + example',d:'Firstly, …',c:DG.green},{kind:'fill',t:'Reason 2 + example',d:'Secondly, …',c:'#dc5a2a'},{kind:'fill',t:'Reason 3 + example',d:'Finally, …',c:'#7a3e1d'},{kind:'bun-bottom',t:'Opinion again + call to action',d:'Tell the reader what to do now.'}],'Persuasive burger'), 'Use persuasive words: must, should, clearly, everyone, imagine.'),
+ letter:()=>dgFig('The layout of a friendly letter', dgPage([
+   {y:28, x:118, w:68, lines:3, full:true, note:'Your address, top right', ny:30},{y:68, x:118, w:68, lines:1, full:true, c:DG.gold, note:'Date under the address', ny:74},
+   {y:94, text:'Dear Gogo,', note:'Greeting and a comma', ny:94, nc:DG.purple},{y:114, lines:3, note:'Paragraph 1: why you are writing', ny:118},
+   {y:160, lines:4, note:'Paragraphs 2 and 3: your news', ny:166},{y:218, lines:2, note:'Last paragraph: ask a question, say goodbye', ny:216},
+   {y:252, text:'Love,', note:'Ending and a comma', ny:254, nc:DG.purple},{y:272, text:'Thandi', bold:true, note:'Your name', ny:276, nc:DG.purple}], 'Friendly letter layout', 300), 'Write as if you are chatting to the person: friendly, but in full sentences.'),
+ diary:()=>dgFig('The layout of a diary entry', dgPage([
+   {y:22, text:'Friday, 12 March', note:'Day and date', ny:24, nc:DG.purple},{y:46, text:'Dear Diary,', note:'Greeting', ny:48, nc:DG.purple},
+   {y:66, lines:4, note:'What happened, in order, in the past tense', ny:70},{y:124, lines:3, note:'How you felt and why (use "I")', ny:126, nc:DG.pink},
+   {y:170, lines:2, note:'What you think will happen next', ny:172},{y:204, text:'Until tomorrow,', note:'Sign-off', ny:206, nc:DG.purple},{y:224, text:'Lucy', bold:true}], 'Diary entry layout', 250), 'A diary is personal: write in the first person (I, me, my).'),
+ instr:()=>dgFig('The shape of instructions', dgPage([
+   {y:22, text:'How to make a kite', note:'Title: what you will make', ny:24, nc:DG.purple},{y:46, text:'You will need:', tc:DG.teal, note:'A list of what you need', ny:48, nc:DG.teal},
+   {y:60, x:24, w:120, lines:3, full:true},{y:104, text:'Method:', tc:DG.teal, note:'Numbered steps, in order', ny:106, nc:DG.teal},
+   {y:120, text:'1. Cut the paper…', bold:false, note:'Start each step with a command verb: Cut, Fold, Tie', ny:132, nc:DG.pink},{y:140, text:'2. Fold the edges…', bold:false},{y:160, text:'3. Tie the string…', bold:false},
+   {y:184, box:true, h:30, boxText:'Tip: test it outside!', fill:DG.goldL, stroke:DG.gold, btc:'#8a5a00', note:'A tip or a test at the end', ny:194, mh:15}], 'Instructions layout', 226), 'Instructions use the present tense and command verbs. Keep each step short.'),
+ report:()=>dgFig('The shape of an information report', dgPage([
+   {y:20, text:'Rhinos', s:15, note:'Heading: the topic', ny:22, nc:DG.purple},{y:36, lines:2, c:DG.gold, note:'Opening: a general statement about the topic', ny:40},
+   {y:64, text:'Appearance', tc:DG.teal, note:'Sub-headings split the facts into topics', ny:66, nc:DG.teal},{y:76, lines:2},{y:104, text:'Food and habitat', tc:DG.teal},{y:116, lines:2},
+   {y:142, box:true, w:90, h:44, boxText:'Labelled diagram', fill:DG.blueL, stroke:DG.blue, btc:DG.blue, note:'A picture or diagram with labels', ny:160, mh:22},{y:198, lines:2, c:DG.gold, note:'Conclusion: an interesting final fact', ny:200}], 'Information report layout', 228), 'Reports give facts, not opinions. Use the present tense and topic words.'),
+ dialogue:()=>dgFig('The layout of a dialogue (script)', dgPage([
+   {y:22, text:'The Missing Homework', s:13, note:'Title', ny:24, nc:DG.purple},{y:42, text:'Characters: SAM, MRS DLAMINI', s:11, bold:false, note:'List of characters', ny:44},
+   {y:62, text:'(A classroom. Morning.)', it:true, s:11.5, tc:DG.grey, note:'Setting and stage directions in brackets', ny:64, nc:DG.teal},
+   {y:86, text:'SAM: My dog ate it!', note:'Name in CAPITALS, then a colon', ny:88, nc:DG.pink},{y:106, text:'MRS DLAMINI: (sighing)', bold:false},{y:122, text:'  Again, Sam?', bold:false},
+   {y:146, text:'SAM: (smiling) Yes…', bold:false, note:'No inverted commas in a script', ny:150, nc:DG.red}], 'Dialogue layout', 172), 'Each new speaker starts on a new line.'),
+ advert:()=>dgFig('The layout of an advert', dgPage([
+   {y:20, text:'SPLASH ZONE!', s:16, a:'middle', note:'Headline: big and catchy', ny:22, nc:DG.pink},{y:30, text:'Get wet. Get wild.', s:11, a:'middle', ty:22, tc:DG.purple, bold:false, note:'Slogan', ny:52, nc:DG.purple},
+   {y:62, box:true, h:58, boxText:'Picture', fill:DG.blueL, stroke:DG.blue, btc:DG.blue, note:'An eye-catching picture', ny:88, mh:29},
+   {y:130, lines:2, note:'Details: what, where, when and price', ny:132},{y:158, x:20, w:88, box:true, h:24, boxText:'Only R50!', fill:DG.goldL, stroke:DG.gold, btc:'#8a5a00', note:'Persuasive words', ny:168, mh:12},
+   {y:192, box:true, h:26, boxText:'Book now!', fill:DG.navy, stroke:DG.navy, btc:'#fff', note:'Call to action: tell the reader what to do', ny:200, mh:13},{y:228, text:'www.splashzone.co.za', s:10, a:'middle', bold:false, tc:DG.grey, note:'Contact details', ny:232}], 'Advert layout', 252), 'Adverts persuade. Keep it short, bold and easy to read from far away.'),
+ review:()=>dgFig('The shape of a review', dgPage([
+   {y:20, text:'Danny, the Champion…', s:12.5, note:'Title and author', ny:22, nc:DG.purple},{y:40, lines:3, note:'What it is about, with no spoilers!', ny:44},
+   {y:84, text:'👍 What I liked', s:12, tc:DG.green},{y:96, lines:2},{y:124, text:'👎 What could be better', s:12, tc:DG.red, note:'Your opinion, with reasons', ny:118, nc:DG.pink},{y:136, lines:2},
+   {y:166, text:'★★★★☆', s:18, tc:DG.gold, note:'A star rating', ny:162, nc:'#8a5a00'},{y:186, lines:2, c:DG.gold, note:'Who would enjoy it?', ny:190}], 'Review layout', 214), 'A review is your opinion. Back it up with examples from the book or film.'),
+ poem:()=>dgFig('The parts of a poem', dgPoem()),
+ acrostic:()=>dgFig('How an acrostic poem works', dgAcrostic())
+};
+
+/* ----- Grammar: Learn card diagrams ----- */
+function dgTense(){
+  let b=`<defs><linearGradient id="dg-tl" x1="0" x2="1"><stop offset="0" stop-color="${DG.purple}"/><stop offset=".5" stop-color="${DG.teal}"/><stop offset="1" stop-color="${DG.pink}"/></linearGradient></defs>`;
+  b+=`<rect x="12" y="52" width="320" height="8" rx="4" fill="url(#dg-tl)"/>`+dgArrow(320,56,350,56,DG.pink,4)+`<line x1="180" y1="40" x2="180" y2="72" stroke="${DG.navy}" stroke-width="3"/>`;
+  [[70,'PAST','Yesterday',DG.purple],[180,'PRESENT','Now',DG.teal],[290,'FUTURE','Tomorrow',DG.pink]].forEach(([x,t,s,c])=>{ b+=dgT(x,26,t,{s:14,c})+dgT(x,90,s,{s:11,b:false,c:DG.grey}); });
+  const rows=[['Simple','I walked','I walk','I will walk'],['Continuous','I was walking','I am walking','I will be walking']];
+  rows.forEach((r,i)=>{ const y=112+i*58; b+=dgT(12,y+4,r[0],{s:11,a:'start',c:DG.grey}); [[70,DG.purple,DG.purpleL],[180,DG.teal,DG.tealL],[290,DG.pink,DG.pinkL]].forEach(([x,c,f],j)=>{ b+=dgBox(x-52,y+10,104,32,f,c,10)+dgT(x,y+31,r[j+1],{s:12,c}); }); });
+  return dgSvg(360,230,b,'Tense timeline');
+}
+function dgSubj(){
+  let b=''; const parts=[['The hungry dog',12,118,DG.blue,DG.blueL,'SUBJECT','who or what'],['chased',138,78,DG.pink,DG.pinkL,'VERB','the action'],['the ball.',224,124,DG.teal,DG.tealL,'OBJECT','who or what gets the action']];
+  parts.forEach(([t,x,w,c,f,l,d])=>{ b+=dgBox(x,40,w,40,f,c,10)+dgT(x+w/2,65,t,{s:14,c})+dgT(x+w/2,24,l,{s:11.5,c})+dgT(x+w/2,100,d,{s:10.5,b:false,c:DG.grey,w:w}); });
+  b+=`<path d="M138,128 Q138,140 150,140 L231,140 Q243,140 243,152 Q243,140 255,140 L336,140 Q348,140 348,128" fill="none" stroke="${DG.purple}" stroke-width="2.5"/>`+dgT(243,172,'PREDICATE: everything that is not the subject',{s:11.5,c:DG.purple,w:200});
+  return dgSvg(360,200,b,'Subject, verb and object');
+}
+function dgComplex(){
+  let b=''; const row=(y,label,items,note)=>{ b+=dgT(12,y-8,label,{s:13,a:'start'}); let x=12; items.forEach(([t,w,c,f])=>{ b+=dgBox(x,y,w,34,f,c,9)+dgT(x+w/2,y+22,t,{s:11.5,c}); x+=w+6; }); if (note) b+=dgT(12,y+52,note,{s:10.5,a:'start',b:false,c:DG.grey,w:330}); };
+  row(30,'Simple: one main clause',[['The bell rang.',120,DG.blue,DG.blueL]],'One subject and one verb. It makes sense on its own.');
+  row(112,'Compound: two main clauses',[['The bell rang',104,DG.blue,DG.blueL],['and',44,DG.gold,DG.goldL],['we ran outside.',126,DG.blue,DG.blueL]],'Joined by and, but, or, so. Both parts make sense alone.');
+  row(194,'Complex: main + dependent clause',[['We ran outside',114,DG.blue,DG.blueL],['because',66,DG.pink,DG.pinkL],['the bell rang.',114,DG.pink,DG.pinkL]],'Because, when, although, if… The pink part cannot stand alone.');
+  return dgSvg(360,262,b,'Simple, compound and complex sentences');
+}
+function dgComp(){
+  let b=''; const steps=[['Positive','tall','good','beautiful',DG.blue,DG.blueL],['Comparative','taller','better','more beautiful',DG.purple,DG.purpleL],['Superlative','tallest','best','most beautiful',DG.pink,DG.pinkL]];
+  const base=236; steps.forEach(([n,a,c,d,col,f],i)=>{ const x=12+i*116, h=104+i*44, y=base-h; b+=dgBox(x,y,108,h,f,col,10)+dgT(x+54,y+22,n,{s:12,c:col})+dgT(x+54,y+46,a,{s:15})+dgT(x+54,y+68,c,{s:13,b:500})+dgT(x+54,y+90,d,{s:11.5,b:500,w:100}); });
+  b+=dgT(66,254,'one thing',{s:10.5,b:false,c:DG.grey})+dgT(182,254,'compares two',{s:10.5,b:false,c:DG.grey})+dgT(298,254,'compares three or more',{s:10.5,b:false,c:DG.grey,w:110});
+  b+=dgT(180,18,'Short words: -er, -est. Long words: more, most.',{s:11.5,c:DG.teal})+dgT(180,36,'Irregular: good, better, best.',{s:11.5,c:DG.red});
+  return dgSvg(360,278,b,'Degrees of comparison');
+}
+function dgAffix(){
+  let b=''; const parts=[['un','prefix','= not',DG.purple,DG.purpleL,20,70],['help','root word','the main meaning',DG.blue,DG.blueL,110,110],['ful','suffix','= full of',DG.pink,DG.pinkL,240,90]];
+  parts.forEach(([t,l,d,c,f,x,w],i)=>{ b+=dgBox(x,40,w,50,f,c,12)+dgT(x+w/2,73,t,{s:22,c})+dgT(x+w/2,26,l,{s:12,c})+dgT(x+w/2,108,d,{s:11,b:false,c:DG.grey}); if (i<2) b+=dgT(x+w+(i?10:10),72,'+',{s:20,c:DG.grey}); });
+  b+=dgArrow(180,124,180,146,DG.navy,2.5)+dgBox(90,150,180,44,DG.navy,null,12)+dgT(180,179,'unhelpful',{s:20,c:'#fff'})+dgT(180,216,'= not full of help',{s:12.5,c:DG.teal});
+  return dgSvg(360,232,b,'Prefix, root and suffix');
+}
+function dgSpeech(){
+  const fs=14, cw=7.7, chips=[['“',DG.pink,DG.pinkL,20],['Where are you going',DG.navy,DG.blueL,0],['?',DG.green,DG.greenL,20],['”',DG.pink,DG.pinkL,20],['asked Thandi.',DG.purple,DG.purpleL,0]];
+  let x=8, b=''; const pos=[];
+  chips.forEach(([t,c,f,w])=>{ const W=w||Math.round(t.length*cw+14); pos.push([x,W]); b+=dgBox(x,64,W,34,f,c,8);
+    b+= t==='Where are you going' ? `<text x="${x+7}" y="86" font-size="${fs}" font-weight="800" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" fill="${DG.navy}"><tspan fill="${DG.blue}">W</tspan>here are you going</text>` : dgT(x+W/2,86,t,{s:fs+(w?4:0),c,b:800});
+    x+=W+4; });
+  const up=(i,t,c,dx=0,a='middle')=>{ const [px,W]=pos[i], cx=px+W/2; return `<line x1="${cx}" y1="62" x2="${cx}" y2="44" stroke="${c}" stroke-width="1.6"/>`+dgT(cx+dx,38,t,{s:11,c,a}); };
+  const dn=(t,c,xx,a='middle')=>`<line x1="${xx}" y1="100" x2="${xx}" y2="118" stroke="${c}" stroke-width="1.6"/>`+dgT(xx,132,t,{s:11,c,a});
+  b+=up(0,'Opening inverted commas',DG.pink,-12,'start')+up(2,'Punctuation inside',DG.green)+up(4,'Who said it',DG.purple);
+  b+=dn('Capital letter',DG.blue,pos[1][0]+11,'start')+dn('Closing inverted commas',DG.pink,pos[3][0]+10);
+  b+=dgT(180,172,'Reported speech: no inverted commas, and the tense moves back.',{s:11.5,c:DG.grey,w:330})+dgBox(8,196,344,38,DG.tealL,DG.teal,12)+dgT(180,220,'Thandi asked where I was going.',{s:14,c:DG.teal});
+  return dgSvg(360,244,b,'Direct speech');
+}
+function dgPoss(){
+  let b=''; const person=(x,y,c)=>`<circle cx="${x}" cy="${y}" r="7" fill="${c}"/><path d="M${x-9},${y+22} Q${x},${y+6} ${x+9},${y+22} Z" fill="${c}"/>`;
+  b+=dgBox(8,10,166,170,DG.blueL,DG.blue,14)+dgBox(186,10,166,170,DG.pinkL,DG.pink,14);
+  b+=dgT(91,32,'ONE girl',{s:13,c:DG.blue})+person(91,52,DG.blue)+`<rect x="104" y="62" width="16" height="13" rx="3" fill="${DG.gold}"/>`;
+  b+=`<text x="91" y="112" text-anchor="middle" font-size="17" font-weight="800" font-family="system-ui,sans-serif" fill="${DG.navy}">the girl<tspan fill="${DG.red}">'s</tspan> bag</text>`+dgT(91,138,"Add 's",{s:12,c:DG.red})+dgT(91,158,'to a singular noun',{s:11,b:false,c:DG.grey});
+  b+=dgT(269,32,'MANY girls',{s:13,c:DG.pink})+[245,269,293].map(x=>person(x,52,DG.pink)+`<rect x="${x+8}" y="62" width="12" height="10" rx="2" fill="${DG.gold}"/>`).join('');
+  b+=`<text x="269" y="112" text-anchor="middle" font-size="17" font-weight="800" font-family="system-ui,sans-serif" fill="${DG.navy}">the girls<tspan fill="${DG.red}">'</tspan> bags</text>`+dgT(269,138,"Add ' after the s",{s:12,c:DG.red})+dgT(269,158,'of a plural noun',{s:11,b:false,c:DG.grey});
+  b+=dgT(180,206,"Plurals without s: the children's toys, the men's shoes.",{s:11.5,c:DG.teal,w:330});
+  return dgSvg(360,230,b,'Apostrophes of ownership');
+}
+function dgTypes(){
+  let b=''; const T=[['Statement','The sun is shining','.','tells you something',DG.blue,DG.blueL],['Question','Is it raining','?','asks something',DG.purple,DG.purpleL],['Command','Close the door','.','tells someone to do something',DG.teal,DG.tealL],['Exclamation','What a goal','!','shows strong feeling',DG.pink,DG.pinkL]];
+  T.forEach(([n,s,m,d,c,f],i)=>{ const y=8+i*54; b+=dgBox(8,y,344,46,f,c,12)+dgT(20,y+19,n,{s:12.5,a:'start',c})+dgT(20,y+37,d,{s:10.5,a:'start',b:false,c:DG.grey})+`<text x="300" y="${y+30}" text-anchor="end" font-size="14" font-weight="700" font-family="system-ui,sans-serif" fill="${DG.navy}">${dgEsc(s)}</text>`+`<circle cx="326" cy="${y+23}" r="15" fill="${c}"/>`+dgT(326,y+30,m,{s:20,c:'#fff'}); });
+  return dgSvg(360,226,b,'Kinds of sentences');
+}
+function dgSyn(){
+  let b=`<defs><linearGradient id="dg-tmp" x1="0" x2="1"><stop offset="0" stop-color="#2563eb"/><stop offset=".5" stop-color="#e5e7eb"/><stop offset="1" stop-color="#dc2626"/></linearGradient></defs>`;
+  b+=dgT(180,20,'ANTONYMS are opposites. Put them on a scale:',{s:12,c:DG.navy})+`<rect x="14" y="44" width="332" height="12" rx="6" fill="url(#dg-tmp)"/>`;
+  ['freezing','cold','cool','warm','hot','boiling'].forEach((w,i)=>{ const x=30+i*60; b+=`<circle cx="${x}" cy="50" r="7" fill="#fff" stroke="${DG.navy}" stroke-width="2"/>`+dgT(x,80,w,{s:12}); });
+  b+=dgT(180,112,'SYNONYMS mean the same or nearly the same:',{s:12,c:DG.navy}); const SY=[['huge',90,138],['enormous',270,138],['giant',96,204],['massive',264,204]];
+  SY.forEach(([w,x,y])=>{ b+=`<line x1="180" y1="168" x2="${x}" y2="${y}" stroke="${DG.line}" stroke-width="2"/>`; });
+  SY.forEach(([w,x,y])=>{ b+=dgBox(x-42,y-15,84,30,DG.tealL,DG.teal,15)+dgT(x,y+5,w,{s:12.5,c:DG.teal}); });
+  b+=`<circle cx="180" cy="168" r="30" fill="${DG.navy}"/>`+dgT(180,173,'big',{s:15,c:'#fff'});
+  return dgSvg(360,232,b,'Synonyms and antonyms');
+}
+function dgPron(){
+  let b=''; b+=dgBox(8,16,344,40,DG.soft,DG.line,10)+`<text x="18" y="41" font-size="14" font-weight="700" font-family="system-ui,sans-serif" fill="${DG.navy}"><tspan fill="${DG.blue}">Sam</tspan> has a dog. <tspan fill="${DG.blue}">Sam</tspan> walks <tspan fill="${DG.teal}">the dog</tspan> every day.</text>`;
+  b+=dgArrow(180,64,180,86,DG.navy,2.5)+dgBox(8,92,344,40,DG.greenL,DG.green,10)+`<text x="18" y="117" font-size="14" font-weight="700" font-family="system-ui,sans-serif" fill="${DG.navy}"><tspan fill="${DG.blue}">Sam</tspan> has a dog. <tspan fill="${DG.pink}">He</tspan> walks <tspan fill="${DG.pink}">it</tspan> every day.</text>`;
+  b+=dgT(180,154,'A pronoun takes the place of a noun, so we do not repeat it.',{s:11.5,c:DG.grey,w:330});
+  const P=[['I / me',DG.purple],['you',DG.purple],['he / him',DG.blue],['she / her',DG.pink],['it',DG.teal],['we / us',DG.purple],['they / them',DG.green]];
+  P.forEach(([t,c],i)=>{ const x=12+(i%4)*86, y=176+Math.floor(i/4)*36; b+=dgBox(x,y,80,28,'#fff',c,14)+dgT(x+40,y+19,t,{s:12,c}); });
+  return dgSvg(360,250,b,'Pronouns');
+}
+function dgMainIdea(){
+  let b=dgT(180,20,'Main idea = the table top. Details = the legs.',{s:12,c:DG.navy});
+  b+=`<rect x="16" y="36" width="328" height="46" rx="8" fill="${DG.navy}"/>`+dgT(180,56,'MAIN IDEA',{s:13,c:DG.gold})+dgT(180,73,'What the whole text is mostly about',{s:11,b:500,c:'#fff'});
+  [[34,'Detail 1'],[140,'Detail 2'],[246,'Detail 3']].forEach(([x,t])=>{ b+=`<rect x="${x}" y="82" width="80" height="84" fill="${DG.purpleL}" stroke="${DG.purple}" stroke-width="2"/>`+dgT(x+40,118,t,{s:12.5,c:DG.purple})+dgT(x+40,136,'supports it',{s:10.5,b:false,c:DG.grey}); });
+  b+=dgT(180,192,'A summary = the main idea + the most important details, in your own words.',{s:11.5,c:DG.teal,w:320});
+  return dgSvg(360,226,b,'Main idea table');
+}
+function dgConj(){
+  let b='';
+  const blk=(y,head,sub,words,c,f,ex)=>{ b+=dgT(12,y,head,{s:13,a:'start',c})+dgT(12,y+16,sub,{s:10.5,a:'start',b:false,c:DG.grey});
+    let x=12; words.forEach(w=>{ const ww=w.length*8+20; b+=dgBox(x,y+26,ww,26,f,c,13)+dgT(x+ww/2,y+43,w,{s:11.5,c}); x+=ww+6; });
+    let ex2=12; ex.forEach(([t,cc,ff])=>{ const ww=t.length*6.6+18; b+=dgBox(ex2,y+62,ww,30,ff,cc,9)+dgT(ex2+ww/2,y+81,t,{s:11.5,c:cc}); ex2+=ww+5; }); };
+  blk(18,'Join two equal ideas','Both halves make sense on their own.',['and','but','or','so'],DG.gold,DG.goldL,[['I was tired,',DG.blue,DG.blueL],['so',DG.gold,DG.goldL],['I went to bed.',DG.blue,DG.blueL]]);
+  blk(136,'Add a reason, a time or a condition','The pink half cannot stand alone.',['because','when','although','if','until'],DG.pink,DG.pinkL,[['I went to bed',DG.blue,DG.blueL],['because',DG.pink,DG.pinkL],['I was tired.',DG.pink,DG.pinkL]]);
+  b+=dgT(12,256,'Tip: put a comma before so and but.',{s:11,a:'start',c:DG.teal});
+  return dgSvg(360,266,b,'Joining words');
+}
+const SKILL_DIAG = {
+ 'v-tense':()=>dgFig('The tense timeline', dgTense()), 'v-past':()=>dgFig('Where the past tense sits', dgTense()),
+ 's-subj':()=>dgFig('The parts of a sentence', dgSubj()), 's-complex':()=>dgFig('Three kinds of sentence', dgComplex()), 's-conj':()=>dgFig('Two kinds of joining words', dgConj()),
+ 'd-comp':()=>dgFig('The comparison ladder', dgComp()), 'w-affix':()=>dgFig('Building a word', dgAffix()), 'p-speech':()=>dgFig('Direct speech, part by part', dgSpeech()),
+ 'p-poss':()=>dgFig("Where does the apostrophe go?", dgPoss()), 's-types':()=>dgFig('Four kinds of sentences', dgTypes()), 'w-syn':()=>dgFig('Synonyms and antonyms', dgSyn()),
+ 'n-pron':()=>dgFig('What pronouns do', dgPron()), 'n-ptypes':()=>dgFig('What pronouns do', dgPron()), 'r-summary':()=>dgFig('The main-idea table', dgMainIdea())
+};
+
+/* ----- Thinking: Bloom's pyramid with the app's four levels ----- */
+function dgBloom(){
+  const lv=[['Create',DG.green],['Evaluate',DG.pink],['Analyse',DG.purple],['Apply','#8b5cf6'],['Understand','#a78bfa'],['Remember',DG.blue]];
+  let b=''; const top=40, h=34, cx=132, hw=i=>22+i*15.5;
+  lv.forEach(([n,c],i)=>{ const y=top+i*h; b+=`<path d="M${cx-hw(i)},${y} L${cx+hw(i)},${y} L${cx+hw(i+1)},${y+h-3} L${cx-hw(i+1)},${y+h-3} Z" fill="${c}"/>`+dgT(cx,y+21,n,{s:12,c:'#fff'}); });
+  const br=(y1,y2,t,c,sub)=>`<path d="M246,${y1+2} L254,${y1+2} L254,${y2-5} L246,${y2-5}" fill="none" stroke="${c}" stroke-width="2.5"/>`+dgT(262,(y1+y2)/2-2,t,{s:12,a:'start',c})+dgT(262,(y1+y2)/2+13,sub,{s:10,a:'start',b:false,c:DG.grey});
+  b+=br(top,top+h,'💡 Create it',DG.green,'Barrett: Appreciation')+br(top+h,top+2*h,'⚖️ Judge it',DG.pink,'Barrett: Evaluation')+br(top+2*h,top+5*h,'🧩 Work it out',DG.purple,'Barrett: Inferential')+br(top+5*h,top+6*h,'🔍 Find it',DG.blue,'Barrett: Literal');
+  b+=dgT(cx,22,"Bloom's taxonomy",{s:12.5})+dgT(304,22,'In the app',{s:12.5})+dgArrow(12,top+6*h-4,12,top+4,DG.grey,2)+dgT(20,top+10,'harder',{s:10,a:'start',b:false,c:DG.grey});
+  return dgSvg(360, top+6*h+12, b, "Bloom's taxonomy and the app's thinking levels");
+}
+const bloomFig = () => dgFig("How the thinking levels fit together", dgBloom(), "Low on the pyramid: the answer is in the text. Higher up: you work it out, judge it, or make something new.");
 /* ----- Start here: the one next thing to do ----- */
 function nextTask(p){
   const w=curWeek(), y=YEAR[w-1], r=p.yr['w'+w]||{}, back=()=>screenHome(), st=weekStatus(p,w), step=`Step ${Math.min(st.total, st.done+1)} of ${st.total} this week`;
