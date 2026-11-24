@@ -2273,6 +2273,22 @@ function edQ(text, lv){
   const n=parts.filter(t=>t.fix).length, fixed=parts.map(t=>t.fix||t.w).join(' ');
   return {type:'edit', prompt:`Proofread! Find and fix the ${n===1?'mistake':n+' mistakes'}.`, tokens:parts, n, answer:fixed, explain:`Corrected: <i>${escH(fixed)}</i>`};
 }
+/* ----- Extra skills and content for the HeronBridge Grade 5 planning ----- */
+const INTERJ_TAP = ["*Wow*! Look at that rainbow.","*Ouch*! I stubbed my toe.","*Hooray*! We won the match.","*Oops*, I spilt my juice.","*Yikes*! There is a spider on my desk.","*Phew*! We made it just in time.","*Shh*! The baby is sleeping.","*Yuck*! This milk is sour.","*Hey*, wait for me!","*Brr*! It is freezing today.","*Well*, I am not sure about that.","*Aha*! I found the missing key."];
+const INTERJ_FEEL = [["Ouch!","pain"],["Hooray!","joy"],["Yuck!","disgust"],["Phew!","relief"],["Shh!","asking for quiet"],["Yikes!","fright"],["Brr!","feeling cold"],["Oops!","a small mistake"],["Hmm...","thinking"],["Wow!","surprise"]];
+const INTERJ_FIT = ["___ We won the final!|Hooray!|Ouch!|Yuck!","___ That bee stung me!|Ouch!|Hooray!|Yum!","___ This soup is delicious.|Yum!|Yuck!|Ouch!","___ I nearly missed the bus.|Phew!|Hooray!|Yum!","___ There's a snake on the path!|Yikes!|Yum!|Hooray!","___ The rubbish bin smells terrible.|Yuck!|Yum!|Hooray!","___ I dropped my ice cream.|Oh no!|Hooray!|Yum!","___ Please be quiet, the baby is asleep.|Shh!|Hooray!|Ouch!"];
+const INTERJ_PUNCT = [["Wow! What a goal!","Wow what a goal.","wow, What a goal!"],["Ouch! That really hurt.","Ouch that really hurt!","ouch. That really hurt"],["Oh, I didn't know that.","Oh I didn't know that","oh! i didn't know that."],["Hooray! School is out!","Hooray school is out.","hooray! school is out!"],["Well, I think you are right.","Well I think, you are right.","well, I think you are right"],["Yikes! The dog is chasing us!","Yikes the dog is chasing us.","yikes. The dog is chasing us!"]];
+const FIN_TAP = ["The ranger *drove* to the waterhole.","Thandi *wants* to win the race.","My brother *plays* soccer every Saturday.","We *visited* the Kruger Park last year.","The children *love* swimming in the dam.","Sipho *hopes* to become a pilot.","The impala *jumped* over the fence.","Gogo *bakes* bread every Sunday.","They *decided* to walk home.","The rhinos *drank* at the waterhole."];
+const FIN2 = [["The dog <u>barked</u> all night.","finite","<b>barked</b> has a subject (the dog) and shows the past tense."],["I like <u>to read</u> before bed.","not finite","<b>to read</b> is an infinitive. It does not show tense on its own."],["<u>Running</u> makes me tired.","not finite","<b>Running</b> is a gerund here: it is used as a noun, the subject of the sentence."],["Lerato <u>sings</u> in the school choir.","finite","<b>sings</b> has a subject (Lerato) and shows the present tense."],["They want <u>to win</u> the cup.","not finite","<b>to win</b> is an infinitive. The finite verb is <b>want</b>."],["We <u>ate</u> pap and wors for supper.","finite","<b>ate</b> has a subject (we) and shows the past tense."],["My aunt <u>hopes</u> to visit us soon.","finite","<b>hopes</b> has a subject (my aunt) and shows the present tense."],["She went to the shop <u>to buy</u> milk.","not finite","<b>to buy</b> is an infinitive. The finite verb is <b>went</b>."],["The rhinos <u>drank</u> at the waterhole.","finite","<b>drank</b> has a subject (the rhinos) and shows the past tense."],["<u>Swimming</u> is my favourite sport.","not finite","<b>Swimming</b> is a gerund: it names an activity, like a noun."]];
+const FIN_G = "a gerund (used as a noun)", FIN_V = "a verb (part of the action)";
+const FIN3 = [["<u>Swimming</u> keeps me fit.",FIN_G,"It is the subject of the sentence, so it works like a noun."],["The boys are <u>swimming</u> in the dam.",FIN_V,"<b>are swimming</b> is the verb. It tells us what the boys are doing."],["I love <u>dancing</u>.",FIN_G,"It is the thing I love, so it works like a noun."],["She is <u>dancing</u> on the stage.",FIN_V,"<b>is dancing</b> tells us what she is doing right now."],["<u>Reading</u> is my favourite hobby.",FIN_G,"It names the hobby, so it works like a noun."],["We were <u>reading</u> when the lights went out.",FIN_V,"<b>were reading</b> tells us what we were doing."],["Thank you for <u>helping</u> me.",FIN_G,"It comes after the preposition <b>for</b>, so it works like a noun."],["The ranger was <u>helping</u> the injured rhino.",FIN_V,"<b>was helping</b> tells us what the ranger was doing."],["<u>Poaching</u> is a serious crime.",FIN_G,"It names an activity and is the subject, so it works like a noun."],["The men were <u>poaching</u> at night.",FIN_V,"<b>were poaching</b> tells us what the men were doing."]];
+const SYL_WORDS = ["cat","jump","school","tree","rab-bit","pen-cil","win-dow","sun-set","kit-ten","mon-key","foot-ball","but-ter-fly","el-e-phant","won-der-ful","um-brel-la","hos-pi-tal","al-pha-bet","fan-tas-tic","in-for-ma-tion","wa-ter-mel-on","hel-i-cop-ter","al-li-ga-tor","cel-e-bra-tion","hip-po-pot-a-mus","re-frig-er-a-tor","e-lec-tric-i-ty"];
+const SYL_SPLIT = [["rab-bit","ra-bbit","rabb-it"],["pen-cil","pe-ncil","penc-il"],["win-dow","wi-ndow","wind-ow"],["sun-set","su-nset","suns-et"],["kit-ten","ki-tten","kitt-en"],["nap-kin","na-pkin","napk-in"],["mag-net","ma-gnet","magn-et"],["in-sect","i-nsect","ins-ect"],["but-ter-fly","bu-tter-fly","butt-erf-ly"],["um-brel-la","u-mbre-lla","umb-rel-la"],["won-der-ful","wo-nder-ful","wond-erf-ul"],["fan-tas-tic","fa-ntas-tic","fant-ast-ic"],["hos-pi-tal","ho-spi-tal","hosp-it-al"]];
+const FIG_EXTRA = [["I've told you a million times to tidy your room!","hyperbole","An exaggeration: nobody has really said it a million times."],["My school bag weighs a ton!","hyperbole","An exaggeration to show the bag is very heavy."],["I'm so hungry I could eat a horse.","hyperbole","An exaggeration to show how hungry the person is."],["We waited forever for the bus.","hyperbole","An exaggeration: it only felt like forever."],["How now, brown cow?","assonance","The same 'ow' vowel sound is repeated."],["I like to ride my bike at night.","assonance","The same long 'i' vowel sound is repeated."],["Please keep the green sheet clean.","assonance","The same long 'ee' vowel sound is repeated."]];
+const SEMI1 = [["It was raining; we stayed inside.","It was; raining we stayed inside.","It was raining we; stayed inside."],["Lerato loves maths; her brother loves art.","Lerato loves; maths her brother loves art.","Lerato; loves maths her brother loves art."],["The bell rang; everyone ran outside.","The bell; rang everyone ran outside.","The bell rang everyone; ran outside."],["I was tired; I went to bed early.","I was; tired I went to bed early.","I; was tired I went to bed early."],["The shop was closed; we went home.","The shop; was closed we went home.","The shop was closed we went; home."],["Rhinos are in danger; poachers hunt them for their horns.","Rhinos are; in danger poachers hunt them for their horns.","Rhinos are in danger poachers; hunt them for their horns."]];
+const RELAT = ["The girl ___ won the race is my sister.|who|which|whose","This is the book ___ I told you about.|that|who|whose","The boy ___ bike was stolen went to the police.|whose|who|which","The rhino, ___ was injured, was taken to a vet.|which|who|whose","The ranger ___ found the snare called for help.|who|which|whose","I found the pen ___ you lost.|that|who|whose","That is the man ___ dog barks all night.|whose|who|that","The cake, ___ Gogo baked, was delicious.|which|who|whose"];
+const HOMOG = [["She will <u>lead</u> the team onto the field.","rhymes with 'need': to go first","rhymes with 'red': a heavy metal"],["The old pipe is made of <u>lead</u>.","rhymes with 'red': a heavy metal","rhymes with 'need': to go first"],["A <u>tear</u> rolled down her cheek.","rhymes with 'ear': a drop from your eye","rhymes with 'air': to rip"],["Please don't <u>tear</u> the page.","rhymes with 'air': to rip","rhymes with 'ear': a drop from your eye"],["The <u>wind</u> blew the leaves away.","rhymes with 'pinned': moving air","rhymes with 'find': to turn or twist"],["<u>Wind</u> the wool into a ball.","rhymes with 'find': to turn or twist","rhymes with 'pinned': moving air"],["Tie a <u>bow</u> in the ribbon.","rhymes with 'go': a knot with loops","rhymes with 'cow': to bend forward"],["The actors <u>bow</u> at the end of the play.","rhymes with 'cow': to bend forward","rhymes with 'go': a knot with loops"],["I <u>live</u> in Johannesburg.","rhymes with 'give': to have your home","rhymes with 'five': happening now"],["We watched the <u>live</u> match on TV.","rhymes with 'five': happening now","rhymes with 'give': to have your home"]];
+const SYMB = [["🕊️ a white dove","peace"],["❤️ a red heart","love"],["🦉 an owl","wisdom"],["☠️ a skull and crossbones","danger or poison"],["🏳️ a white flag","giving up (surrender)"],["🌈 a rainbow","hope"],["🦁 a lion","courage and strength"],["👑 a crown","power or royalty"],["⚖️ a pair of scales","fairness and justice"],["🟢 a green traffic light","go"]];
 const WORLDS = [
 { id:'nouns', name:'Noun Nest', icon:'🪺', color:'#2f80ed',
   boss:{name:'Captain Croc', e:'🐊', taunt:"Snap snap! I'll gobble up all your nouns!"},
@@ -2344,6 +2360,12 @@ const WORLDS = [
       tip:"The helping verb is the sidekick 🦸 It stands next to the hero verb: <b>is</b> singing, <b>will</b> go, <b>has</b> eaten.", ex:["She <b>is</b> singing.","You <b>must</b> wear a seatbelt.","It <b>might</b> rain."]},
     gen:lv=> lv===1 ? tq(rnd(HELP_TAP),'Tap the helping verb','The helping verb works with the main verb.')
       : lv===2 ? (([s,a,o])=>mc('Choose the helping verb that fits:', a, o, `<b>${escH(fill(s,a))}</b>`, {clue:s}))(rnd(HELP_FILL)) : M(rnd(MODAL)) },
+  { id:'v-finite', name:'Finite verbs & gerunds', out:'I can identify finite verbs and tell a verb from a gerund.', lvl:['Find the finite verb','Finite or not?','Verb or gerund?'],
+    learn:{rule:"A <b>finite verb</b> has a subject and shows tense: <i>She <b>swims</b>. They <b>swam</b>.</i> Every sentence needs one.<br><b>Not finite:</b> <i>to swim</i> (an infinitive) does not show tense on its own.<br>A <b>gerund</b> is an <i>-ing</i> word used as a noun: <i><b>Swimming</b> is fun.</i>",
+      tip:"Can you change it to past or present? Then it's finite ⏰ If the -ing word is the subject or the thing you like, it's a gerund: a noun in disguise 🥸", ex:["Thabo <b>plays</b> soccer. <i>(finite)</i>","He wants <b>to play</b>. <i>(not finite)</i>","<b>Reading</b> is my hobby. <i>(gerund)</i>"]},
+    gen:lv=> lv===1 ? tq(rnd(FIN_TAP),'Tap the finite verb','A finite verb has a subject and shows tense.')
+      : lv===2 ? (([s,a,e])=>mc(`Is the underlined verb finite or not finite?<br><i>${s}</i>`, a, [a==='finite'?'not finite':'finite'], e))(rnd(FIN2))
+      : (([s,a,e])=>mc(`Is the underlined word a verb or a gerund?<br><i>${s}</i>`, a, [a===FIN_G?FIN_V:FIN_G], e))(rnd(FIN3)) },
   { id:'v-voice', name:'Active & passive voice ⭐', out:'I can tell active and passive sentences apart and change one into the other. (Challenge skill)', lvl:['Active or passive?','Make it passive','Make it active'],
     learn:{rule:"In the <b>active voice</b>, the subject DOES the action: <i>The dog chased the cat.</i><br>In the <b>passive voice</b>, the subject has the action done TO it: <i>The cat was chased by the dog.</i><br>⭐ This is a challenge skill for word heroes who want to go further!",
       tip:"Spot the passive with <b>was/were + by</b> 🔍 <i>The ball <b>was</b> kicked <b>by</b> Thabo.</i>", ex:["Active: <b>Gran</b> baked a cake.","Passive: The cake <b>was baked by</b> Gran."]},
@@ -2410,6 +2432,13 @@ const WORLDS = [
     learn:{rule:"A <b>simple</b> sentence has one main idea. A <b>compound</b> sentence joins two simple sentences with <i>and, but, or, so</i>. A <b>complex</b> sentence has a main part and a part starting with <i>because, when, although, if</i> that can't stand on its own.",
       tip:"Cover up the joining word part 🙈 If what's left makes sense AND the hidden part makes sense alone, it's compound. If the hidden part can't stand alone, it's complex!", ex:["The dog barked. <i>(simple)</i>","The dog barked <b>and</b> the cat ran. <i>(compound)</i>","<b>When</b> the dog barked, the cat ran. <i>(complex)</i>"]},
     gen:lv=> lv===3 ? M(rnd(SC3)) : (([s,t])=>mc('What kind of sentence is this?', t, lv===1?['simple','compound']:['simple','compound','complex'], `It is a <b>${t}</b> sentence.`, {clue:s}))(rnd(lv===1?SC1:SC2)) },
+  { id:'w-interj', name:'Interjections', out:'I can identify interjections, say what feeling they show and punctuate them correctly.', lvl:['Spot the interjection','Which feeling?','Use and punctuate it'],
+    learn:{rule:"An <b>interjection</b> is a word or short phrase that shows a sudden feeling: <i>Wow! Ouch! Oops! Hooray!</i> A strong interjection is followed by an <b>exclamation mark</b>. A mild one is followed by a <b>comma</b>: <i>Oh, I see.</i>",
+      tip:"Interjections are the sound effects of a sentence 💥 Ouch! Phew! Yikes!", ex:["<b>Ouch!</b> That hurt.","<b>Hooray!</b> We won!","<b>Well,</b> I'm not sure."]},
+    gen:lv=> lv===1 ? tq(rnd(INTERJ_TAP),'Tap the interjection','An interjection shows a sudden feeling.')
+      : lv===2 ? (([w,f])=>mc('What feeling does this interjection show?', f, sample(INTERJ_FEEL.filter(x=>x[1]!==f).map(x=>x[1]),3), `<b>${escH(w)}</b> shows ${escH(f)}.`, {clue:w}))(rnd(INTERJ_FEEL))
+      : pct(.5) ? F(rnd(INTERJ_FIT),'Choose the interjection that fits:','It matches the feeling in the sentence.')
+      : (o=>mc('Which sentence is punctuated correctly?', o[0], o.slice(1), `<b>${escH(o[0])}</b> A strong interjection takes an exclamation mark; a mild one takes a comma.`))(rnd(INTERJ_PUNCT)) },
   { id:'w-edit', name:'Proofreading', out:'I can find and correct mistakes in spelling, punctuation and grammar in a short paragraph.', lvl:['One mistake','Two mistakes','Three mistakes'],
     learn:{rule:"Good writers <b>proofread</b>: they read their work again, slowly, to find mistakes. Check <b>capital letters</b> (names, places, days, months, the start of a sentence), <b>punctuation</b>, <b>spelling</b>, <b>verb tense</b> (did it happen in the past?) and words that sound the same (<i>their, there, they're</i>).",
       tip:"Be a detective 🔎 Read it once for meaning, then once word by word with your finger. Ask of each word: does it look right, and does it sound right in this sentence?", ex:["<s>goed</s> → <b>went</b>","<s>sipho</s> → <b>Sipho</b>","<s>could of</s> → <b>could have</b>"]},
@@ -2472,6 +2501,12 @@ const WORLDS = [
       tip:"Silent letters are ninjas 🥷 They're there, but you never hear them!", ex:["<b>k</b>nee, <b>w</b>rong","lam<b>b</b>, <b>h</b>onest","lis<b>t</b>en, ca<b>l</b>m"]},
     gen:lv=>{ const [w,l]=rnd([SIL1,SIL2,SIL3][lv-1]), i=w.indexOf(l), shown=w.slice(0,i)+'_'+w.slice(i+1);
       return mc('Which silent letter is missing?', l, sample(['k','w','b','h','g','t','s','l','n'].filter(x=>x!==l),3), `<b>${w.slice(0,i)}<u>${l}</u>${w.slice(i+1)}</b>`, {clue:shown, speak:w}); } },
+  { id:'sp-syll', name:'Syllables', out:'I can break words into syllables to help me read and spell them.', lvl:['Count the beats','Longer words','Split the word'],
+    learn:{rule:"A <b>syllable</b> is a beat in a word. Every syllable has a vowel sound: <i>cat</i> (1), <i>rab-bit</i> (2), <i>el-e-phant</i> (3). When two consonants sit between vowels, we usually split between them: <i>pen-cil, kit-ten</i>.",
+      tip:"Put your hand under your chin and say the word 🖐️ Each time your chin drops, that's a syllable!", ex:["sun = 1","pen-cil = 2","but-ter-fly = 3","hip-po-pot-a-mus = 5"]},
+    gen:lv=>{ if (lv===3){ const o=rnd(SYL_SPLIT), w=o[0].replace(/-/g,''); return mc(`Which shows <b>${w}</b> split into syllables correctly?`, o[0], o.slice(1), `<b>${o[0]}</b>: split between the two consonants.`, {speak:w}); }
+      const pool=SYL_WORDS.filter(s=>{ const n=s.split('-').length; return lv===1?n<=3:n>=2; }), s=rnd(pool), n=s.split('-').length, w=s.replace(/-/g,'');
+      return mc('How many syllables are in this word?', String(n), (lv===1?['1','2','3']:['2','3','4','5']).filter(x=>x!==String(n)), `<b>${s}</b>: ${n} syllable${n>1?'s':''}.`, {clue:w, speak:w}); } },
   { id:'sp-abc', name:'Dictionary skills', out:'I can put words in alphabetical order to the second and third letter.', lvl:['First letters','Second letters','Third letters and beyond'],
     learn:{rule:"Dictionaries list words in <b>alphabetical order</b>. If the first letters are the same, look at the second letter. Still the same? Look at the third!",
       tip:"Be a word detective 🔍 Same letter? Take one step to the right and compare again.", ex:["c<b>a</b>t, c<b>l</b>oud (a comes before l)","bre<b>a</b>d, bri<b>d</b>ge","sta<b>c</b>k, sta<b>m</b>p, sta<b>r</b>"]},
@@ -2581,6 +2616,30 @@ const WORLDS = [
 ]}
 ];
 const ALLSKILLS = WORLDS.flatMap(w=>w.skills.map(s=>Object.assign(s,{world:w.id})));
+/* ----- Extra content in existing skills, to cover the HeronBridge planning ----- */
+(()=>{ const S=id=>ALLSKILLS.find(k=>k.id===id);
+  FIG.push(...FIG_EXTRA); FIG_TYPES.push('hyperbole','assonance');
+  const fig=S('w-fig'); fig.out='I can identify and explain similes, metaphors, personification, alliteration, onomatopoeia, hyperbole and assonance.'; fig.lvl=['Simile or metaphor?','All the figures','What does it mean?'];
+  fig.learn.rule+="<br><b>Hyperbole:</b> a big exaggeration.<br><b>Assonance:</b> the same vowel sound repeated.<br><b>Rhyme:</b> words that end with the same sound.";
+  fig.learn.ex=[...fig.learn.ex, "I've told you a million times! <i>(hyperbole)</i>"];
+  const pc=S('p-colon'), pcg=pc.gen; pc.name='Colons, semi-colons, brackets & hyphens'; pc.lvl=['Colons and semi-colons','Brackets','Hyphens'];
+  pc.out='I can use colons before lists, semi-colons to join linked sentences, brackets for extra information and hyphens in compound words.';
+  pc.learn.rule=pc.learn.rule.replace('<b>Brackets','A <b>semi-colon (;)</b> joins two short sentences that are closely linked. <b>Brackets');
+  pc.learn.ex=[...pc.learn.ex, "It was raining<b>;</b> we stayed inside."];
+  pc.gen=lv=> lv===1&&pct(.45) ? (o=>mc('Which sentence uses the semi-colon correctly?', o[0], o.slice(1), `<b>${escH(o[0])}</b> A semi-colon joins two short sentences that are closely linked.`))(rnd(SEMI1)) : pcg(lv);
+  const pt=S('n-ptypes'), ptg=pt.gen; pt.out='I can use demonstrative, reflexive, interrogative and relative pronouns.'; pt.lvl=['this, that, these, those','myself, themselves...','who, whose, which, that'];
+  pt.learn.rule+="<br><b>Relative</b> pronouns add information about a noun: <i>who, whom, whose, which, that</i>.";
+  pt.learn.ex=[...pt.learn.ex, "The girl <b>who</b> won is my sister."];
+  pt.gen=lv=> lv===3&&pct(.5) ? F(rnd(RELAT),'Choose the correct pronoun:','<b>Who</b> is for people, <b>which</b> is for animals and things, and <b>whose</b> shows that something belongs to someone.') : ptg(lv);
+  const ho=S('w-homo'), hog=ho.gen; ho.name='Homophones, homonyms & homographs'; ho.lvl=['Sound-alike words','there, their, they\'re...','Homonyms and homographs'];
+  ho.out='I can use homophones correctly and explain homonyms and homographs.';
+  ho.learn.rule+="<br><b>Homographs</b> are spelt the same but said differently: a <i>tear</i> 💧 from your eye, and a <i>tear</i> in your shirt.";
+  ho.gen=lv=> lv===3&&pct(.45) ? (([s,a,b])=>mc(`This word is a homograph. How do you say it here?<br><i>${s}</i>`, a, [b], `Here it ${escH(a)}. Homographs are spelt the same but said differently.`))(rnd(HOMOG)) : hog(lv);
+  const id=S('w-idiom'), idg=id.gen; id.name='Idioms, proverbs & symbols'; id.lvl=['Everyday idioms','More idioms and symbols','Proverbs'];
+  id.out='I can explain common idioms, proverbs and symbols.';
+  id.learn.rule+=" A <b>symbol</b> is a picture or object that stands for an idea: a white dove stands for <b>peace</b>.";
+  id.gen=lv=> lv===2&&pct(.4) ? (([s,m])=>mc('What does this symbol usually stand for?', m, sample(SYMB.filter(x=>x[1]!==m).map(x=>x[1]),3), `${escH(s)} usually stands for <b>${escH(m)}</b>.`, {clue:s}))(rnd(SYMB)) : idg(lv);
+})();
 const SK = id => ALLSKILLS.find(s=>s.id===id);
 const WD = id => WORLDS.find(w=>w.id===id);
 
@@ -3290,60 +3349,188 @@ function writingChecks(text){
 const OLD_IDS = {'The Lost Lunchbox':['lunchbox','narrative'],'The Patient Hunter':['heron','information'],'The Mighty Baobab':['baobab','information'],'Match Day':['matchday','narrative'],'A Letter from Camp':['camp','friendly letter'],'How to Make a Pine Cone Bird Feeder':['birdfeeder','instructions']};
 PASSAGES.forEach(p=>{ const m=OLD_IDS[p.title]; Object.assign(p,{id:m[0], type:m[1], lv:1}); });
 Object.assign(POEM,{id:'heronpoem', type:'poem', lv:1});
-const ALL_PASSAGES = [...PASSAGES, POEM, ...NEW_PASSAGES, ...NEW_PASSAGES2];
+/* ----- Reading texts added for the HeronBridge planning ----- */
+const PLAN_PASSAGES = [
+PSG('crossing','The Man at the Crossing','poem',2,`
+When the sleepy sun yawns over the hills
+and the taxis hoot, "Beep! Beep! Beep!",
+Mr Dube buttons his bright yellow coat
+and walks to the corner of our street.
+
+He stands as still as a mountain
+in the middle of the roaring road.
+His stop sign is a magic wand:
+the cars all freeze, the buses slow.
+
+Small children cross like ducklings,
+backpacks bobbing in a line.
+He has told us a million times,
+"Look left, look right, and you'll be fine."
+
+He has never won a medal,
+and his name is not in the news,
+but every child in our school is safe
+because of one man's dusty shoes.`,
+["Who is the poem about?|Mr Dube, who helps children cross the road|A taxi driver|A teacher at the school|A police officer on a motorbike|The first stanza introduces Mr Dube in his yellow coat.",
+ "Which line is an example of personification?|When the sleepy sun yawns over the hills|He stands as still as a mountain|backpacks bobbing in a line|because of one man's dusty shoes|The sun cannot really be sleepy or yawn. These are things people do.",
+ "'He stands as still as a mountain' is an example of...|a simile|a metaphor|hyperbole|onomatopoeia|It compares using 'as ... as'.",
+ "Which words are an example of onomatopoeia?|Beep! Beep! Beep!|bright yellow coat|the roaring road|dusty shoes|They sound like the noise a taxi's hooter makes.",
+ "'He has told us a million times' is an example of...|hyperbole|a simile|alliteration|personification|It is an exaggeration. He has not really said it a million times.",
+ "Why does the poet say the children cross 'like ducklings'?|They walk in a neat line, one behind the other|They are covered in feathers|They are swimming across the road|They are making quacking sounds|Ducklings follow each other in a line.",
+ "'His stop sign is a magic wand.' What does this metaphor tell us?|When he holds up the sign, the traffic stops as if by magic|The sign is made of wood|Mr Dube can do magic tricks|The sign is very small|A metaphor says one thing IS another, to paint a picture.",
+ "What is the main message of the last stanza?|Ordinary people can be heroes, even without a medal|Mr Dube wants to be in the news|Crossing the road is boring|Mr Dube needs new shoes|He keeps every child safe, even though he is not famous."]),
+PSG('weather1','Weekend Weather for Gauteng','weather report',2,`
+WEEKEND WEATHER FOR GAUTENG
+Issued on Friday, 11 June, at 5 p.m.
+
+SATURDAY
+A cold front will move over Gauteng tonight. Saturday morning will be very cold and frosty, with a low of 1 °C in Johannesburg and 3 °C in Pretoria. By the afternoon it will be sunny and clear, but a strong south-westerly wind of up to 40 km/h will make it feel even colder. The highest temperature will be only 14 °C.
+
+SUNDAY
+Sunday will be calm and sunny. The wind will die down by midday, and temperatures will climb to 17 °C. There is no chance of rain.
+
+ADVICE
+Farmers should protect young plants from frost tonight. If you are going to a soccer match on Saturday, wear a warm jacket, a beanie and gloves. Remember to bring pets indoors on Friday night.
+
+Sunrise: 06:52. Sunset: 17:24.
+
+(This is a made-up weather report for reading practice.)`,
+["When was this weather report issued?|On Friday, 11 June, at 5 p.m.|On Saturday morning|On Sunday at midday|On Monday, 14 June|The line under the heading tells us.",
+ "What will bring the cold weather on Saturday?|A cold front moving over Gauteng|A thunderstorm|A heat wave|Snow from the mountains|The report says a cold front will move over Gauteng tonight.",
+ "What is the lowest temperature expected in Johannesburg on Saturday?|1 °C|3 °C|14 °C|17 °C|'a low of 1 °C in Johannesburg'",
+ "Why will Saturday afternoon feel colder than 14 °C?|Because of the strong wind|Because it will rain|Because the sun will not shine|Because of the frost on the plants|The report says the wind will make it feel even colder.",
+ "Which day would be better for a picnic?|Sunday|Saturday|Friday night|Both days are the same|Sunday will be calm and sunny, with no rain.",
+ "Why should farmers protect young plants tonight?|Because frost can damage them|Because the wind will blow them away|Because it will be too hot|Because there will be hail|Frost forms when it is very cold, and it can kill young plants.",
+ "What does 'km/h' stand for?|kilometres per hour|kilograms per hour|kilometres high|kilometres per hill|It tells us how fast the wind is moving.",
+ "What type of text is this?|A weather report|A short story|A poem|An advert|It tells us what the weather will be like and gives advice."]),
+PSG('weather2','Weather for the Kruger National Park','weather report',3,`
+KRUGER NATIONAL PARK: THE WEEK AHEAD
+Issued on Monday, 25 October
+
+MONDAY TO WEDNESDAY
+Hot and dry across the park. Temperatures will reach 36 °C at Skukuza and 38 °C in the far north near Punda Maria. Nights will stay warm, at about 22 °C. Animals will gather at waterholes during the hottest part of the day, so visitors have a good chance of seeing elephants and buffalo there.
+
+THURSDAY
+Clouds will build up in the afternoon, with a 60% chance of thunderstorms in the south. Storms may bring lightning, strong gusts of wind and short bursts of heavy rain. Dirt roads could become muddy and slippery.
+
+FRIDAY AND THE WEEKEND
+The sky will clear again. Friday night will be a full moon, and with no clouds the bush will stay bright until early morning.
+
+ADVICE FOR VISITORS AND RANGERS
+Drink plenty of water and wear a hat. Stay inside your car during storms. Poachers sometimes move on bright, moonlit nights, so extra ranger patrols will be on duty from Friday.
+
+(This is a made-up weather report for reading practice.)`,
+["Where in the park will it be hottest from Monday to Wednesday?|In the far north, near Punda Maria|At Skukuza|In the south|At the waterholes|Punda Maria will reach 38 °C, the highest temperature.",
+ "Why will animals gather at waterholes during the day?|Because it will be very hot and they need to drink|Because it will rain there|Because the rangers feed them|Because the moon is full|On hot days, animals need water to drink and cool down.",
+ "What is the chance of thunderstorms on Thursday?|60%|36%|22%|100%|'a 60% chance of thunderstorms in the south'",
+ "Why could dirt roads be dangerous on Thursday?|Heavy rain could make them muddy and slippery|Elephants will block them|They will be too hot to drive on|They will be closed for repairs|The report warns that dirt roads could become muddy and slippery.",
+ "When will there be a full moon?|On Friday night|On Monday night|On Thursday afternoon|On Wednesday morning|The section on Friday and the weekend tells us.",
+ "Why will extra rangers patrol from Friday?|Poachers sometimes move on bright, moonlit nights|The storms will be dangerous|Visitors will need help with flat tyres|The waterholes will dry up|The advice links the full moon to poaching.",
+ "Which piece of advice is about storms?|Stay inside your car|Drink plenty of water|Wear a hat|Look for elephants at waterholes|Lightning is dangerous, so it is safer to stay in the car.",
+ "What is the purpose of this text?|To tell people what weather to expect and how to prepare|To tell a story about rangers|To sell holidays in the Kruger Park|To describe how rhinos live|A weather report forecasts the weather and gives advice."]),
+PSG('snare','The Snare','play script',3,`
+THE SNARE: A PLAY IN ONE SCENE
+
+CHARACTERS: NANDI, a Grade 5 learner. SIPHO, her cousin. RANGER MAKHUBELE, a game ranger.
+
+(The edge of a game farm in Limpopo. Early morning. Birds are singing. NANDI and SIPHO walk along a dusty path, carrying binoculars.)
+
+SIPHO: (yawning) Why did we have to get up so early?
+
+NANDI: Because the animals are awake early. Shh! Listen.
+
+(A soft, frightened cry comes from behind a bush.)
+
+SIPHO: (whispering) What was that?
+
+NANDI: (creeping forward) It's a young impala! Its leg is caught in a loop of wire.
+
+SIPHO: A snare! Poachers set those. Let's pull it off!
+
+NANDI: No, wait. If we pull the wire, it will tighten and hurt her more. We need help.
+
+(SIPHO takes out his phone and dials.)
+
+SIPHO: Ranger Makhubele? It's Sipho. We've found an impala in a snare near the old windmill. Please come quickly!
+
+(Ten minutes later, RANGER MAKHUBELE arrives with a pair of wire cutters.)
+
+RANGER MAKHUBELE: (kneeling down gently) Well done, you two. You did exactly the right thing.
+
+(He cuts the wire. The impala limps a few steps, then bounds away into the long grass.)
+
+NANDI: (smiling) Look at her go!
+
+RANGER MAKHUBELE: Snares are cruel. They catch any animal that walks past. Every snare you report could save a life.
+
+SIPHO: Then let's search the rest of the path.
+
+RANGER MAKHUBELE: (handing them each a notebook) Good idea. Write down where you find them, and never touch one yourself.
+
+(They walk off together, scanning the ground. The lights fade.)`,
+["Where does the play take place?|At the edge of a game farm in Limpopo|In a classroom|At a zoo in Johannesburg|In a restaurant in the Kruger Park|The stage directions at the start tell us.",
+ "How do we know which words are stage directions?|They are written in brackets|They are written in CAPITAL letters|They are inside inverted commas|They are at the end of the play|In a play script, stage directions go in brackets.",
+ "Why did Nandi stop Sipho from pulling the wire?|It would tighten and hurt the impala more|She wanted to keep the wire|The ranger had told them to stay away|Sipho might drop his phone|Nandi says the wire will tighten if they pull it.",
+ "What did Sipho do to get help?|He phoned Ranger Makhubele|He ran back to the house|He shouted for help|He sent Nandi to the windmill|The stage directions say he takes out his phone and dials.",
+ "What do the words 'bounds away' tell us about the impala?|It is free and able to run again|It is badly hurt|It is still trapped|It is lying down to rest|To bound means to leap or run with big jumps.",
+ "Why does the ranger say snares are cruel?|They catch any animal that walks past|They are made of wire|They are hard to find|They are very expensive|He explains this near the end.",
+ "How does Sipho feel at the start of the play?|Tired, because they got up early|Scared of the dark|Angry with the ranger|Excited about his birthday|He is yawning and asks why they got up so early.",
+ "What type of text is this?|A play script|A newspaper article|A poem|A diary entry|It has a list of characters, stage directions and speakers' names before their words."])
+];
+const ALL_PASSAGES = [...PASSAGES, POEM, ...NEW_PASSAGES, ...NEW_PASSAGES2, ...PLAN_PASSAGES];
 const TP = id => TEST_PASSAGES.find(p=>p.id===id);
 const ALL_VISUAL = [...VISUAL, NEW_PASSAGES.find(p=>p.id==='splash')];
 const PS = id => ALL_PASSAGES.find(p=>p.id===id);
 
 const WEEKS_PER_TERM = 13;   // Heronbridge 2027: 13 teaching weeks a term
-const YEAR_DROP = [12,13,27,29,32,33];   // themes that rest to fit 39 weeks
-const YEAR = [
- ['New beginnings','🎒',['n-cp','s-types'],'lunchbox','about','Introduce yourself to a new friend: who you are, what you love and something surprising about you.'],
- ['Birds of the vlei','🦩',['p-caps','n-plural'],'heron','report','Write an information report about a bird you have seen, such as a heron, hadeda, pigeon or sunbird.'],
- ['Trees and plants','🌳',['n-coll','s-build'],'baobab','describe','Describe a tree or garden you know well, using all five senses.'],
- ['Sport and games','⚽',['v-spot','v-past'],'matchday','recount','Recount a match, race or game you played in. What happened, and how did you feel?'],
- ['Camp and adventure','⛺',['n-pron','p-comma'],'camp','letter','Write a letter home from an imaginary camp. Tell your family about two adventures.'],
- ['Making things','🔨',['d-adj','s-subj'],'birdfeeder','instr','Write instructions for making something simple: a paper aeroplane, a sandwich or a bird feeder.'],
- ['Folktales','🐢',['v-tense','w-syn'],'tortoise','story','Write your own folktale that explains something in nature, for example why the zebra has stripes.'],
- ['Caring for our world','🌍',['d-adv','s-conj'],'jukskei','persuade','Convince your class to look after the environment. Give three reasons and tell them what to do.'],
- ['Poetry corner','🎵',['w-fig','r-poem'],'heronpoem','acrostic','Write an acrostic poem using the word HERON or the name of your favourite animal.'],
- ['My diary','📔',['v-conc','p-contr'],'sportsday','diary','Write a diary entry about the best (or funniest) day you have had this term.'],
- ['Wild animals','🐧',['r-infer','w-homo'],'penguins','report','Write an information report about a South African animal.'],
- ['Space and stars','🌌',['sp-abc','d-art'],'solarsystem','describe','Imagine you are an astronaut. Describe what you see, hear and feel as you look down at Earth.'],
- ['Friends','🤝',['n-abs','p-poss'],'newgirl','letter','Write a letter to a friend telling them why they are special to you.'],
- ['Music and rhythm','🥁',['sp-silent','w-dim'],'marimba','poem','Write a poem about music, rain or another sound you love. Use onomatopoeia!'],
- ['Term 1 review','🏆',['r-comp','w-idiom'],'spellingbee','story','Write a story that starts: "The box on the doorstep was wriggling..."'],
- ['South African heroes','🇿🇦',['n-count','r-types'],'mandela','letter','Write a letter to a South African you admire, telling them why they inspire you.'],
- ['Adverts all around','📣',['r-visual','r-fact'],'splash','advert','Create an advert for a new waterpark ride, a snack or a school event.'],
- ['Growing things','🌱',['s-prep','r-seq'],'bean','instr','Write instructions for planting a seed or caring for a pot plant.'],
- ['Family stories','🕯️',['d-comp','v-help'],'lights','story','Write a story about a family evening when the power went out.'],
- ['Weather and water','💧',['w-affix','r-summary'],'watercycle','describe','Describe a rainy day from inside your house, using your five senses.'],
- ['On stage','🎭',['p-speech','s-complex'],'homework','dialogue','Write a dialogue between a learner who has forgotten their homework and their teacher.'],
- ['Our community','🏘️',['n-ptypes','p-colon'],'mayor','persuade','Persuade your principal or the mayor to fix a problem in your community.'],
- ['Storms and seasons','⛈️',['w-fig','sp-silent'],'storm','poem','Write a poem about a storm or your favourite season, with at least two stanzas.'],
- ['Clever animals','🦊',['d-art','w-idiom'],'jackal','story','Write a folktale in which a small animal outsmarts a bigger one.'],
- ['The Big Five','🦁',['r-skim','sp-abbr'],'bigfive','report','Write an information report about one of the Big Five.'],
- ['Food and culture','🍲',['p-poss','sp-rules'],'gogo','describe','Describe a meal that is special to your family. What does it look, smell and taste like?'],
- ['Inventors','💡',['sp-spot','s-subj'],'sainventions','advert','Invent a gadget that would make school easier, and write an advert for it.'],
- ['Rock pools','🦀',['r-summary','d-adv'],'rockpools','story','Write a story about getting lost and finding your way back.'],
- ['Celebrations','🎉',['n-ptypes','r-visual'],'heritageday','recount','Recount a celebration you enjoyed: a birthday, Heritage Day or a family wedding.'],
- ['Term 2 review','🏆',['s-complex','r-infer'],'solar','persuade','Persuade your school to put up solar panels. Give at least three reasons.'],
- ['The human body','❤️',['v-voice','d-adj'],'heart','instr','Write instructions for a healthy morning routine or a simple exercise.'],
- ['Robots and inventions','🤖',['w-dim','s-build'],'robot','story','Write a story about a robot who discovers something it loves.'],
- ['Speak up!','📢',['r-fact','w-syn'],'garden','persuade','Should our school have a longer break? Give your opinion and at least three reasons.'],
- ['Trips and history','🦴',['v-tense','p-comma'],'cradle','recount','Recount a school trip or outing in the order it happened.'],
- ['People we love','👵',['r-poem','w-fig'],'gran','poem','Write a poem about someone you love, using a simile and a metaphor.'],
- ['Waste not','♻️',['n-abs','sp-spot'],'recycle','advert','Create a poster or advert that persuades people to recycle.'],
- ['Mysteries','🗺️',['r-infer','s-conj'],'treasure','story','Write a mystery story that begins with a strange map or note.'],
- ['In the kitchen','🍓',['r-seq','p-colon'],'kebabs','instr','Write a recipe for your favourite snack.'],
- ['Reading rocket','🚀',['r-summary','sp-abc'],'readathon','review','Write a review of the best book you have read this year.'],
- ['Book worms','📚',['r-types','p-speech'],'dragonreview','dialogue','Write a conversation between two characters from your favourite book.'],
- ['Amazing nature','✨',['r-skim','w-affix'],'glow','report','Write an information report about an animal that lives in the ocean.'],
- ['Postcards','✉️',['p-contr','sp-rules'],'postcard','letter','Write a postcard to someone from a real or imaginary holiday.'],
- ['Myths and legends','🌙',['w-idiom','n-coll'],'moonglow','story','Write a legend that explains something in nature, like why the sea is salty.'],
- ['Big debates','⚖️',['r-fact','s-complex'],'phones','persuade','Should children have phones at school? Give your opinion with at least three reasons.'],
- ['Goodbye, Grade 5!','🎓',['r-comp','w-homo'],'lastday','letter','Write a letter to next year\'s Grade 5 class with advice for a great year.']
-].filter((_,i)=>!YEAR_DROP.includes(i+1)).map(([theme,icon,skills,passage,write,prompt],i)=>({w:i+1, term:Math.ceil((i+1)/WEEKS_PER_TERM), tw:(i%WEEKS_PER_TERM)+1, theme, icon, skills, passage, write, prompt}));
+/* Weekly plan, following the Grade 5 English planning used at HeronBridge (three terms of 13 teaching weeks).
+   Each week: [text type, icon, skills, reading text, writing task, language focus from the planning]. */
+const TERM_THEMES = ['The impact of war, and animals and children in wartime', 'Ordinary people doing extraordinary things', 'Exploitation of animals'];
+const YEAR_PLAN = [
+ // Term 1 · The Lion, the Witch and the Wardrobe
+ ['Settling in','🎒',['s-build'],'lunchbox','about','Baseline assessment (the Starting Point Check)'],
+ ['Information texts','🦩',['s-types','p-caps','p-comma'],'heron','report','Types of sentences and punctuation'],
+ ['Short stories','📖',['n-cp','d-adj','v-spot','d-adv'],'matchday','story','Parts of speech: nouns, adjectives, verbs and adverbs'],
+ ['Reports with visuals','🔭',['w-affix','w-syn'],'solarsystem','report','Root words, prefixes and suffixes; synonyms and antonyms'],
+ ['Newspaper articles','📰',['s-subj'],'jukskei','news','Subject, verb and object; subject and predicate'],
+ ['Short stories','🕯️',['v-voice'],'lights','story','Active and passive voice'],
+ ['Folklore','🐢',['v-conc'],'tortoise','story','Concord'],
+ ['Poetry','🎵',['w-fig'],'heronpoem','poem','Figurative language: simile, metaphor, alliteration, personification, hyperbole and onomatopoeia'],
+ ['Instructions','🔨',['v-conc','v-tense'],'birdfeeder','instr','Concord and the simple tense'],
+ ['Information texts','💧',['sp-abc','w-syn'],'watercycle','report','Dictionary and thesaurus work'],
+ ['Short stories','🐝',['s-conj','s-prep','d-art','n-plural'],'spellingbee','story','Parts of speech recap, plus conjunctions, prepositions, articles and plurals'],
+ ['Poetry','⛈️',['w-fig','r-poem'],'storm','poem','Figurative language recap, plus assonance and rhyme'],
+ ['Revision and word games','🧩',['r-comp','w-edit'],'newgirl','acrostic','Word searches, crosswords and revision'],
+ // Term 2 · Danny, the Champion of the World (from week 4)
+ ['Short stories','🍲',['w-edit','s-subj','v-voice'],'gogo','story','Revision of Term 1'],
+ ['Information texts','🇿🇦',['d-adv','s-prep','n-abs','n-coll'],'mandela','report','Adverbs of time, place and manner; prepositions; common, abstract, proper and collective nouns'],
+ ['Poetry','👵',['w-fig','r-poem'],'gran','poem','Analysing poetry: figurative language'],
+ ['Descriptive writing','🌳',['d-adj','d-comp'],'baobab','describe','Adjectives and degrees of comparison'],
+ ['Reports with visuals','💡',['sp-rules','n-plural','p-poss'],'sainventions','report','Spelling rules, punctuation (apostrophes) and plurals'],
+ ['Plays','🎭',['s-conj','s-complex'],'homework','dialogue','Conjunctions; simple and complex sentences'],
+ ['Advertisements','📣',['r-visual','r-fact'],'splash','advert','Revision before the term test'],
+ ['Folklore','🦊',['v-tense','v-past','v-help'],'jackal','story','Tenses: simple and continuous (with helping verbs)'],
+ ['Instructions','🌱',['n-pron','n-ptypes'],'bean','instr','Pronouns: personal, possessive, reflexive, demonstrative and interrogative'],
+ ['The class novel','🗺️',['p-speech','r-infer'],'treasure','diary','Direct and indirect speech'],
+ ['Poetry','🦺',['w-fig','v-spot','d-adj'],'crossing','poem','Revise parts of speech and figurative language'],
+ ['Weather reports','🌦️',['v-tense','sp-syll'],'weather1','weather','Revise tenses; syllables'],
+ ['Revision and word games','📚',['r-comp','r-summary'],'readathon','review','Revision, crosswords and word searches'],
+ // Term 3 · The Boy and the Poacher's Moon (weeks 4 to 9)
+ ['A tour','🦴',['r-types','r-skim'],'cradle','recount','Orientation week'],
+ ['Myths and legends','🌙',['w-interj','s-prep','s-conj'],'moonglow','story','Parts of speech recap, plus interjections'],
+ ['Diary entries','📔',['p-speech','p-caps','p-comma'],'sportsday','diary','Direct and indirect speech; inverted commas, commas, full stops and capital letters'],
+ ['The class novel','🦁',['w-fig','w-idiom'],'bigfive','describe','Figurative language: symbols, idioms and proverbs'],
+ ['The class novel','✨',['v-tense','w-syn'],'glow','letter','Simple and continuous tenses; synonyms and antonyms'],
+ ['The class novel','🐧',['w-homo','w-affix'],'penguins','report','Homophones, homonyms and homographs; prefixes, suffixes and root words'],
+ ['The class novel','♻️',['v-conc','p-colon'],'recycle','advert','Concord; colons and semi-colons'],
+ ['Weather reports','🌕',['n-ptypes','d-art'],'weather2','weather','Pronouns (personal, reflexive and relative) and articles'],
+ ['The class novel','📚',['s-complex','v-finite'],'dragonreview','review','Simple and compound sentences; finite verbs; verbs and gerunds'],
+ ['Plays','🎭',['sp-abc','sp-rules','v-conc'],'snare','dialogue','Dictionary and thesaurus work; spelling rules; concord'],
+ ['Persuasive writing','📢',['w-homo','p-contr','sp-spot','w-syn'],'garden','persuade','Words often confused or misspelt (its and it\'s, there and their); vocabulary, synonyms and antonyms'],
+ ['Instructions','🍓',['r-seq','w-edit'],'kebabs','instr','Revision of this term\'s work'],
+ ['Celebrations','🎓',['r-comp'],'lastday','letter','Class swaps, word games and celebrations']
+];
+const YEAR = YEAR_PLAN.map(([theme,icon,skills,passage,write,lang],i)=>({w:i+1, term:Math.ceil((i+1)/WEEKS_PER_TERM), tw:(i%WEEKS_PER_TERM)+1, theme, icon, skills, passage, write, lang, prompt:''}));
 const TEST_WEEK = 8;   // one term test, in week 8, well before reports
 const TESTS = [1,2,3].map(t=>({id:`t${t}`, term:t, week:(t-1)*WEEKS_PER_TERM+TEST_WEEK, kind:'Term', title:`Term ${t} Test`, from:(t-1)*WEEKS_PER_TERM+1, to:(t-1)*WEEKS_PER_TERM+TEST_WEEK-1, passage:`test${t}a`}));
 const testForWeek = w => TESTS.find(t=>t.week===w);
@@ -3423,6 +3610,14 @@ const WRITING_TASKS = [
   prompt:'Write a story with a clear beginning, middle and end. Story starter: "The box on the doorstep was wriggling..."',
   plan:['Characters','Setting (where and when)','Beginning','Problem (middle)','How it ends'],
   checks:t=>[['At least 3 paragraphs (beginning, middle, end)', wParas(t)>=3],['Uses time connectives (one day, suddenly, finally...)', wCount(t,TIMEW)>=3],['Has direct speech in inverted commas', wCount(t,/["“”]/g)>=2],['Uses a simile', wHas(t,SIMILE)],['At least 100 words', wWords(t)>=100]]},
+ {id:'news', icon:'📰', title:'Newspaper Article', type:'Newspaper article', min:80,
+  prompt:'Write a newspaper article about an exciting event at your school. Answer who, what, when, where, why and how.',
+  plan:['Headline (short and catchy)','Lead paragraph: who, what, when and where?','Why and how did it happen?','A quote from someone who was there','Ending: what happens next?'],
+  checks:t=>{ const first=(t.trim().split('\n')[0]||'').trim(); return [['Starts with a short headline on its own line', first.split(/\s+/).length<=10 && !/[.]$/.test(first) && t.trim().includes('\n')],['Says when it happened', wHas(t,/\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|yesterday|today|last week|this morning|january|february|march|april|may|june|july|august|september|october|november|december)\b/i)],['Includes a quote in inverted commas', wHas(t,/["“][^"”]{4,}["”]/)],['Written in the past tense', wCount(t,/\b(was|were|had|\w{3,}ed)\b/gi)>=4],['At least 80 words', wWords(t)>=80]]; }},
+ {id:'weather', icon:'🌦️', title:'Weather Report', type:'Weather report', min:50,
+  prompt:'Write a weather report for your town for tomorrow. Include temperatures, wind and rain, and give people advice.',
+  plan:['Place and day','Morning','Afternoon and evening','Lowest and highest temperatures','Advice: what should people do?'],
+  checks:t=>[['Names a day', wHas(t,/\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today|tonight|weekend)\b/i)],['Gives temperatures in °C', wHas(t,/\d+\s*(°|degrees)/i)],['Uses weather words (sunny, cloudy, wind, showers...)', wCount(t,/\b(sunny|sun|cloudy|clouds?|wind|windy|rain|rainy|showers?|storms?|thunder|lightning|frost|cold|hot|warm|mist|fog|hail)\b/gi)>=3],['Uses the future tense (will...)', wHas(t,/\bwill\b/i)],['Gives advice (remember, take, wear...)', wHas(t,/\b(remember|don't forget|do not forget|take|wear|bring|should|make sure)\b/i)]]},
  {id:'report', icon:'🔬', title:'Information Report', type:'Information report', min:80,
   prompt:'Write an information report about an animal. Use headings like Appearance, Habitat, Food and Interesting facts.',
   plan:['Animal','Appearance','Habitat','Food','Interesting facts'],
@@ -7290,7 +7485,7 @@ function weekStatus(p, w){
   const y=YEAR[w-1], r=p.yr['w'+w]||{}, items=[];
   items.push(['spell', !!r.spell]); items.push(['read', (r.read||0)>=3]);
   y.skills.forEach(s=>items.push([s, (p.best[s]||0)>=1]));
-  if (novelWeek(w)) items.push(['novel', r.nov!=null && mapDone(p,w)]);
+  if (novelWeek(w)) items.push(['novel', r.nov!=null && mapDone(p,w)]); else if (novelMap(w)) items.push(['map', mapDone(p,w)]);
   if (y.write) items.push(['write', !!r.write]);
   items.push(['quiz', r.quiz!=null]);
   const tt=testForWeek(w); if (tt) items.push(['test', !!p.tests[tt.id]]);
@@ -7307,6 +7502,7 @@ function weekCardHTML(p){
       ${tile('id="wk-spell"','🔤','Spelling',escH(sw.pat), !!r.spell, p.spellTests['w'+w]!=null?`<small class="b">Test: ${p.spellTests['w'+w]}/${SPELL_N(w)}</small>`:'')}
       ${tile('id="wk-read"','📖','Reading',escH(ps.title), (r.read||0)>=3)}
       ${(nw=>nw?tile('id="wk-novel"', nw.n.icon, 'Class novel', escH(nw.k.ch), r.nov!=null&&mapDone(p,w), `<small class="b">${r.nov!=null?'Quiz '+r.novFirst+'/5':'Quiz'} · ${mapDone(p,w)?'Map ✓':'Map'}</small>`):'')(novelWeek(w))}
+      ${(s=>!novelWeek(w)&&s?tile('id="wk-map"', MAPS[s.m].ic, 'Thinking map', escH(s.t), mapDone(p,w)):'')(novelMap(w))}
       ${y.skills.map(s=>tile(`data-wks="${s}"`, (p.best[s]||0)?LVI[p.best[s]-1]:'🎯', escH(SK(s).name), `${LVI[curLv(s)-1]} ${LVN[curLv(s)-1]} level`, (p.best[s]||0)>=1)).join('')}
       ${y.write?tile('id="wk-write"',WT(y.write).icon,'Writing',escH(WT(y.write).title), !!r.write):''}
       ${tile('id="wk-quiz"','🧩','Weekly quiz','10 mixed questions', r.quiz!=null, r.quiz!=null?`<small class="b">Best: ${r.quiz}/10</small>`:'')}
@@ -7320,6 +7516,7 @@ function wireWeekCard(p){
   $('#wk-spell').onclick=()=>screenWeek(w);
   $('#wk-read').onclick=()=>startRead(w, back);
   if ($('#wk-novel')) $('#wk-novel').onclick=()=>screenNovel(w, back);
+  if ($('#wk-map')) $('#wk-map').onclick=()=>screenMap(w, back);
   $$('[data-wks]').forEach(b=>b.onclick=()=>{ const s=b.dataset.wks; p.learned[s]?startRound(s,null,back):screenLearn(s); });
   if ($('#wk-write')) $('#wk-write').onclick=()=>screenTask(y.write, w);
   $('#wk-quiz').onclick=()=>startQuiz(w, back);
@@ -7334,10 +7531,10 @@ function wireTestBanner(w, back){ $$('[data-test]').forEach(b=>b.onclick=()=>scr
 function startQuiz(w, back){
   stopTimers(); const y=YEAR[w-1], sw=SPELL_WEEKS[w-1];
   const sp=[...sample(sw.words,2), ...sample(sw.stretch,2)].map(([wd,s])=>Object.assign(typeQ('Listen, then spell the word', wd, `<b>${escH(wd)}</b>: ${escH(s)}`, {speak:wd, clue:blankWord(s,wd)}),{skill:'sp-bee', lv:1}));
-  const sk=y.skills.flatMap(s=>{ const k=SK(s), L=curLv(s);
-    if (k.round) return sample(k.round(L),3).map(q=>(q.skill=s,q.lv=L,q));
+  const nS=y.skills.length, sk=y.skills.flatMap((s,si)=>{ const k=SK(s), L=curLv(s), cnt=Math.floor(6/nS)+(si<6%nS?1:0);
+    if (k.round) return sample(k.round(L),cnt).map(q=>(q.skill=s,q.lv=L,q));
     const out=[], seen=new Set(); let g=0;
-    while (out.length<3 && g++<200){ const q=makeQ(s,L), key=qKey(q); if (seen.has(key)) continue; seen.add(key); out.push(q); }
+    while (out.length<cnt && g++<200){ const q=makeQ(s,L), key=qKey(q); if (seen.has(key)) continue; seen.add(key); out.push(q); }
     return out; });
   R={mode:'quiz', week:w, qs:[...sp, ...sk], i:0, correct:0, streak:0, points:0, back:back||(()=>screenWeek(w))};
   renderRoundQ();
@@ -7355,15 +7552,16 @@ function screenWeek(w){
    <div class="card mt"><b>📖 Reading: ${escH(ps.title)}</b> <small class="muted">(${escH(ps.type)})</small>${r.read!=null?` <span class="pill okpill">Best: ${r.read}/${ps.qs.length}</span>`:''}
      <p class="muted small">${ps.qs.length} questions about this week's text, then 2 answers in full sentences (one is your opinion).</p><button class="btn w100" id="rd">Read and answer ▶</button><button class="btn ghost w100 mt8" id="rqm">❓ Make your own questions${(p.qmake||{})['w'+w+':read']?' ✅':''}</button></div>
    ${(nw=>nw?`<div class="card mt"><b>${nw.n.icon} Class novel: ${escH(nw.n.title)}</b>${r.nov!=null?` <span class="pill okpill">First try: ${r.novFirst}/5</span>`:''}<p class="muted small">This week read <b>${escH(nw.k.ch)}</b>, then answer 5 questions.</p><button class="btn w100" id="wnv">Open the class novel ▶</button></div>`:'')(novelWeek(w))}
+   ${(s=>!novelWeek(w)&&s?`<div class="card mt"><b>💡 Thinking map</b>${mapDone(p,w)?' <span class="pill okpill">Done</span>':''}<p class="muted small">${MAPS[s.m].n}: ${escH(s.t)}. Show your thinking about this week's reading.</p><button class="btn w100" id="wmap">${MAPS[s.m].ic} Open the map ▶</button></div>`:'')(novelMap(w))}
    <div class="card mt"><b>🎯 This week's skills</b><div class="list mt8">${y.skills.map(s=>{ const k=SK(s); return `
      <button class="item" data-ws="${s}"><span class="em">${(p.best[s]||0)?LVI[p.best[s]-1]:'🎯'}</span><span class="grow"><b>${k.name}</b><br><small class="muted">${escH(k.out)}</small><br><span class="medals">${medalStr(p.best[s])}</span></span>▶</button>`; }).join('')}</div></div>
    ${y.write?`<div class="card mt"><b>✍️ Writing task</b><button class="item mt8" id="wt"><span class="em">${WT(y.write).icon}</span><span class="grow"><b>${escH(WT(y.write).title)}</b><br><small class="muted">${escH(y.prompt||WT(y.write).type)}${r.write?' · ✅ done':''}</small></span>▶</button></div>`:''}
    <div class="card mt"><div class="row"><b class="grow">🧩 Weekly quiz</b>${r.quiz!=null?`<span class="pill okpill">Best: ${r.quiz}/10</span>`:''}</div>
-     <p class="muted small">10 mixed questions: 4 of this week's spelling words (2 of them stretch words) and 3 from each skill, at your level. Do it at the end of the week.</p><button class="btn w100" id="qz">Start the quiz 🧩</button></div>`;
+     <p class="muted small">10 mixed questions: 4 of this week's spelling words (2 of them stretch words) and 6 from this week's skills, at your level. Do it at the end of the week.</p><button class="btn w100" id="qz">Start the quiz 🧩</button></div>`;
   $('#bk').onclick=()=>screenHome();
   $$('[data-say]').forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $('#sp-prac').onclick=()=>startSpell(w,false); $('#sp-test').onclick=()=>startSpell(w,true);
-  $('#rd').onclick=()=>startRead(w, back); $('#rqm').onclick=()=>screenQuestionMaker(w, 'read', back); if ($('#wnv')) $('#wnv').onclick=()=>screenNovel(w, back);
+  $('#rd').onclick=()=>startRead(w, back); $('#rqm').onclick=()=>screenQuestionMaker(w, 'read', back); if ($('#wnv')) $('#wnv').onclick=()=>screenNovel(w, back); if ($('#wmap')) $('#wmap').onclick=()=>screenMap(w, back);
   $$('[data-ws]').forEach(b=>b.onclick=()=>{ const s=b.dataset.ws; p.learned[s]?startRound(s,null,back):screenLearn(s); });
   if ($('#wt')) $('#wt').onclick=()=>screenTask(y.write, w);
   $('#qz').onclick=()=>startQuiz(w, back);
@@ -7382,11 +7580,11 @@ function startRead(w, back){
 }
 function screenYear(){
   stopTimers(); const p=P(), cw=curWeek();
-  app.innerHTML = backTitle('📅 The Year Plan')+`<p class="muted">Three terms of ${WEEKS_PER_TERM} weeks${calYear()?`, following the Heronbridge ${calYear()} calendar`:''}. Every week has a spelling list, a reading text, two skills, a writing task and a quiz. Week ${TEST_WEEK} of each term has the term test.</p>
+  app.innerHTML = backTitle('📅 The Year Plan')+`<p class="muted">Three terms of ${WEEKS_PER_TERM} weeks${calYear()?`, following the Heronbridge ${calYear()} calendar`:''}. Every week has a spelling list, a reading text, the week's grammar skills, a writing task and a quiz, following the Grade 5 English planning. Week ${TEST_WEEK} of each term has the term test.</p>
    ${testsCardHTML(p)}
-   ${[1,2,3].map(t=>`<h3 class="mt">Term ${t} <small class="muted">· ${novelOf(t).icon} ${escH(novelOf(t).title)}</small></h3><div class="list mt8">${YEAR.filter(y=>y.term===t).map(y=>{ const st=weekStatus(p,y.w), open=weekOpen(y.w);
+   ${[1,2,3].map(t=>`<h3 class="mt">Term ${t} <small class="muted">· ${novelOf(t).icon} ${escH(novelOf(t).title)}</small></h3><p class="small muted">Theme: ${escH(TERM_THEMES[t-1])}</p><div class="list mt8">${YEAR.filter(y=>y.term===t).map(y=>{ const st=weekStatus(p,y.w), open=weekOpen(y.w);
      return `<button class="item yrow ${y.w===cw?'now':''} ${open?'':'locked'}" data-yw="${y.w}" ${open?'':'disabled'}><span class="em">${open?y.icon:'🔒'}</span>
-       <span class="grow"><small class="muted b">Week ${y.tw}${weekDate(y.w)?' · '+weekDate(y.w):''}${y.w===cw?' · THIS WEEK':''}</small>${testForWeek(y.w)?` <span class="pill testpill">📝 ${testForWeek(y.w).kind} test</span>`:''}<br><b>${escH(y.theme)}</b><br><small class="muted">${escH(SPELL_WEEKS[y.w-1].pat)} · ${y.skills.map(s=>escH(SK(s).name)).join(' · ')}</small></span>
+       <span class="grow"><small class="muted b">Week ${y.tw}${weekDate(y.w)?' · '+weekDate(y.w):''}${y.w===cw?' · THIS WEEK':''}</small>${testForWeek(y.w)?` <span class="pill testpill">📝 ${testForWeek(y.w).kind} test</span>`:''}<br><b>${escH(y.theme)}</b><br><small class="muted">${escH(SPELL_WEEKS[y.w-1].pat)} · ${y.skills.map(s=>escH(SK(s).name)).join(' · ')}</small>${y.lang?`<br><small class="muted">📋 ${escH(y.lang)}</small>`:''}</span>
        <span class="wkpct sm">${st.done}/${st.total}</span></button>`; }).join('')}</div>`).join('')}`;
   $('#bk').onclick=()=>screenHome();
   $$('[data-yw]').forEach(b=>b.onclick=()=>screenWeek(+b.dataset.yw));
@@ -8168,49 +8366,52 @@ const NOVELS = [
 ];
 // Writing tasks follow each term's book and theme (same text types as before).
 const NOVEL_PROMPTS = [
- "Introduce yourself to a new friend. Then tell us: if you were sent away from home like the Pevensie children, which three things would you pack, and why?",
- "Write an information report about children who were evacuated in World War 2: why they were sent away, where they went and what they took with them.",
- "Describe Narnia in winter as Lucy first saw it, using all five senses: the snow, the lamp-post and the quiet wood.",
- "You are Edmund. Recount your first visit to Narnia in the order it happened.",
- "Write a letter from Lucy at the Professor's house to her parents in London. Tell them about the house and one strange thing that has happened.",
+ // Term 1: the impact of war, and animals and children in wartime
+ "Introduce yourself to your new class. Then tell us: if you were sent away from home like the Pevensie children, which three things would you pack, and why?",
+ "Write an information text about children who were evacuated in World War 2: why they were sent away, where they went and what they took with them.",
+ "Write a short story about a child who is sent to live with strangers in the countryside during a war. Use strong nouns, adjectives, verbs and adverbs.",
+ "Write a report about an animal that helped people in World War 2, such as a carrier pigeon, a dog or a horse. Add a labelled drawing.",
+ "Write a newspaper article about the day the evacuee trains left London. Answer who, what, when, where, why and how.",
+ "Write a short story about the day Lucy first found the wardrobe, told by the Professor.",
+ "Write a folktale that explains why the robin is so friendly to people, like the robin that leads the children through Narnia.",
+ "Write a poem about Narnia in winter. Use at least one simile, one metaphor and some alliteration.",
  "Write instructions for packing an evacuee's suitcase for a child leaving London in 1940.",
- "Write a story about a different child who finds a door to a magical land. What do they find, and how do they get home?",
- "You are Mr Beaver. Persuade the children to trust you and come with you. Give three good reasons.",
- "Write an acrostic poem using the word NARNIA or ASLAN.",
- "Write Edmund's diary entry for the night he reached the White Witch's house. How does he feel now?",
- "Write an information report about lions: where they live, what they eat and how a pride works.",
- "Write a poem about winter turning into spring, like the thaw in Narnia. Use onomatopoeia!",
+ "Write an information text about lions: where they live, what they eat and how a pride works.",
  "Write a new adventure for the four kings and queens of Narnia, after the White Witch is gone.",
- "Write a letter to an ordinary person who did something extraordinary (a nurse, a firefighter, a neighbour or someone in your family), telling them why they inspire you.",
- "Create an advert for Danny and his father's filling station and car repairs.",
- "Write instructions for making and flying a kite, like the ones Danny's father made.",
- "Invent your own bedtime story creature, like the Big Friendly Giant. Write the story a parent might tell about it.",
- "Describe Danny's caravan at night, using your five senses.",
+ "Write a poem about winter turning into spring, like the thaw in Narnia. Use onomatopoeia, assonance and rhyme.",
+ "Write an acrostic poem using the word NARNIA or ASLAN.",
+ // Term 2: ordinary people doing extraordinary things
+ "Write a short story about an ordinary person in your community who does something extraordinary for someone else.",
+ "Write an information text about a South African who started out ordinary and did something extraordinary.",
+ "Write a poem about an everyday hero: a nurse, a taxi driver, a gogo or a teacher. Use a simile and a metaphor.",
+ "Describe Danny's caravan, using all five senses.",
+ "Write a report about a South African invention that made ordinary people's lives better. Add a labelled diagram.",
  "Write a dialogue between Danny and his father on the night Danny discovers his father's secret.",
- "Should Danny's father poach pheasants from Mr Hazell's wood? Give your opinion with at least three reasons.",
- "Write a poem about a wood at night, with at least two stanzas.",
- "Write a story in which an ordinary child does something brave to help someone they love.",
- "Write an information report about pheasants or another bird that lives in woods or grassland.",
- "Describe Mr Victor Hazell from Danny's point of view: how he looks, sounds and behaves.",
- "Write the story of the night Danny drove the Baby Austin, told by Danny's father from the bottom of the pit.",
- "Persuade your school to give an award to an everyday hero from your community. Give at least three reasons.",
- "Write instructions for staying safe on a game drive in a national park.",
- "Recount a visit to a game reserve, zoo or farm, real or imagined, in the order it happened.",
- "Write a poem about a rhino under a full moon, using a simile and a metaphor.",
- "Create a poster that persuades people never to buy rhino horn or ivory.",
- "Write a mystery story set in the bush, with clues for the reader and a surprise at the end.",
- "Write instructions for organising a school fundraiser to help protect rhinos.",
- "Write a review of the best book you have read this year. It can be one of our class novels!",
- "Write a dialogue between Billy and Vusi as they walk through the bush at night to find help.",
+ "Create an advert for Danny and his father's filling station and car repairs.",
+ "Write a folktale in which a small, ordinary animal outsmarts a bigger and more powerful one, just like Danny and his father outsmart Mr Hazell.",
+ "Write instructions for making and flying a kite, like the ones Danny's father made.",
+ "Write Danny's diary entry about the night his father did not come home from the wood. Include one thing his father said, in direct speech.",
+ "Write a poem about a wood at night, with at least two stanzas. Use personification.",
+ "Write a weather report for the weekend of the great pheasant hunt in Hazell's Wood. Will it rain on Mr Hazell's big day?",
+ "Write a review of Danny, the Champion of the World. Would you recommend it to a friend? Give reasons.",
+ // Term 3: exploitation of animals
+ "Recount a tour or outing you went on to a game reserve, zoo, farm or museum, real or imagined, in the order it happened.",
+ "Write a short myth that explains why the rhino has a horn.",
+ "Write a diary entry by an animal that is kept in a circus or a small cage. Use direct speech for what the people around it say.",
+ "Describe the bush at night as Billy first sees it in the Kruger National Park. Use your five senses.",
+ "Write a letter from Billy to his family about his first days in the Kruger National Park.",
  "Write an information report about rhinos: the two kinds found in South Africa, what they eat and why they are in danger.",
- "Write a postcard from Billy to his family about his first days in the Kruger National Park.",
- "Write a legend that explains why the rhino has a horn.",
- "Should people be allowed to keep wild animals to make money, for example in petting zoos or for photos? Give your opinion with at least three reasons.",
+ "Create a poster that persuades people never to buy rhino horn or ivory.",
+ "Write a weather report for the Kruger National Park for the night of the full moon. Rangers need to know what to expect.",
+ "Write a review of The Boy and the Poacher's Moon. Who would you recommend it to, and why?",
+ "Write a scene from a play in which two learners and a ranger find a snare in the bush. Include stage directions.",
+ "Persuade your readers that wild animals should never be used to make money, for example in circuses or for photos. Give at least three reasons.",
+ "Write instructions for organising a school fundraiser to help protect rhinos.",
  "Write a letter to next year's Grade 5 class with advice for a great year. Tell them which of this year's three books they will love most, and why."
 ];
 YEAR.forEach((y,i)=>{ if (NOVEL_PROMPTS[i]) y.prompt=NOVEL_PROMPTS[i]; });
 const novelOf = term => NOVELS.find(n=>n.term===term);
-const novelWeek = w => { const y=YEAR[w-1], n=y&&novelOf(y.term); return n ? {n, k:n.wk[y.tw-1], y} : null; };
+const novelWeek = w => { const y=YEAR[w-1], n=y&&novelOf(y.term); return n && n.wk[y.tw-1] ? {n, k:n.wk[y.tw-1], y} : null; };
 const fsKeysQ = (q, a, keys) => sentQ(null, [q, a, null, ''], {keys, skill:'r-comp', lv:2});
 function startNovelQuiz(w, back){
   stopTimers(); const nw=novelWeek(w); if (!nw || !nw.k) return screenHome();
@@ -8220,7 +8421,7 @@ function startNovelQuiz(w, back){
 function screenNovel(w, back){
   stopTimers(); const p=P(), nw=novelWeek(w||curWeek()); if (!nw) return screenHome();
   const {n, y}=nw, cw=curWeek(), bk=back||(()=>screenHome());
-  const rows=n.wk.map((k,i)=>{ const ww=(n.term-1)*WEEKS_PER_TERM+i+1, r=(p.yr['w'+ww]||{}), open=weekOpen(ww);
+  const rows=n.wk.map((k,i)=>{ if (!k) return ''; const ww=(n.term-1)*WEEKS_PER_TERM+i+1, r=(p.yr['w'+ww]||{}), open=weekOpen(ww);
     return `<button class="item ${ww===cw?'now':''} ${open?'':'locked'}" data-nv="${ww}" ${open?'':'disabled'}><span class="em">${open?(r.nov!=null?'✅':'📖'):'🔒'}</span><span class="grow"><small class="muted b">Week ${i+1}${weekDate(ww)?' · '+weekDate(ww):''}${ww===cw?' · THIS WEEK':''}</small><br><b>${escH(k.ch)}</b></span>${r.nov!=null?`<span class="wkpct sm">${r.novFirst}/5</span>`:''}</button>`; }).join('');
   const k=nw.k, r=p.yr['w'+w]||{};
   app.innerHTML = backTitle('📚 Class novel')+`
@@ -8335,6 +8536,31 @@ const NOVEL_MAPS = [
   {m:'flow', t:'How Billy and Surina find the horn, in order', n:5},{m:'double', t:'Compare Karel and Schalk', a:'Karel', b:'Schalk'},{m:'bridge', t:'Animals and what poachers want', ex:['rhino','horn','elephant','tusks'], rel:'is hunted for its'}]
 ];
 const novelMap = w => { const y=YEAR[w-1], s=y&&NOVEL_MAPS[y.term-1]; return s ? s[y.tw-1] : null; };
+/* ----- Pace the class novels to the HeronBridge reading plan -----
+   Term 1: The Lion, the Witch and the Wardrobe all term. Term 2: Danny from week 4 (whole book in week 12).
+   Term 3: The Boy and the Poacher's Moon in weeks 4 to 9. Weeks without the novel get a thinking map on the weekly reading. */
+const chNums = s => (String(s).match(/\d+/g)||[]).map(Number);
+function joinNovelWeeks(ks, endJudge){
+  const nums=ks.flatMap(k=>chNums(k.ch)), a=Math.min(...nums), b=Math.max(...nums), A=ks[0], B=ks[ks.length-1];
+  const ch=(a===b?`Chapter ${a}`:b===a+1?`Chapters ${a} and ${b}`:`Chapters ${a} to ${b}`)+(endJudge?' (the end)':'');
+  return {ch, q:[A.q[0], B.q[0], B.q[2], (endJudge||B).q[3]], fs:A.fs};
+}
+const NOVEL_PACE = [null,
+  {from:4, groups:[[0,1],[2,3],[4,5],[6,7],[8],[9],[10],[11]], whole:true},
+  {from:4, groups:[[0,1],[2,3],[4,5],[6,7],[8,9],[10,11]], endJudge:true}];
+NOVELS.forEach((n,ti)=>{ const P=NOVEL_PACE[ti]; if (!P) return; const old=n.wk, wk=new Array(WEEKS_PER_TERM).fill(null);
+  P.groups.forEach((g,i)=>{ const end=P.endJudge&&i===P.groups.length-1 ? old[12] : null;
+    wk[P.from-1+i] = g.length===1&&!end ? old[g[0]] : joinNovelWeeks(g.map(j=>old[j]), end); });
+  if (P.whole) wk[P.from-1+P.groups.length]=old[12];
+  n.wk=wk; n.theme=TERM_THEMES[ti]; });
+NOVELS[0].theme=TERM_THEMES[0];
+(()=>{ const t2=NOVEL_MAPS[1].slice(), t3=NOVEL_MAPS[2].slice(), R=o=>Object.assign(o,{src:'read'});
+  NOVEL_MAPS[1]=[R({m:'flow', t:'How Naledi made the chakalaka, in order', n:4}), R({m:'bubble', t:'Describe Nelson Mandela', c:'Nelson Mandela'}), R({m:'circle', t:'What makes someone an everyday hero?', c:'An everyday hero'}),
+    t2[0], t2[3], t2[5], t2[6], t2[8], t2[9], t2[10], t2[11], t2[12], R({m:'multi', t:'The Reading Rocket challenge', c:'Learners read 10 000 books'})];
+  NOVEL_MAPS[2]=[R({m:'flow', t:'Our trip to the Cradle, in order', n:4}), R({m:'bubble', t:'Describe the Moon at the start of the legend', c:'The Moon'}), R({m:'double', t:'Compare the 100 metres and the relay', a:'The 100 metres', b:'The relay'}),
+    t3[0], t3[3], t3[5], t3[6], t3[8], t3[11],
+    R({m:'bubble', t:'Describe Nandi', c:'Nandi'}), R({m:'tree', t:'Sort the reasons for a school garden', c:'A school garden', cats:['Learning','Healthy eating','Responsibility']}), R({m:'flow', t:'Making the fruit kebabs, in order', n:5}), t3[12]];
+})();
 // Field list for each map: [key, count, label]
 const mapFields = s => s.m==='circle'?[['ideas',6],['frame',1]] : s.m==='bubble'?[['bub',6]] : s.m==='double'?[['a',2],['both',3],['b',2]] : s.m==='tree'?s.cats.map((c,i)=>['c'+i,3]) : s.m==='brace'?[['part',s.n||4]] : s.m==='flow'?[['step',s.n||5]] : s.m==='multi'?[['cause',3],['effect',3]] : s.m==='bridge'?[['pair',6]] : [];
 const mapNeed = s => { const tot=mapFields(s).reduce((a,[,n])=>a+n,0); return Math.max(3, Math.ceil(tot*0.7)); };
@@ -8357,7 +8583,7 @@ function screenMap(w, back){
   stopTimers(); const p=P(), s=novelMap(w), M=s&&MAPS[s.m]; if (!s) return (back||screenHome)();
   const key='w'+w, cur=JSON.parse(JSON.stringify(((p.maps||{})[key]||{}).v||{}));
   app.innerHTML = backTitle(`${M.ic} ${M.n}`)+`
-   <div class="card"><small class="up b muted">💡 Create it · ${escH(M.does)}</small><h3>${escH(s.t)}</h3><p class="small muted">${escH(M.how)}</p>
+   <div class="card"><small class="up b muted">💡 Create it · ${escH(M.does)}</small><h3>${escH(s.t)}</h3>${s.src==='read'?`<p class="small b">About this week's reading: ${escH(PS(YEAR[w-1].passage).title)}</p>`:''}<p class="small muted">${escH(M.how)}</p>
      ${mapHTML(s, cur)}
      <p class="small muted center" id="mapn"></p><button class="btn gold w100 mt8" id="mapsv">💾 Save my map</button></div>`;
   const upd=()=>{ const n=mapFilled(cur), need=mapNeed(s); $('#mapn').textContent=n>=need?`✅ ${n} boxes filled. Ready to save!`:`${n} of ${need} boxes filled.`; };
@@ -8533,6 +8759,28 @@ const WRITE_DIAG = {
  poem:()=>dgFig('The parts of a poem', dgPoem()),
  acrostic:()=>dgFig('How an acrostic poem works', dgAcrostic())
 };
+WRITE_DIAG.news = ()=>dgFig('The layout of a newspaper article', dgPage([
+   {y:18, text:'THE HERON TIMES', s:10.5, a:'middle', tc:DG.grey, note:'Name of the newspaper', ny:16, nc:DG.grey},
+   {y:38, text:'Baby Rhino Rescued!', s:13.5, note:'Headline: short and catchy', ny:40, nc:DG.pink},
+   {y:56, text:'By Thandi Zulu', s:10.5, bold:false, tc:DG.grey, note:'By-line: who wrote it', ny:62, nc:DG.purple},
+   {y:74, box:true, h:46, boxText:'Photo', fill:DG.blueL, stroke:DG.blue, btc:DG.blue, note:'A photo...', ny:86, mh:23},
+   {y:124, text:'A ranger feeds the rhino calf.', s:9.5, bold:false, it:true, tc:DG.grey, note:'...with a caption', ny:120, nc:DG.grey},
+   {y:144, lines:2, c:DG.gold, note:'Lead paragraph: who, what, when and where', ny:144},
+   {y:172, lines:3, note:'Body: why and how, most important facts first', ny:184},
+   {y:210, text:'"We were so proud," said…', s:10.5, bold:false, it:true, tc:DG.pink, note:'A quote from someone who was there', ny:216, nc:DG.pink},
+   {y:228, lines:2, c:DG.teal, note:'Ending: what happens next', ny:244, nc:DG.teal}], 'Newspaper article layout', 262),
+  'Write in the past tense and the third person (he, she, they). Put the most important facts first.');
+WRITE_DIAG.weather = ()=>dgFig('The layout of a weather report', dgPage([
+   {y:20, text:'Weather for Johannesburg', s:12.5, note:'Place', ny:20, nc:DG.purple},
+   {y:38, text:'Saturday, 12 June', s:10.5, bold:false, tc:DG.grey, note:'Day and date', ny:42, nc:DG.purple},
+   {y:56, x:14, w:54, box:true, h:46, boxText:'🌤️ Morning', bs:10.5, fill:DG.soft, stroke:DG.line, btc:DG.navy},
+   {y:56, x:74, w:54, box:true, h:46, boxText:'☀️ Afternoon', bs:10.5, fill:DG.goldL, stroke:DG.gold, btc:DG.navy},
+   {y:56, x:134, w:54, box:true, h:46, boxText:'🌙 Night', bs:10.5, fill:DG.blueL, stroke:DG.blue, btc:DG.navy, note:'What to expect in each part of the day', ny:72, mh:23},
+   {y:116, text:'Low 3 °C · High 17 °C', s:11.5, tc:DG.blue, note:'Lowest and highest temperatures, in °C', ny:118, nc:DG.blue},
+   {y:136, text:'Wind: south-west, 20 km/h', s:10.5, bold:false, note:'Wind and the chance of rain', ny:146},
+   {y:152, text:'Chance of rain: 10%', s:10.5, bold:false},
+   {y:168, box:true, h:36, boxText:'Wear a warm jacket and gloves!', bs:11, fill:DG.tealL, stroke:DG.teal, btc:DG.teal, note:'Advice for the reader', ny:182, mh:18}], 'Weather report layout', 222),
+  'Use the future tense (will), weather words and numbers. Keep it short and clear.');
 
 /* ----- Grammar: Learn card diagrams ----- */
 function dgTense(){
@@ -8662,6 +8910,7 @@ function nextTask(p){
   if ((r.read||0)<3) return {ic:'📖', t:'Reading: '+PS(y.passage).title, sub:step, go:()=>startRead(w, back)};
   const nw=novelWeek(w); if (nw && r.nov==null) return {ic:nw.n.icon, t:'Class novel: '+nw.k.ch, sub:step, go:()=>screenNovel(w, back)};
   if (nw && !mapDone(p,w)){ const s=novelMap(w); return {ic:MAPS[s.m].ic, t:`${MAPS[s.m].n}: ${s.t}`, sub:step, go:()=>screenMap(w, back)}; }
+  if (!nw && novelMap(w) && !mapDone(p,w)){ const s=novelMap(w); return {ic:MAPS[s.m].ic, t:`${MAPS[s.m].n}: ${s.t}`, sub:step, go:()=>screenMap(w, back)}; }
   for (const s of y.skills) if ((p.best[s]||0)<1) return {ic:'🎯', t:SK(s).name, sub:step, go:()=>p.learned[s]?startRound(s,null,back):screenLearn(s)};
   if (y.write && !r.write) return {ic:WT(y.write).icon, t:'Writing: '+WT(y.write).title, sub:step, go:()=>screenTask(y.write, w)};
   if (r.quiz==null) return {ic:'🧩', t:'Weekly quiz', sub:step, go:()=>startQuiz(w, back)};
