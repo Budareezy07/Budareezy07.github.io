@@ -442,6 +442,10 @@ mark.hl.sel{outline:2px solid var(--ink)}
 .model h3{margin-top:0}
 .loadcard{background:#ecfdf5;border:2px solid #34d399}.loadcard.mid{background:#fffbeb;border-color:#f59e0b}.loadcard.heavy{background:#fef2f2;border-color:#f87171}
 .loadbig{font-size:30px;font-weight:900;margin:4px 0}
+.novelhero{text-align:center;background:linear-gradient(160deg,#fffaf0,#f3ecff)}.novelhero h2{margin:4px 0}
+.fsin{width:100%;box-sizing:border-box;border:2.5px solid #c9d1e3;border-radius:14px;padding:12px;font:inherit;font-size:18px;line-height:1.4;resize:vertical;margin-top:6px}.fsin:focus{outline:none;border-color:#2b3a8c}
+.fslist{list-style:none;padding:0;margin:8px 0}.fslist li{padding:3px 0;font-weight:700}.fslist li.no{color:#b42318}.fslist li.ok{color:#15803d}
+.fsans{background:#f6f7fb;border-left:4px solid #c9d1e3;border-radius:8px;padding:6px 10px;margin:4px 0}.fsans.fixed{border-left-color:#34d399;background:#f0fdf4;margin-left:14px}
 .startnext{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:20px;padding:14px 16px;background:linear-gradient(135deg,#ffd75e,#f0a92a);color:#1f2756;text-align:left;box-shadow:0 5px 0 #c98a17,0 10px 22px #f0a92a55;cursor:pointer}
 .startnext .snic{font-size:38px;line-height:1}.startnext b{display:block;font-size:20px;line-height:1.2}.startnext small{display:block}.startnext .sngo{font-size:24px;font-weight:900}
 .tw3{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}.tw3>div{background:#f4f6fb;border-radius:12px;padding:8px;text-align:center}.tw3 b{display:block;font-size:22px}.tw3 small{font-size:12px;color:#5b6478;font-weight:700}
@@ -5313,6 +5317,8 @@ function qBody(q){
   if (q.type==='mc') h += `<div class="opts ${q.options.every(o=>o.length<=12)&&q.options.length>=4?'grid2':''}">${q.options.map((o,i)=>`<button class="opt" data-i="${i}">${escH(o)}</button>`).join('')}</div>`;
   if (q.type==='edit'){ q.phase=0; h += `<div class="sentence edit">${q.tokens.map((t,i)=>`<button class="tok etok" data-k="${i}">${escH(t.w)}</button>`).join(' ')}</div>
     <p class="small muted center" id="edn"></p><div id="edfix"></div><button class="btn w100 mt8" id="edgo" disabled>Next: fix them →</button>`; }
+  if (q.type==='sent') h += `<p class="small muted">💡 Turn the question into your sentence. For "Why did Sam run?" write "Sam ran because…"</p>
+     <textarea class="fsin" id="fsin" rows="3" placeholder="Write your full sentence here…" autocapitalize="off" autocorrect="off"></textarea><div id="fschk"></div><button class="btn w100 mt8" id="fsgo">Check ✓</button>`;
   if (q.type==='tap') h += `<div class="sentence">${q.tokens.map((t,i)=>`${escH(t.pre)}<button class="tok" data-k="${i}">${escH(t.w)}</button>${escH(t.p)}`).join(' ')}</div>`;
   if (q.type==='type'){ const pad=usePad();
     h += `<input class="typein ${pad?'padin':''}" id="ti" type="text" name="hwq-${Date.now()}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done" ${pad?'readonly inputmode="none" placeholder="Tap the letters below"':'inputmode="text" placeholder="Type your answer here"'}>
@@ -5377,6 +5383,12 @@ function wireQ(q, done){
         if (need.every(k=>picks[k]!=null)) finish(); });
     };
     upd(); }
+  if (q.type==='sent'){ q.tries=0;
+    const go=()=>{ if (R.answered) return; const v=$('#fsin').value; if (!v.trim()){ $('#fsin').focus(); return; }
+      const r=fsCheck(q, v); q.given=v.trim(); q.checks=r.c; if (q.first==null) q.first=q.given;
+      if (!r.ok && q.tries===0){ q.tries=1; $('#fschk').innerHTML=fsListHTML(r.c, true)+'<p class="small b">Fix it, then check again. You get one more try.</p>'; try{ sfx.bad(); }catch(e){} $('#fsin').focus(); return; }
+      $('#fsin').disabled=true; $('#fsgo').disabled=true; $('#fschk').innerHTML=''; done(r.ok); };
+    $('#fsgo').onclick=go; setTimeout(()=>{ if ($('#fsin') && !$('#fsin').disabled) $('#fsin').focus(); },80); }
   if (q.type==='tap') $$('.tok').forEach(b=>b.onclick=()=>{ if (R.answered) return;
     const ok=q.tokens[+b.dataset.k].ok;
     $$('.tok').forEach(x=>{ if (q.tokens[+x.dataset.k].ok) x.classList.add(x===b?'right':'show'); });
@@ -5419,12 +5431,36 @@ function wireQ(q, done){
     $$('[data-ml]').forEach(b=>b.onclick=()=>{ if (R.answered) return; $$('[data-ml]').forEach(x=>x.classList.remove('sel')); L=+b.dataset.ml; b.classList.add('sel'); tryPair(); });
     $$('[data-mr]').forEach(b=>b.onclick=()=>{ if (R.answered) return; $$('[data-mr]').forEach(x=>x.classList.remove('sel')); Rr=+b.dataset.mr; b.classList.add('sel'); tryPair(); }); }
 }
+/* ----- Full-sentence answers: the app checks the basics, Plume says what to fix ----- */
+const FS_STOP = new Set("a an the and or but so to of in on at for with from by as is are was were be been being it its this that these those he she they we you his her hers their our your my me him them us do does did done why how what when where who which whom whose because about into onto than then there here not no yes very can could would should will just also has have had one ones some any all more most other such only own same too out up down over under again once off".split(' '));
+const fsWords = t => String(t).replace(/<[^>]+>/g,' ').toLowerCase().replace(/[^a-z' ]/g,' ').split(/\s+/).map(w=>w.replace(/'s$/,'').replace(/'/g,'')).filter(w=>w.length>=3 && !FS_STOP.has(w));
+const fsStem = w => w.replace(/ies$/,'y').replace(/(ing|ed|es|ly|s)$/,'').slice(0,6);
+const fsHas = (ans, keys) => { const A=new Set(fsWords(ans).map(fsStem)); return keys.filter(k=>A.has(fsStem(k))).length; };
+function fsPick(ps, n=2){
+  const bad=/\b(word|words|mean|means|meaning|simile|metaphor|example|feature|tone|purpose|NOT|phrase|title|sentence)\b/;
+  const ok=ps.qs.filter(([q,a])=>{ const t=String(q).replace(/<[^>]+>/g,''); return /^(Why|How|What (did|does|do|was|were|happened|had|made|is the main))\b/.test(t) && !bad.test(t) && String(a).split(/\s+/).length>=3; });
+  return [...ok.filter(x=>/^Why/.test(x[0])), ...ok.filter(x=>!/^Why/.test(x[0]))].slice(0,n);
+}
+const sentQ = (ps, [q,a,,e], extra) => Object.assign({type:'sent', fs:true, prompt:`✍️ <b>Answer in a full sentence.</b><br>${q}`, qtext:q, answer:a, explain:e||'', passage:ps, skill:ps&&ps.type==='poem'?'r-poem':'r-comp', lv:ps?ps.lv:2}, extra||{});
+function fsCheck(q, text){
+  const t=text.trim().replace(/\s+/g,' '), qk=[...new Set(fsWords(q.qtext))], ak=[...new Set(fsWords(q.keys||q.answer))], need=Math.min(2, qk.length);
+  const c=[
+    {k:'cap',  ok:/^["“']?[A-Z]/.test(t), m:'Start with a capital letter.'},
+    {k:'stop', ok:/[.!?]["”']?$/.test(t), m:'End with a full stop.'},
+    {k:'long', ok:t.split(' ').length>=6, m:'Write at least 6 words.'},
+    {k:'bec',  ok:!/^["“']?(because|cause|coz|cos|so|by|to)\b/i.test(t), m:'Don\'t start with "Because" or "To". Start with words from the question.'},
+    {k:'qw',   ok:fsHas(t,qk)>=need, m:'Use words from the question in your answer.'},
+    {k:'txt',  ok:!ak.length || fsHas(t,ak)>=1, m:'Check the text again: your answer should match what it says.'}];
+  return {c, ok:c.every(x=>x.ok)};
+}
+const fsListHTML = (c, onlyBad) => `<ul class="fslist">${(c||[]).filter(x=>!onlyBad||!x.ok).map(x=>`<li class="${x.ok?'ok':'no'}">${x.ok?'✅':'❌'} ${x.m}</li>`).join('')}</ul>`;
 function feedbackHTML(q, ok, extra, nextLabel){
-  const showAns = !ok && !['sort','match','order','edit'].includes(q.type);
+  const showAns = !ok && !['sort','match','order','edit','sent'].includes(q.type);
   return `<div class="fb ${ok?'good':'bad'}"><div class="fbrow">${PLUME('h48 '+(ok?'happy':'think'))}<h3>${ok?'✅ '+rnd(PRAISE):'💡 '+rnd(OOPS)} ${extra||''}</h3></div>
     ${showAns && q.type==='type' && q.given ? (d=>`<div class="diffbox"><div>You wrote: <b>${d.ga}</b></div><div>Correct: <b>${d.cb}</b></div></div>`)(diffHTML(q.given,q.answer)) : showAns?`<p>The answer is <b>${escH(q.answer)}</b>.</p>`:''}${q.type==='match'&&!ok?`<p>You made ${q.mistakes} wrong ${q.mistakes===1?'match':'matches'}.</p>`:''}
-    ${q.type==='order'&&!ok?`<p>The right order is:</p>`:''}<p>${q.explain}</p>
-    ${!ok?`<p class="small muted">🩹 Saved to "Fix my mistakes" so you can try it again later.</p>`:''}
+    ${q.type==='order'&&!ok?`<p>The right order is:</p>`:''}
+    ${q.type==='sent'?`${fsListHTML(q.checks)}<div class="diffbox"><div>You wrote: <b>${escH(q.given||'')}</b></div><div>${q.keys?'A good answer':'The text says'}: <b>${escH(q.answer)}</b></div></div>`:''}<p>${q.explain}</p>
+    ${!ok&&q.type!=='sent'?`<p class="small muted">🩹 Saved to "Fix my mistakes" so you can try it again later.</p>`:''}
     <button class="btn w100 ${ok?'':'navy'}" id="nx">${nextLabel}</button></div>`;
 }
 function makeQ(skillId, lv){ const k=SK(skillId), L=lv||curLv(skillId); const q=k.gen(L); q.skill=skillId; q.lv=L; return q; }
@@ -5453,7 +5489,7 @@ function startMend(){
 function renderRoundQ(){
   if (R.mode==='smart' && !R.qs[R.i]) R.qs[R.i]=smartQ();
   const q=R.qs[R.i]; R.answered=false;
-  const label = {daily:'🎯 ', mend:'🩹 ', spell:'🔤 ', spelltest:'📝 ', read:'📖 ', quiz:'🧩 ', smart:'🎯 ', review:'🔁 '}[R.mode]||(R.lv?LVI[R.lv-1]+' ':'');
+  const label = {daily:'🎯 ', mend:'🩹 ', spell:'🔤 ', spelltest:'📝 ', read:'📖 ', novel:'📚 ', quiz:'🧩 ', smart:'🎯 ', review:'🔁 '}[R.mode]||(R.lv?LVI[R.lv-1]+' ':'');
   const k=SK(q.skill), tip = R.wr && R.wr[q.skill]>=2 && R.mode!=='spelltest' && k && k.learn
     ? `<div class="tipcard">💡 <b>Plume's tip:</b> ${k.learn.tip}<details><summary>Show me the rule again</summary><p>${k.learn.rule}</p></details></div>` : '';
   app.innerHTML = `<div class="qtop"><button class="x" id="quit" aria-label="Quit">✕</button>
@@ -5467,7 +5503,8 @@ function renderRoundQ(){
     let gain=0;
     if (ok){ R.correct++; R.streak++; gain=10+Math.min(R.streak-1,5)*2; R.points+=gain; p.bestStreak=Math.max(p.bestStreak,R.streak); } else R.streak=0;
     if (R.mode==='mend'){ if (ok){ p.mistakes=p.mistakes.filter(m=>m.key!==q.key); p.fixed++; } else { const m=p.mistakes.find(m=>m.key===q.key); if (m){ p.mistakes=p.mistakes.filter(x=>x!==m); p.mistakes.push(m); } } }
-    else if (!ok) addMistake(q);
+    else if (!ok && q.type!=='sent') addMistake(q);
+    if (q.fs && ok) R.fsOk=(R.fsOk||0)+1;
     save();
     if (R.mode==='spelltest'){ q.ok=ok; sfx.tap(); $$('.typein').forEach(x=>x.classList.remove('right','wrong')); $('#fb').innerHTML=`<div class="fb ${'good'}"><p>✏️ Answer saved. Results at the end of the test!</p><button class="btn w100" id="nx">${R.i+1<R.qs.length?'Next word →':'See my results 📝'}</button></div>`;
       $('#nx').onclick=()=>{ R.i++; R.i<R.qs.length?renderRoundQ():endRound(); }; focusNext(); return; }
@@ -5500,14 +5537,16 @@ function endRound(){
   if (R.week){ const y=p.yr['w'+R.week]||(p.yr['w'+R.week]={});
     if (R.mode==='spell' && pc>=.7) y.spell=true;
     if (R.mode==='spelltest'){ p.spellTests['w'+R.week]=Math.max(p.spellTests['w'+R.week]||0, R.correct); y.spell=true; y.test=true; }
-    if (R.mode==='read') y.read=Math.max(y.read||0, R.correct);
-    if (R.mode==='quiz'){ y.quiz=Math.max(y.quiz||0, R.correct); if (y.quizFirst==null) y.quizFirst=R.correct; } }
+    if (R.mode==='read'){ const fq=R.qs.filter(q=>q.fs), fo=R.fsOk||0; y.read=Math.max(y.read||0, R.correct-fo);
+      if (fq.length){ if (!y.fs) y.fs={first:fo, n:fq.length, a:fq.map(q=>q.first||q.given||''), f:fq.map(q=>q.given||''), d:today()}; y.fs.best=Math.max(y.fs.best||0, fo); } }
+    if (R.mode==='quiz'){ y.quiz=Math.max(y.quiz||0, R.correct); if (y.quizFirst==null) y.quizFirst=R.correct; }
+    if (R.mode==='novel'){ y.nov=Math.max(y.nov||0, R.correct); if (y.novFirst==null) y.novFirst=R.correct; } }
   markDay();
   const mastered = w && !wasGoldWorld && worldStars(p,w)===w.skills.length*3;
   if (mastered) stampCert(p,'master:'+w.id);
   const fresh=checkBadges(); save();
   const lvUp=level(p.xp)>oldLv;
-  const title = {listen:'Listening done!', model:'Feature spotter done!', cquiz:'Quiz done!', daily:'Daily challenge complete!', mend:`${R.correct} mistake${R.correct===1?'':'s'} fixed!`, spelltest:'Spelling test done!', spell:'Spelling practice done!', read:'Reading done!', quiz:'Weekly quiz done!', smart:'Smart practice done!', review:'Review done!'}[R.mode]
+  const title = {novel:'Novel questions done!', listen:'Listening done!', model:'Feature spotter done!', cquiz:'Quiz done!', daily:'Daily challenge complete!', mend:`${R.correct} mistake${R.correct===1?'':'s'} fixed!`, spelltest:'Spelling test done!', spell:'Spelling practice done!', read:'Reading done!', quiz:'Weekly quiz done!', smart:'Smart practice done!', review:'Review done!'}[R.mode]
     || (medalNew?`${LVN[medalNew-1]} medal!`:passed?'Great work!':pc>=.4?'Good effort!':'Keep practising!');
   const results = R.mode==='spelltest' ? `<div class="list left mt8">${R.qs.map(q=>`<div class="item ${q.ok?'':'wrongrow'}"><span class="em">${q.ok?'✅':'❌'}</span><span class="grow">${q.ok?`<b>${escH(q.answer)}</b>`:(d=>`You wrote <b>${d.ga||'(nothing)'}</b><br>Correct: <b>${d.cb}</b>`)(diffHTML(q.given||'',q.answer))}</span></div>`).join('')}</div>` : '';
   app.innerHTML = `<div class="card center">${heronSVG(p.look,'h110 bounce')}<h2>${title}</h2>
@@ -7231,6 +7270,7 @@ function weekStatus(p, w){
   const y=YEAR[w-1], r=p.yr['w'+w]||{}, items=[];
   items.push(['spell', !!r.spell]); items.push(['read', (r.read||0)>=3]);
   y.skills.forEach(s=>items.push([s, (p.best[s]||0)>=1]));
+  if (novelWeek(w)) items.push(['novel', r.nov!=null]);
   if (y.write) items.push(['write', !!r.write]);
   items.push(['quiz', r.quiz!=null]);
   const tt=testForWeek(w); if (tt) items.push(['test', !!p.tests[tt.id]]);
@@ -7246,6 +7286,7 @@ function weekCardHTML(p){
     <div class="wktiles">
       ${tile('id="wk-spell"','🔤','Spelling',escH(sw.pat), !!r.spell, p.spellTests['w'+w]!=null?`<small class="b">Test: ${p.spellTests['w'+w]}/${SPELL_N(w)}</small>`:'')}
       ${tile('id="wk-read"','📖','Reading',escH(ps.title), (r.read||0)>=3)}
+      ${(nw=>nw?tile('id="wk-novel"', nw.n.icon, 'Class novel', escH(nw.k.ch), r.nov!=null, r.nov!=null?`<small class="b">${r.novFirst}/5</small>`:''):'')(novelWeek(w))}
       ${y.skills.map(s=>tile(`data-wks="${s}"`, (p.best[s]||0)?LVI[p.best[s]-1]:'🎯', escH(SK(s).name), `${LVI[curLv(s)-1]} ${LVN[curLv(s)-1]} level`, (p.best[s]||0)>=1)).join('')}
       ${y.write?tile('id="wk-write"',WT(y.write).icon,'Writing',escH(WT(y.write).title), !!r.write):''}
       ${tile('id="wk-quiz"','🧩','Weekly quiz','10 mixed questions', r.quiz!=null, r.quiz!=null?`<small class="b">Best: ${r.quiz}/10</small>`:'')}
@@ -7258,6 +7299,7 @@ function wireWeekCard(p){
   $('#wk-plan').onclick=()=>screenYear(); $('#wk-prog').onclick=()=>screenProgress(P(), ()=>screenHome(), true);
   $('#wk-spell').onclick=()=>screenWeek(w);
   $('#wk-read').onclick=()=>startRead(w, back);
+  if ($('#wk-novel')) $('#wk-novel').onclick=()=>screenNovel(w, back);
   $$('[data-wks]').forEach(b=>b.onclick=()=>{ const s=b.dataset.wks; p.learned[s]?startRound(s,null,back):screenLearn(s); });
   if ($('#wk-write')) $('#wk-write').onclick=()=>screenTask(y.write, w);
   $('#wk-quiz').onclick=()=>startQuiz(w, back);
@@ -7291,7 +7333,8 @@ function screenWeek(w){
      <div class="row mt8"><button class="btn ghost grow" id="sp-prac">✏️ Practise</button><button class="btn gold grow" id="sp-test">📝 Spelling test</button></div>
      <p class="small muted">Tap a word to hear it. Practise first, then take the test: Plume reads each word and you type it. Results show at the end.</p></div>
    <div class="card mt"><b>📖 Reading: ${escH(ps.title)}</b> <small class="muted">(${escH(ps.type)})</small>${r.read!=null?` <span class="pill okpill">Best: ${r.read}/${ps.qs.length}</span>`:''}
-     <p class="muted small">${ps.qs.length} questions about this week's text.</p><button class="btn w100" id="rd">Read and answer ▶</button></div>
+     <p class="muted small">${ps.qs.length} questions about this week's text, then ${fsPick(ps).length} answers in full sentences.</p><button class="btn w100" id="rd">Read and answer ▶</button></div>
+   ${(nw=>nw?`<div class="card mt"><b>${nw.n.icon} Class novel: ${escH(nw.n.title)}</b>${r.nov!=null?` <span class="pill okpill">First try: ${r.novFirst}/5</span>`:''}<p class="muted small">This week read <b>${escH(nw.k.ch)}</b>, then answer 5 questions.</p><button class="btn w100" id="wnv">Open the class novel ▶</button></div>`:'')(novelWeek(w))}
    <div class="card mt"><b>🎯 This week's skills</b><div class="list mt8">${y.skills.map(s=>{ const k=SK(s); return `
      <button class="item" data-ws="${s}"><span class="em">${(p.best[s]||0)?LVI[p.best[s]-1]:'🎯'}</span><span class="grow"><b>${k.name}</b><br><small class="muted">${escH(k.out)}</small><br><span class="medals">${medalStr(p.best[s])}</span></span>▶</button>`; }).join('')}</div></div>
    ${y.write?`<div class="card mt"><b>✍️ Writing task</b><button class="item mt8" id="wt"><span class="em">${WT(y.write).icon}</span><span class="grow"><b>${escH(WT(y.write).title)}</b><br><small class="muted">${escH(y.prompt||WT(y.write).type)}${r.write?' · ✅ done':''}</small></span>▶</button></div>`:''}
@@ -7300,7 +7343,7 @@ function screenWeek(w){
   $('#bk').onclick=()=>screenHome();
   $$('[data-say]').forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $('#sp-prac').onclick=()=>startSpell(w,false); $('#sp-test').onclick=()=>startSpell(w,true);
-  $('#rd').onclick=()=>startRead(w, back);
+  $('#rd').onclick=()=>startRead(w, back); if ($('#wnv')) $('#wnv').onclick=()=>screenNovel(w, back);
   $$('[data-ws]').forEach(b=>b.onclick=()=>{ const s=b.dataset.ws; p.learned[s]?startRound(s,null,back):screenLearn(s); });
   if ($('#wt')) $('#wt').onclick=()=>screenTask(y.write, w);
   $('#qz').onclick=()=>startQuiz(w, back);
@@ -7314,14 +7357,14 @@ function startSpell(w, test){
 }
 function startRead(w, back){
   stopTimers(); const ps=PS(YEAR[w-1].passage);
-  R={mode:'read', week:w, qs:ps.qs.map(([q,a,o,e])=>Object.assign(mc(q,a,o,e,{passage:ps}),{skill:ps.type==='poem'?'r-poem':'r-comp', lv:ps.lv})), i:0, correct:0, streak:0, points:0, back:back||(()=>screenWeek(w))};
+  R={mode:'read', week:w, qs:[...ps.qs.map(([q,a,o,e])=>Object.assign(mc(q,a,o,e,{passage:ps}),{skill:ps.type==='poem'?'r-poem':'r-comp', lv:ps.lv})), ...fsPick(ps).map(x=>sentQ(ps,x))], i:0, correct:0, streak:0, points:0, back:back||(()=>screenWeek(w))};
   renderRoundQ();
 }
 function screenYear(){
   stopTimers(); const p=P(), cw=curWeek();
   app.innerHTML = backTitle('📅 The Year Plan')+`<p class="muted">Three terms of ${WEEKS_PER_TERM} weeks${calYear()?`, following the Heronbridge ${calYear()} calendar`:''}. Every week has a spelling list, a reading text, two skills, a writing task and a quiz. Week ${TEST_WEEK} of each term has the term test.</p>
    ${testsCardHTML(p)}
-   ${[1,2,3].map(t=>`<h3 class="mt">Term ${t}</h3><div class="list mt8">${YEAR.filter(y=>y.term===t).map(y=>{ const st=weekStatus(p,y.w), open=weekOpen(y.w);
+   ${[1,2,3].map(t=>`<h3 class="mt">Term ${t} <small class="muted">· ${novelOf(t).icon} ${escH(novelOf(t).title)}</small></h3><div class="list mt8">${YEAR.filter(y=>y.term===t).map(y=>{ const st=weekStatus(p,y.w), open=weekOpen(y.w);
      return `<button class="item yrow ${y.w===cw?'now':''} ${open?'':'locked'}" data-yw="${y.w}" ${open?'':'disabled'}><span class="em">${open?y.icon:'🔒'}</span>
        <span class="grow"><small class="muted b">Week ${y.tw}${weekDate(y.w)?' · '+weekDate(y.w):''}${y.w===cw?' · THIS WEEK':''}</small>${testForWeek(y.w)?` <span class="pill testpill">📝 ${testForWeek(y.w).kind} test</span>`:''}<br><b>${escH(y.theme)}</b><br><small class="muted">${escH(SPELL_WEEKS[y.w-1].pat)} · ${y.skills.map(s=>escH(SK(s).name)).join(' · ')}</small></span>
        <span class="wkpct sm">${st.done}/${st.total}</span></button>`; }).join('')}</div>`).join('')}`;
@@ -7636,6 +7679,8 @@ function progressModel(p){
   YEAR.forEach(y=>{ const r=(p.yr||{})['w'+y.w]||{}, st=(p.spellTests||{})['w'+y.w], ps=PS(y.passage);
     if (st!=null) add({k:'week', s:'spell', ic:'🔤', t:'Spelling test: '+SPELL_WEEKS[y.w-1].pat, w:y.w, pc:pcOf(st, SPELL_N(y.w)), sc:`${st}/${SPELL_N(y.w)}`});
     if (r.read!=null && ps) add({k:'week', s:'read', ic:'📖', t:'Reading: '+ps.title, w:y.w, pc:pcOf(r.read, ps.qs.length), sc:`${r.read}/${ps.qs.length}`});
+    const nw=novelWeek(y.w); if (r.novFirst!=null && nw) add({k:'week', s:'read', ic:'📚', t:`${nw.n.title}: ${nw.k.ch}`, w:y.w, pc:pcOf(r.novFirst,5), sc:`${r.novFirst}/5`});
+    if (r.fs) add({k:'week', s:'write', ic:'✍️', t:'Full sentences: '+(ps?ps.title:y.theme), w:y.w, pc:pcOf(r.fs.first, r.fs.n), sc:`${r.fs.first}/${r.fs.n}`});
     if (r.quizFirst!=null) add({k:'week', s:'lang', ic:'🧩', t:'Weekly quiz: '+y.theme, w:y.w, pc:r.quizFirst*10, sc:`${r.quizFirst}/10`}); });
   const sk={};
   ALLSKILLS.forEach(k=>{ const m=p.mast&&p.mast[k.id], s=p.stats&&p.stats[k.id], v=mastery(p,k.id); if (v==null && !(s&&s.t)) return;
@@ -7832,6 +7877,328 @@ async function screenGradeProgress(){
   draw();
 }
 
+/* ================= CLASS NOVELS: one book a term (Tanya's 2026 books) =================
+   Questions are about the story only. No text from the books is copied here. */
+const NOVELS = [
+ {term:1, title:"The Lion, the Witch and the Wardrobe", by:"C.S. Lewis", icon:"🦁", theme:"World War 2",
+  why:"The Pevensie children are sent away from London to stay safe from the bombing in World War 2. That is how they end up in the Professor's house, and the wardrobe.",
+  words:[["evacuee","a person, often a child, sent away from a dangerous place to somewhere safer"],["air raid","an attack by planes dropping bombs"],["wardrobe","a tall cupboard for hanging clothes"],["faun","a creature from myths, half man and half goat"],["traitor","someone who betrays their friends or country"],["cordial","a sweet drink; Lucy's cordial can heal"],["thaw","when snow and ice melt as it gets warmer"],["valiant","very brave"]],
+  wk:[
+   {ch:"Chapter 1", q:[
+     ["Why were the children sent to stay at the Professor's house?","Because of the air raids in London",["Because their parents were moving house","Because they were on a school trip","Because the Professor was their uncle"],"During World War 2 many children were sent away from cities to keep them safe from bombs."],
+     ["Who looks after the house for the Professor?","Mrs Macready",["Mrs Beaver","The White Witch","Aunt Polly"],"Mrs Macready is the Professor's housekeeper."],
+     ["What did Lucy find in the empty room?","A big wardrobe",["A secret staircase","A magic mirror","A locked trunk"],"The wardrobe is the doorway to Narnia."],
+     ["Who did Lucy meet near the lamp-post?","A faun",["A talking beaver","A lion","A dwarf"],"Lucy meets Mr Tumnus, a faun, carrying an umbrella and parcels."]],
+    fs:["Why were the four children sent to the countryside?","The four children were sent to the countryside to keep them safe from the air raids in London.","safe air raids bombs bombing war London danger"]},
+   {ch:"Chapter 2", q:[
+     ["What did Mr Tumnus admit to Lucy?","He was supposed to hand her over to the White Witch",["He was really a lion","He had stolen her coat","He was lost in the wood"],"Mr Tumnus was working for the White Witch, but he feels terrible about it."],
+     ["What has the White Witch done to Narnia?","Made it always winter and never Christmas",["Made it always summer","Hidden the sun forever","Turned all the trees to gold"],"The Witch's spell keeps Narnia in an endless winter."],
+     ["What does Mr Tumnus play for Lucy?","A flute",["A drum","A violin","A trumpet"],"His music makes Lucy feel sleepy and dreamy."],
+     ["When Lucy got back, how long did the others think she had been gone?","Hardly any time at all",["A whole day","A week","Several hours"],"Time in Narnia does not match time in our world."]],
+    fs:["Why did Mr Tumnus let Lucy go home?","Mr Tumnus let Lucy go home because he liked her and knew that handing her to the Witch would be wrong.","liked kind friend sorry wrong ashamed good cried"]},
+   {ch:"Chapters 3 and 4", q:[
+     ["Who did Edmund meet on his first visit to Narnia?","The White Witch",["Mr Tumnus","Aslan","Father Christmas"],"She calls herself the Queen of Narnia."],
+     ["What sweet did the Witch give Edmund?","Turkish Delight",["Chocolate","Toffee","Fudge"],"The Turkish Delight is enchanted, so Edmund only wants more."],
+     ["What did the Witch promise Edmund?","That he would become a prince and later a king",["That she would take him home","That he could have a horse","That Lucy would be punished"],"She tempts him with power."],
+     ["What did the Witch want Edmund to do?","Bring his brother and sisters to her house",["Steal the Professor's key","Find Aslan","Stay away from Narnia"],"She wants all four children, because of an old prophecy."]],
+    fs:["Why do you think Edmund lied about going to Narnia?","Edmund lied about going to Narnia because he was spiteful and did not want to admit that Lucy was right.","spiteful mean jealous admit right embarrassed proud tease"]},
+   {ch:"Chapters 5 and 6", q:[
+     ["Who did Peter and Susan ask for advice about Lucy?","The Professor",["Mrs Macready","Their mother","Mr Beaver"],"The Professor thinks carefully about whether Lucy is telling the truth."],
+     ["How did all four children end up inside the wardrobe?","They were hiding from Mrs Macready and some visitors",["They were looking for a lost ball","Lucy pushed them in","They were playing a trick on Edmund"],"They hid so they would not get into trouble."],
+     ["What had happened to Mr Tumnus's cave?","It had been wrecked and he had been arrested",["It was full of food for a party","It had turned into a castle","It was covered in flowers"],"The Witch's police took him away."],
+     ["Which bird showed the children the way?","A robin",["An owl","An eagle","A crow"],"The robin leads them to Mr Beaver."]],
+    fs:["What did the Professor say about Lucy's story?","The Professor said that Lucy was probably telling the truth because she does not usually tell lies.","truth true lies honest logic mad"]},
+   {ch:"Chapters 7 and 8", q:[
+     ["How did Mr Beaver show the children he was a friend?","He showed them Lucy's handkerchief",["He gave them a map","He knew their names","He brought them food"],"Lucy had lent her handkerchief to Mr Tumnus."],
+     ["Who is Aslan?","A great lion, the true king of Narnia",["The Witch's guard","A friendly wolf","The Professor's cat"],"The Beavers say Aslan is on the move."],
+     ["Where do the Beavers live?","In a dam on the river",["In a tree house","In a cave","Under the Witch's castle"],"Mr Beaver built the dam himself."],
+     ["What did Edmund do while the others talked after dinner?","He slipped away to the White Witch",["He fell asleep","He went home through the wardrobe","He went fishing"],"He wants more Turkish Delight and to be a king."]],
+    fs:["Why did Edmund sneak off to the White Witch?","Edmund sneaked off to the White Witch because he wanted more Turkish Delight and wanted to become a king.","Turkish Delight king prince power sweets promise"]},
+   {ch:"Chapters 9 and 10", q:[
+     ["What did Edmund see in the Witch's courtyard?","Creatures turned to stone",["A feast","A frozen lake","A golden throne"],"The Witch turns her enemies into statues."],
+     ["What did the Witch give Edmund to eat instead of Turkish Delight?","Dry bread and water",["Roast chicken","Nothing at all","Cake"],"Edmund starts to see what the Witch is really like."],
+     ["Who visited the children and the Beavers?","Father Christmas",["The Professor","The Witch's dwarf","A giant"],"His arrival shows the Witch's magic is getting weaker."],
+     ["What gift did Lucy receive?","A healing cordial and a small dagger",["A sword and a shield","A bow and arrows","A sewing machine"],"Peter gets a sword and shield, and Susan a bow, arrows and a horn."]],
+    fs:["Why was it a good sign that Father Christmas came?","Father Christmas coming was a good sign because it showed the Witch's magic was getting weaker and winter was ending.","magic weaker winter ending Witch Aslan power spell"]},
+   {ch:"Chapters 11 and 12", q:[
+     ["Why did the Witch's sledge get stuck?","The snow was melting",["A tree fell on it","The reindeer ran away","Edmund broke it"],"Spring is coming to Narnia."],
+     ["What did the Witch do to the creatures having a Christmas feast?","She turned them to stone",["She joined their party","She gave them presents","She ignored them"],"She is furious that they are celebrating."],
+     ["Where did the children meet Aslan?","At the Stone Table",["At the lamp-post","At the Beavers' dam","At Cair Paravel"],"The Stone Table is an ancient place on a hill."],
+     ["What brave thing did Peter do?","He fought a wolf to save Susan",["He climbed the tallest tree","He crossed the river alone","He spoke to the Witch"],"Aslan knights him afterwards."]],
+    fs:["How did the children feel when they first saw Aslan?","When the children first saw Aslan they felt both glad and afraid, because he was good but also terrible.","afraid scared glad happy nervous good terrible shy solemn"]},
+   {ch:"Chapter 13", q:[
+     ["Who rescued Edmund from the Witch?","Aslan's followers",["Mr Tumnus","The Professor","Father Christmas"],"Aslan sends a rescue party."],
+     ["What did the Witch say the Deep Magic gave her?","The right to kill every traitor",["The power to fly","A crown","Endless Turkish Delight"],"She says Edmund's life belongs to her."],
+     ["What did Aslan and the Witch do?","They talked alone",["They fought straight away","They ran away","They shared a meal"],"No one else hears what they agree."],
+     ["What did the Witch agree after the talk?","To give up her claim on Edmund's life",["To leave Narnia","To free all the statues","To give Edmund his crown"],"Everyone is relieved, but no one knows the price yet."]],
+    fs:["Why did the Witch say Edmund belonged to her?","The Witch said Edmund belonged to her because he was a traitor and the Deep Magic gave her the right to his life.","traitor Deep Magic betrayed law right"]},
+   {ch:"Chapter 14", q:[
+     ["Who followed Aslan when he walked away at night?","Susan and Lucy",["Peter and Edmund","Mr and Mrs Beaver","Mr Tumnus"],"The girls cannot sleep because they are worried."],
+     ["Where did the Witch and her followers take Aslan?","To the Stone Table",["To her castle","To the lamp-post","To the river"],"It happens at the Stone Table."],
+     ["What did they cut off before killing him?","His mane",["His tail","His claws","His crown"],"They mock him to make him look weak."],
+     ["Why did Aslan let this happen?","He gave his life instead of Edmund's",["He was too tired to fight","He did not know about the Witch","He wanted to trick the girls"],"It was the price of Edmund's freedom."]],
+    fs:["Why did Aslan give up his life?","Aslan gave up his life so that Edmund, the traitor, would not have to die.","Edmund instead save place traitor die"]},
+   {ch:"Chapter 15", q:[
+     ["Which animals chewed through Aslan's ropes?","Mice",["Rabbits","Squirrels","Beavers"],"The girls watch them nibble the cords."],
+     ["What happened to the Stone Table at sunrise?","It cracked in two",["It sank into the ground","It turned to gold","It disappeared"],"A great crack sounds across the hill."],
+     ["What is the Deeper Magic?","If an innocent person dies willingly for a traitor, death works backwards",["The Witch can never die","Winter will last forever","Only kings can use magic"],"The Witch did not know this older magic."],
+     ["Where did Aslan carry the girls?","To the White Witch's castle",["To Cair Paravel","Back to the wardrobe","To the Beavers' dam"],"They ride on his back at great speed."]],
+    fs:["How did the girls feel when they saw that Aslan was alive?","The girls felt amazed and overjoyed when they saw that Aslan was alive again.","amazed happy joy overjoyed glad surprised delighted shocked"]},
+   {ch:"Chapter 16", q:[
+     ["How did Aslan bring the statues back to life?","He breathed on them",["He touched them with a wand","He roared at them","He poured water on them"],"Colour spreads over each statue as it wakes."],
+     ["Which friend did Lucy find among the statues?","Mr Tumnus",["Mr Beaver","The robin","Peter"],"Lucy is overjoyed to see him."],
+     ["What brave thing had Edmund done in the battle?","He smashed the Witch's wand",["He hid in a tree","He ran to fetch Aslan","He freed the prisoners"],"Breaking the wand stopped her turning soldiers to stone."],
+     ["Who defeated the White Witch?","Aslan",["Lucy","Mr Beaver","The giant"],"The battle is won."]],
+    fs:["How did Lucy help after the battle?","After the battle Lucy used her cordial to heal Edmund and the other wounded soldiers.","cordial heal healed wounded Edmund drops medicine"]},
+   {ch:"Chapter 17", q:[
+     ["Where were the four children crowned?","At Cair Paravel",["At the Stone Table","At the Professor's house","At the Beavers' dam"],"Cair Paravel is the castle by the sea."],
+     ["What title was Edmund given?","King Edmund the Just",["King Edmund the Brave","King Edmund the Magnificent","King Edmund the Gentle"],"Peter is the Magnificent, Susan the Gentle and Lucy the Valiant."],
+     ["What were the kings and queens hunting when they found the lamp-post?","The White Stag",["A golden lion","The last wolf","A dragon"],"It was said the Stag would grant wishes."],
+     ["How much time had passed in our world when they came back?","No time at all",["Fifteen years","One year","A week"],"They were children again."]],
+    fs:["How had Edmund changed by the end of the book?","By the end of the book Edmund had changed from mean and selfish to kind, wise and fair.","kind fair just wise good better sorry changed"]},
+   {ch:"The whole book", q:[
+     ["Who wrote The Lion, the Witch and the Wardrobe?","C.S. Lewis",["Roald Dahl","J.K. Rowling","Enid Blyton"],"He wrote seven Narnia books."],
+     ["Which child found Narnia first?","Lucy",["Peter","Susan","Edmund"],"Nobody believed her at first."],
+     ["Why does the story begin in the Professor's house?","The children were evacuated from London during the war",["The Professor invited them on holiday","Their house burnt down","They were lost"],"The war is the reason the adventure starts."],
+     ["Which word best describes Aslan?","Good and powerful",["Sly and greedy","Silly and clumsy","Cruel and cold"],"Aslan is the true king of Narnia."]],
+    fs:["What is the main message of the story?","The main message of the story is that good wins over evil and that people can be forgiven.","good evil forgive forgiven brave courage sacrifice wrong"]}
+  ]},
+ {term:2, title:"Danny, the Champion of the World", by:"Roald Dahl", icon:"🐦", theme:"Ordinary people doing extraordinary things",
+  why:"Danny and his father are ordinary people who live in a small caravan, but together they do something extraordinary.",
+  words:[["filling station","a garage that sells petrol"],["caravan","a small home on wheels"],["poacher","someone who hunts animals on land where they are not allowed"],["pheasant","a large, long-tailed bird often hunted for food"],["keeper","a person who guards the birds and animals on a large estate"],["ravenous","extremely hungry"],["vicar","a priest in charge of a church"],["champion","the very best at something"]],
+  wk:[
+   {ch:"Chapters 1 and 2", q:[
+     ["How old was Danny when his mother died?","Four months old",["Four years old","Nine years old","He was not born yet"],"Danny's father brought him up alone."],
+     ["Where do Danny and his father live?","In a caravan behind their filling station",["In a big farmhouse","In a flat in the city","In a castle"],"Their home is small, but Danny loves it."],
+     ["What does Danny's father do for work?","He runs a filling station and fixes cars",["He is a teacher","He is a doctor","He is a farmer"],"He is very good with engines."],
+     ["Which story does his father tell him at bedtime?","A story about a big friendly giant",["A story about a chocolate factory","A story about a witch","A story about a peach"],"It is an early version of The BFG."]],
+    fs:["Why does Danny love his father so much?","Danny loves his father so much because he is kind, fun and spends all his time looking after him.","kind fun stories cares looks after love sparky"]},
+   {ch:"Chapter 3", q:[
+     ["What do Danny and his father make together for fun?","Kites and fire balloons",["Model trains","Paper boats","Sandcastles"],"The chapter title gives you a clue."],
+     ["What does Danny learn from his father in the workshop?","How to fix engines",["How to sew","How to bake","How to paint"],"Danny becomes a skilled young mechanic."],
+     ["How would you describe Danny's father so far?","Kind and full of fun",["Strict and cold","Lazy and bored","Rich and proud"],"He makes ordinary days exciting."],
+     ["What kind of life do Danny and his father have?","Simple, with very little money, but happy",["Rich and fancy","Lonely and sad","Busy with lots of travel"],"They do not need much to be happy."]],
+    fs:["What makes Danny's father a good parent?","Danny's father is a good parent because he spends time with Danny and makes everyday things exciting.","time fun kites balloons teaches kind exciting stories"]},
+   {ch:"Chapters 4 and 5", q:[
+     ["What did Danny discover one night when he was nine?","His father was not in the caravan",["A fox in the workshop","A letter from his mother","A hidden treasure"],"Danny waits, worried, until his father comes home."],
+     ["What was his father's deep dark secret?","He went poaching pheasants",["He was a spy","He had a second family","He could not read"],"He poaches pheasants in Mr Hazell's wood."],
+     ["Who taught Danny's father to poach?","Danny's grandfather",["Doc Spencer","Mr Hazell","Captain Lancaster"],"It runs in the family."],
+     ["Which of these is one of the secret methods?","The Horse-hair Stopper",["The Golden Net","The Silent Trap","The Feather Bomb"],"Another method is the Sticky Hat."]],
+    fs:["How did Danny feel when his father did not come home?","Danny felt frightened and worried when his father did not come home that night.","frightened scared worried afraid alone nervous"]},
+   {ch:"Chapter 6", q:[
+     ["Who is Mr Victor Hazell?","A rich, rude man who owns the wood and the pheasants",["Danny's teacher","The village policeman","Danny's uncle"],"He is very unpleasant to Danny and his father."],
+     ["What kind of car does Mr Hazell drive?","A Rolls-Royce",["A Baby Austin","A tractor","A taxi"],"He shows off his wealth."],
+     ["Why does Mr Hazell raise pheasants?","For big shooting parties with important guests",["To sell their eggs","To keep as pets","To win prizes for feathers"],"He wants to impress rich people."],
+     ["How does Mr Hazell treat Danny and his father?","Rudely, as if they are beneath him",["Kindly","Like old friends","Politely but coldly"],"This makes many readers want Danny to win."]],
+    fs:["Why don't Danny and his father like Mr Hazell?","Danny and his father do not like Mr Hazell because he is rude, snobbish and treats them badly.","rude snob snobbish badly mean nasty rich proud"]},
+   {ch:"Chapters 7 and 8", q:[
+     ["What did Danny do when his father did not come back from the wood?","He drove the Baby Austin to find him",["He phoned the police","He went back to sleep","He woke up Doc Spencer"],"Danny had never driven on a real road before."],
+     ["Who nearly caught Danny on the road?","A police car",["Mr Hazell","A keeper","A farmer"],"Danny had to hide."],
+     ["Where did Danny find his father?","At the bottom of a deep pit",["Up a tree","In Mr Hazell's house","At the filling station"],"The pit was a trap dug for poachers."],
+     ["What had happened to his father?","He had broken his ankle",["He had lost his glasses","He had been shot","He had fallen asleep"],"Danny helped him get home."]],
+    fs:["Why was Danny brave on the night he drove the Baby Austin?","Danny was brave because he drove alone in the dark to rescue his father, even though he was scared.","drove alone dark rescue scared father found night"]},
+   {ch:"Chapters 9 and 10", q:[
+     ["Who came to treat Danny's father's ankle?","Doc Spencer",["Sergeant Samways","Mrs Clipstone","Captain Lancaster"],"Doc Spencer is a kind old doctor."],
+     ["What big event does Mr Hazell hold every year?","A pheasant shooting party",["A horse race","A village fair","A car show"],"Important guests come to shoot his birds."],
+     ["What did Danny's father dream of doing?","Poaching all of Mr Hazell's pheasants before the shoot",["Buying Mr Hazell's wood","Becoming a keeper","Moving to the city"],"It would ruin Mr Hazell's party."],
+     ["Why would that make him the champion of the world?","No poacher had ever caught so many birds at once",["He would win a trophy","He would become rich","He would be on television"],"It seems impossible."]],
+    fs:["Why did Danny's father want to ruin Mr Hazell's shooting party?","Danny's father wanted to ruin the shooting party because Mr Hazell was rude to them and he wanted to beat him.","rude revenge beat Hazell nasty party humiliate"]},
+   {ch:"Chapter 11", q:[
+     ["Whose idea was the new poaching method?","Danny's",["His father's","Doc Spencer's","Grandfather's"],"Danny thinks of it himself."],
+     ["What would go inside the raisins?","Powder from sleeping pills",["Glue","Sugar","Salt"],"Doc Spencer had given his father sleeping pills."],
+     ["What did his father call the new method?","The Sleeping Beauty",["The Sticky Hat","The Golden Raisin","The Night Trap"],"The pheasants would fall asleep in the trees."],
+     ["How did Danny's father react to the idea?","He was delighted and proud of Danny",["He was angry","He laughed at it","He ignored it"],"He thinks it is brilliant."]],
+    fs:["How would the Sleeping Beauty method catch the pheasants?","The pheasants would eat raisins filled with sleeping-pill powder, fall asleep and drop from the trees.","raisins sleeping pills powder asleep drop fall trees eat"]},
+   {ch:"Chapter 12", q:[
+     ["Who is Captain Lancaster?","A strict teacher at Danny's school",["A keeper","A pilot","Danny's neighbour"],"Danny is afraid of him."],
+     ["How does Captain Lancaster treat the children?","Harshly",["Gently","Like a friend","He ignores them"],"He is quick to punish."],
+     ["Who had given Danny's father the sleeping pills?","Doc Spencer",["Mrs Clipstone","Mr Hazell","Sergeant Samways"],"His father never took them, which turns out to be useful."],
+     ["What has to go inside the raisins for the plan to work?","Powder from the sleeping pills",["Glue","Pepper","Sugar"],"This is the Sleeping Beauty method."]],
+    fs:["How does Danny feel about Captain Lancaster?","Danny feels scared of Captain Lancaster because he is a strict and harsh teacher.","scared afraid strict harsh frightened dislike hate cruel"]},
+   {ch:"Chapters 13 and 14", q:[
+     ["How did Danny get the raisins ready?","He filled them with the sleeping-pill powder",["He painted them","He froze them","He boiled them in sugar"],"It was slow, careful work."],
+     ["Why did they need so many raisins?","To catch as many pheasants as possible",["To eat on the way","To feed Doc Spencer","To sell at the shop"],"They aimed to catch hundreds of birds."],
+     ["Where did they go on Friday night?","Into Mr Hazell's wood",["To the vicarage","To the police station","To Doc Spencer's house"],"It was dark and they had to be very quiet."],
+     ["What was the hardest part of being in the wood?","Staying quiet and hidden from the keepers",["Finding the car","Carrying the raisins","Staying awake"],"Getting caught would mean big trouble."]],
+    fs:["Why did Danny and his father have to be so quiet in the wood?","Danny and his father had to be quiet in the wood so that the keepers would not catch them.","keepers keeper caught catch hear trouble hidden"]},
+   {ch:"Chapters 15 and 16", q:[
+     ["Who did they have to hide from in the wood?","A keeper",["Mr Hazell's cook","A fox","Sergeant Samways"],"The keepers guard the birds."],
+     ["What happened to the pheasants after they ate the raisins?","They fell asleep and dropped from the branches",["They flew away","They got very noisy","They chased the poachers"],"The Sleeping Beauty worked."],
+     ["About how many pheasants did they catch?","120",["12","20","1 000"],"No poacher had done anything like it."],
+     ["What did Danny's father call Danny?","The champion of the world",["A naughty boy","A great mechanic","A lucky boy"],"It gives the book its title."]],
+    fs:["Why did Danny's father call him the champion of the world?","Danny's father called him the champion of the world because his idea caught more pheasants than anyone ever had.","idea pheasants caught Sleeping Beauty more ever record 120"]},
+   {ch:"Chapters 17 to 19", q:[
+     ["Where were the pheasants hidden?","At the vicarage",["In the caravan","In the police station","In the Baby Austin"],"The vicar's wife helped."],
+     ["Who is Mrs Clipstone?","The vicar's wife",["The headteacher","A keeper's wife","Mr Hazell's sister"],"She is in on the plan."],
+     ["How did Mrs Clipstone carry the pheasants?","In a specially made baby's pram",["In a wheelbarrow","In a suitcase","In a taxi boot"],"Nobody would look inside a pram."],
+     ["Why is \"Rockabye Baby\" a funny chapter title?","The \"baby\" in the pram is really a load of pheasants",["Mrs Clipstone has a new baby","Danny falls asleep","Danny's father sings a song"],"A pram was the perfect hiding place."]],
+    fs:["Why was a pram a clever way to move the pheasants?","A pram was a clever way to move the pheasants because nobody would think of looking inside it.","nobody suspect look inside hidden baby clever"]},
+   {ch:"Chapters 20 to 22", q:[
+     ["What happened to Mr Hazell's Rolls-Royce?","The pheasants scratched and dirtied it",["It was stolen","It caught fire","It got stuck in the pit"],"He drove off furious and humiliated."],
+     ["Which policeman ended up helping Danny and his father?","Sergeant Samways",["Captain Lancaster","Constable Smith","Doc Spencer"],"Even the policeman did not like Mr Hazell."],
+     ["What did Doc Spencer do with the six pheasants that died?","He shared them out, two each",["He buried them","He gave them to Mr Hazell","He kept them all"],"Two went to Danny's father."],
+     ["What does the book say a good parent should be?","Sparky",["Strict","Rich","Quiet"],"Danny's father is the sparkiest father of all."]],
+    fs:["How was Mr Hazell's shooting party ruined?","Mr Hazell's shooting party was ruined because his pheasants were poached and the rest flew away from his land.","poached flew away pheasants gone birds wrong direction"]},
+   {ch:"The whole book", q:[
+     ["Who wrote Danny, the Champion of the World?","Roald Dahl",["C.S. Lewis","David Walliams","Enid Blyton"],"He also wrote The BFG and Matilda."],
+     ["Who is the villain of the story?","Mr Victor Hazell",["Doc Spencer","Sergeant Samways","Mrs Clipstone"],"He is greedy and rude."],
+     ["What is the strongest relationship in the book?","Danny and his father",["Danny and his teacher","Danny and Mr Hazell","Danny and the vicar"],"The book is really a love letter to a great dad."],
+     ["Is poaching right or wrong?","It is stealing, even if the story makes it fun",["It is always fine","It is a sport for everyone","It is a kind of farming"],"A good discussion: the story is on the side of the underdog, but poaching is still taking what is not yours."]],
+    fs:["Do you think Danny's father was right to poach? Give a reason.","I think Danny's father was wrong to poach because it is stealing, even though Mr Hazell was rude.","right wrong stealing steal Hazell rude unfair law"]}
+  ]},
+ {term:3, title:"The Boy and the Poacher's Moon", by:"Pamela Newham", icon:"🦏", theme:"Animal exploitation",
+  why:"The story shows the harm rhino poaching does to animals and to people, and how hard it can be to make the right choice.",
+  words:[["poacher's moon","a full moon, when the bright light makes poaching easier"],["poacher","someone who hunts animals illegally"],["conservation","protecting animals, plants and nature"],["bursary","money given to help someone pay for their studies"],["ranger","a person whose job is to protect a park and its animals"],["informant","someone who secretly gives information to the police or rangers"],["donga","a dry gully or ditch made by water"],["bushveld","wild, open land covered with bushes and trees"]],
+  wk:[
+   {ch:"Chapters 1 and 2", q:[
+     ["What are the poachers carrying at the start of the story?","A rhino horn",["Elephant tusks","A lion skin","Gold"],"A rhino has just been killed for its horn."],
+     ["What is a poacher's moon?","A full moon",["A new moon","A red sunset","A cloudy night"],"Its bright light helps poachers see."],
+     ["Why is Billy going to the Kruger Park?","He is a finalist in the Wild2Save competition",["He is on a family holiday","He is visiting his uncle","He is lost"],"Four teens are chosen as finalists."],
+     ["Which of these is one of the other finalists?","Vusi",["Edmund","Danny","Lucy"],"The others are Jabu and Surina."]],
+    fs:["What prize can the Wild2Save finalists win?","The Wild2Save finalists can win a bursary to study conservation.","bursary study conservation university money"]},
+   {ch:"Chapters 3 and 4", q:[
+     ["Who is Piet Smit?","A game ranger",["A poacher","A teacher","A pilot"],"He is upset about another poached rhino."],
+     ["What did Captain Dlamini think of Hornblower's warning?","He thought it was a hoax",["He believed it at once","He never read it","He sent it to the newspapers"],"Nobody knows who Hornblower is."],
+     ["Who are the teens' hosts?","Bokkie and Schalk Kriek",["Piet and Thandi","Moamba and Lebadi","Billy's parents"],"They say they love conservation."],
+     ["What news do Piet and Thandi bring to the farm?","Another rhino has been poached",["The competition is cancelled","A lion has escaped","It is going to rain"],"The poaching problem is getting worse."]],
+    fs:["Who is Hornblower, as far as you know so far?","As far as I know, Hornblower is a secret person who sends warnings about the poachers.","secret warning warnings unknown email emails poachers informant mystery"]},
+   {ch:"Chapters 5 and 6", q:[
+     ["Who explains rhino poaching to the teens?","Thandi",["Schalk","Moamba","Billy"],"Thandi is a young ranger."],
+     ["Who does Billy think about on the bus?","His late father",["His best friend","His teacher","A famous singer"],"He also remembers Uncle Raymond."],
+     ["What does the boy hear when he wakes up?","The poachers planning another kill",["A lion roaring","A helicopter","His grandmother calling"],"He is with the poachers but does not want to be."],
+     ["Who is the boy worried about?","His grandmother",["Billy","The rangers","Surina"],"His family is very poor."]],
+    fs:["Why do you think the boy is with the poachers?","I think the boy is with the poachers because his family is poor and he needs money to help them.","poor money family grandmother help forced need"]},
+   {ch:"Chapters 7 to 9", q:[
+     ["What happens to the Land Rover on the game drive?","It crashes and breaks down",["It runs out of petrol","It is stolen","It gets stuck in a river"],"The teens are stranded in the bush."],
+     ["What does Thandi do?","She walks off to get help",["She calls a helicopter","She fixes the engine","She falls asleep"],"The teens wait behind."],
+     ["How do the teens feel waiting in the dark?","Nervous",["Bored","Sleepy","Excited"],"They can hear jackals nearby."],
+     ["What does Captain Dlamini do when the teens are late?","He sends a patrol to look for them",["He goes home","He ignores it","He phones their parents"],"Piet has had another Hornblower e-mail."]],
+    fs:["How would you feel if you were stuck in the bush at night?","If I were stuck in the bush at night I would feel scared and nervous because of the wild animals.","scared nervous afraid frightened worried animals dark"]},
+   {ch:"Chapters 10 to 12", q:[
+     ["Who recruited the boy to help the poachers?","Moamba",["Piet","Billy","Schalk"],"Moamba is a cruel poacher."],
+     ["Which animal does Billy face while fetching water?","A buffalo",["A lion","A hippo","A snake"],"Luckily it wanders off."],
+     ["Who did Billy fetch the water for?","Surina",["Vusi","Thandi","Jabu"],"Billy is braver than he thinks."],
+     ["What happens to Thandi?","The poachers capture her",["She finds the rangers","She gets lost","She catches a poacher"],"She is injured."]],
+    fs:["How does Billy show courage in these chapters?","Billy shows courage by going to fetch water for Surina even though a buffalo was nearby.","water Surina buffalo brave courage fetch"]},
+   {ch:"Chapters 13 and 14", q:[
+     ["What do the teens hear?","Thandi screaming",["A gunshot","A car horn","A lion"],"They know something is wrong."],
+     ["Where do the teens hide?","In a donga",["Up a tree","In the Land Rover","In a cave"],"A donga is a dry ditch."],
+     ["What does the boy do with Thandi?","He helps drag her to the Land Rover",["He sets her free","He runs away","He calls the rangers"],"He has no choice."],
+     ["What do the poachers do before they leave?","Tie Thandi up and take the horn",["Fix the Land Rover","Give back the horn","Light a fire"],"They head off into the night."]],
+    fs:["How do you think the boy feels about what the poachers make him do?","I think the boy feels guilty and unhappy about what the poachers make him do.","guilty bad unhappy sad scared wrong ashamed upset"]},
+   {ch:"Chapters 15 and 16", q:[
+     ["What do the teens do when the poachers leave?","They free Thandi",["They follow the poachers","They go to sleep","They drive away"],"Thandi is hurt."],
+     ["Who goes for help?","Billy and Vusi",["Jabu and Surina","Thandi","All four teens"],"The girls stay with Thandi."],
+     ["Who do the poachers hand the horn to?","A man waiting at the crossroads",["Captain Dlamini","Piet","The boy's grandmother"],"He is part of the smuggling chain."],
+     ["What are the poachers planning next?","To kill a second rhino",["To leave the country","To give up","To rescue Thandi"],"Time is running out."]],
+    fs:["Why did the girls stay with Thandi?","The girls stayed with Thandi because she was injured and needed someone to look after her.","injured hurt look after care help alone"]},
+   {ch:"Chapters 17 and 18", q:[
+     ["Who is searching for the teens?","Piet and Karel",["Moamba and Lebadi","Bokkie and Schalk","Thandi and Surina"],"The brothers do not get on well."],
+     ["Which bird do Piet and Karel spot?","A barn owl",["A vulture","An eagle","A heron"],"It is a quiet moment in a tense night."],
+     ["Where do Billy and Vusi arrive?","At the crossroads",["At the farm","At the airport","At the river"],"They hide from passing cars."],
+     ["What vehicle do Billy and Vusi see?","A 4x4",["A bus","A helicopter","A motorbike"],"Could it be help, or danger?"]],
+    fs:["How would you describe Billy and Vusi's journey for help?","Billy and Vusi's journey for help was dangerous and frightening because they walked through the bush at night.","dangerous scary frightening dark night bush brave long"]},
+   {ch:"Chapters 19 to 21", q:[
+     ["Who finds Billy and Vusi?","Karel and Piet",["The poachers","Surina","Captain Dlamini"],"The boys explain the poachers' plan."],
+     ["Where does Piet decide to go?","To the grave, where the rhino is",["Back to the farm","To the airport","To the city"],"They race to stop the poachers."],
+     ["What happens to the rhino?","It is wounded",["It escapes unhurt","It attacks the rangers","It is taken to a zoo"],"Shots are fired."],
+     ["How does the boy save Vusi?","He hits Lebadi with his axe handle",["He shouts a warning","He hides Vusi","He calls the police"],"The boy chooses to do the right thing."]],
+    fs:["Why was the boy's choice to save Vusi so important?","The boy's choice to save Vusi was important because he turned against the poachers to do the right thing.","right brave against poachers save choice courage good"]},
+   {ch:"Chapters 22 to 24", q:[
+     ["Who arrests the poachers?","Captain Dlamini",["Billy","Bokkie","The boy"],"The poachers are caught."],
+     ["Who is taken for questioning?","Karel",["Piet","Vusi","Jabu"],"People start to suspect him."],
+     ["Who do the girls think is the middleman?","Karel",["Schalk","Piet","Thandi"],"They found something on his laptop."],
+     ["How does Billy feel about the evidence against Karel?","He is not sure he believes it",["He is certain Karel is guilty","He does not care","He is happy"],"Billy has a feeling something does not fit."]],
+    fs:["Why does Billy doubt that Karel is guilty?","Billy doubts that Karel is guilty because Karel helped to save them and something does not seem right.","helped save rescued trust feeling right fit"]},
+   {ch:"Chapters 25 to 28", q:[
+     ["What happens to Piet when he defends Karel?","He is ordered to take time off",["He is promoted","He is arrested","He leaves the park"],"Captain Dlamini is not convinced."],
+     ["Whose room do Billy and Vusi search?","Karel's",["Schalk's","Piet's","Thandi's"],"Billy senses something is wrong."],
+     ["Where do Billy and Surina find the rhino horn?","In Schalk's 4x4",["In Karel's bag","In the Land Rover","At the crossroads"],"Now the truth is coming out."],
+     ["What happens when they find it?","They are caught at gunpoint",["They hand it to the police","They hide it again","They run away safely"],"The danger is not over yet."]],
+    fs:["What do Billy and Surina find out about the Krieks?","Billy and Surina find out that the Krieks are secretly part of the poaching because the horn is in Schalk's 4x4.","Krieks Schalk horn poaching secretly 4x4 guilty middlemen"]},
+   {ch:"Chapters 29 to 32", q:[
+     ["Who turns out to be Hornblower?","Karel",["Piet","Billy","Captain Dlamini"],"He had been working undercover."],
+     ["What happens to Bokkie when she tries to escape?","She crashes",["She gets away","She hides in the bush","She turns herself in"],"A helicopter chases her."],
+     ["What does the boy decide?","Never to poach again",["To become a ranger at once","To go back to Moamba","To move to Cape Town"],"He reaches the fence and makes his choice."],
+     ["What do the four teens receive at the end?","Bursaries",["Medals","A new Land Rover","A holiday overseas"],"Billy has grown in confidence."]],
+    fs:["How has Billy changed by the end of the book?","By the end of the book Billy has changed from shy and nervous to brave and confident.","shy confident brave nervous changed grown courage"]},
+   {ch:"The whole book", q:[
+     ["Who wrote The Boy and the Poacher's Moon?","Pamela Newham",["Roald Dahl","C.S. Lewis","Lauren St John"],"She is a South African author."],
+     ["Where does most of the story take place?","In the Kruger National Park",["In Cape Town","In the Drakensberg","In Durban"],"Most of the action happens at night in the bush."],
+     ["What is the main theme of the book?","The harm that poaching does",["Winning a sports match","Moving to a new school","A trip to the sea"],"It harms animals and people."],
+     ["Why did the boy work for the poachers?","Because his family was poor",["Because he loved hunting","Because Billy asked him to","Because he was a ranger"],"Poverty can push people into bad choices."]],
+    fs:["What can people do to help stop rhino poaching?","People can help stop rhino poaching by never buying rhino horn and by supporting the rangers who protect rhinos.","buy horn support rangers protect report donate conservation"]}
+  ]}
+];
+// Writing tasks follow each term's book and theme (same text types as before).
+const NOVEL_PROMPTS = [
+ "Introduce yourself to a new friend. Then tell us: if you were sent away from home like the Pevensie children, which three things would you pack, and why?",
+ "Write an information report about children who were evacuated in World War 2: why they were sent away, where they went and what they took with them.",
+ "Describe Narnia in winter as Lucy first saw it, using all five senses: the snow, the lamp-post and the quiet wood.",
+ "You are Edmund. Recount your first visit to Narnia in the order it happened.",
+ "Write a letter from Lucy at the Professor's house to her parents in London. Tell them about the house and one strange thing that has happened.",
+ "Write instructions for packing an evacuee's suitcase for a child leaving London in 1940.",
+ "Write a story about a different child who finds a door to a magical land. What do they find, and how do they get home?",
+ "You are Mr Beaver. Persuade the children to trust you and come with you. Give three good reasons.",
+ "Write an acrostic poem using the word NARNIA or ASLAN.",
+ "Write Edmund's diary entry for the night he reached the White Witch's house. How does he feel now?",
+ "Write an information report about lions: where they live, what they eat and how a pride works.",
+ "Write a poem about winter turning into spring, like the thaw in Narnia. Use onomatopoeia!",
+ "Write a new adventure for the four kings and queens of Narnia, after the White Witch is gone.",
+ "Write a letter to an ordinary person who did something extraordinary (a nurse, a firefighter, a neighbour or someone in your family), telling them why they inspire you.",
+ "Create an advert for Danny and his father's filling station and car repairs.",
+ "Write instructions for making and flying a kite, like the ones Danny's father made.",
+ "Invent your own bedtime story creature, like the Big Friendly Giant. Write the story a parent might tell about it.",
+ "Describe Danny's caravan at night, using your five senses.",
+ "Write a dialogue between Danny and his father on the night Danny discovers his father's secret.",
+ "Should Danny's father poach pheasants from Mr Hazell's wood? Give your opinion with at least three reasons.",
+ "Write a poem about a wood at night, with at least two stanzas.",
+ "Write a story in which an ordinary child does something brave to help someone they love.",
+ "Write an information report about pheasants or another bird that lives in woods or grassland.",
+ "Describe Mr Victor Hazell from Danny's point of view: how he looks, sounds and behaves.",
+ "Write the story of the night Danny drove the Baby Austin, told by Danny's father from the bottom of the pit.",
+ "Persuade your school to give an award to an everyday hero from your community. Give at least three reasons.",
+ "Write instructions for staying safe on a game drive in a national park.",
+ "Recount a visit to a game reserve, zoo or farm, real or imagined, in the order it happened.",
+ "Write a poem about a rhino under a full moon, using a simile and a metaphor.",
+ "Create a poster that persuades people never to buy rhino horn or ivory.",
+ "Write a mystery story set in the bush, with clues for the reader and a surprise at the end.",
+ "Write instructions for organising a school fundraiser to help protect rhinos.",
+ "Write a review of the best book you have read this year. It can be one of our class novels!",
+ "Write a dialogue between Billy and Vusi as they walk through the bush at night to find help.",
+ "Write an information report about rhinos: the two kinds found in South Africa, what they eat and why they are in danger.",
+ "Write a postcard from Billy to his family about his first days in the Kruger National Park.",
+ "Write a legend that explains why the rhino has a horn.",
+ "Should people be allowed to keep wild animals to make money, for example in petting zoos or for photos? Give your opinion with at least three reasons.",
+ "Write a letter to next year's Grade 5 class with advice for a great year. Tell them which of this year's three books they will love most, and why."
+];
+YEAR.forEach((y,i)=>{ if (NOVEL_PROMPTS[i]) y.prompt=NOVEL_PROMPTS[i]; });
+const novelOf = term => NOVELS.find(n=>n.term===term);
+const novelWeek = w => { const y=YEAR[w-1], n=y&&novelOf(y.term); return n ? {n, k:n.wk[y.tw-1], y} : null; };
+const fsKeysQ = (q, a, keys) => sentQ(null, [q, a, null, ''], {keys, skill:'r-comp', lv:2});
+function startNovelQuiz(w, back){
+  stopTimers(); const nw=novelWeek(w); if (!nw || !nw.k) return screenHome();
+  R={mode:'novel', week:w, qs:[...nw.k.q.map(([q,a,o,e])=>Object.assign(mc(q,a,o,e),{skill:'r-comp', lv:2})), fsKeysQ(nw.k.fs[0], nw.k.fs[1], nw.k.fs[2])], i:0, correct:0, streak:0, points:0, back:back||(()=>screenNovel(w))};
+  renderRoundQ();
+}
+function screenNovel(w, back){
+  stopTimers(); const p=P(), nw=novelWeek(w||curWeek()); if (!nw) return screenHome();
+  const {n, y}=nw, cw=curWeek(), bk=back||(()=>screenHome());
+  const rows=n.wk.map((k,i)=>{ const ww=(n.term-1)*WEEKS_PER_TERM+i+1, r=(p.yr['w'+ww]||{}), open=weekOpen(ww);
+    return `<button class="item ${ww===cw?'now':''} ${open?'':'locked'}" data-nv="${ww}" ${open?'':'disabled'}><span class="em">${open?(r.nov!=null?'✅':'📖'):'🔒'}</span><span class="grow"><small class="muted b">Week ${i+1}${weekDate(ww)?' · '+weekDate(ww):''}${ww===cw?' · THIS WEEK':''}</small><br><b>${escH(k.ch)}</b></span>${r.nov!=null?`<span class="wkpct sm">${r.novFirst}/5</span>`:''}</button>`; }).join('');
+  const k=nw.k, r=p.yr['w'+w]||{};
+  app.innerHTML = backTitle('📚 Class novel')+`
+   <div class="card novelhero"><div class="f60">${n.icon}</div><h2>${escH(n.title)}</h2><p class="muted b">by ${escH(n.by)} · Term ${n.term} theme: ${escH(n.theme)}</p><p class="small">${escH(n.why)}</p></div>
+   <div class="card mt center"><small class="up b muted">Week ${y.tw}: read</small><h3>${escH(k.ch)}</h3>
+     <p class="small muted">Read it in class or at home, then answer 5 questions. The last one needs a full sentence.</p>
+     <button class="btn gold w100" id="nvgo">${r.nov!=null?`Try again ↻ (first try: ${r.novFirst}/5)`:'Start the questions ▶'}</button></div>
+   <div class="card mt"><b>📝 Words to know</b><div class="list mt8">${n.words.map(([a,b])=>`<div class="item"><span class="grow"><b>${escH(a)}</b><br><small class="muted">${escH(b)}</small></span></div>`).join('')}</div></div>
+   <h3 class="mt">The reading plan</h3><div class="list mt8">${rows}</div>`;
+  $('#bk').onclick=()=>bk();
+  $('#nvgo').onclick=()=>startNovelQuiz(w, ()=>screenNovel(w, bk));
+  $$('[data-nv]').forEach(b=>b.onclick=()=>screenNovel(+b.dataset.nv, bk));
+}
+
 /* ----- Start here: the one next thing to do ----- */
 function nextTask(p){
   const w=curWeek(), y=YEAR[w-1], r=p.yr['w'+w]||{}, back=()=>screenHome(), st=weekStatus(p,w), step=`Step ${Math.min(st.total, st.done+1)} of ${st.total} this week`;
@@ -7841,6 +8208,7 @@ function nextTask(p){
   if (a) return {ic:'📌', t:SK(a.sk).name, sub:`Set by ${teacherName()}`, go:()=>{ if (!p.learned[a.sk]){ p.learned[a.sk]=true; save(); } startRound(a.sk, a.lv, back); R.asg=a.id; }};
   if (!r.spell) return {ic:'🔤', t:'Spelling: '+SPELL_WEEKS[w-1].pat, sub:step, go:()=>screenWeek(w)};
   if ((r.read||0)<3) return {ic:'📖', t:'Reading: '+PS(y.passage).title, sub:step, go:()=>startRead(w, back)};
+  const nw=novelWeek(w); if (nw && r.nov==null) return {ic:nw.n.icon, t:'Class novel: '+nw.k.ch, sub:step, go:()=>screenNovel(w, back)};
   for (const s of y.skills) if ((p.best[s]||0)<1) return {ic:'🎯', t:SK(s).name, sub:step, go:()=>p.learned[s]?startRound(s,null,back):screenLearn(s)};
   if (y.write && !r.write) return {ic:WT(y.write).icon, t:'Writing: '+WT(y.write).title, sub:step, go:()=>screenTask(y.write, w)};
   if (r.quiz==null) return {ic:'🧩', t:'Weekly quiz', sub:step, go:()=>startQuiz(w, back)};
@@ -7991,6 +8359,7 @@ function screenPlayerDetail(n){
   app.innerHTML = backTitle(`${escH(n)}`)+`
    <div class="row">${heronSVG(p.look,'h90')}<div class="stats grow" style="margin:0"><div class="stat"><b>${level(p.xp)}</b><span>level</span></div><div class="stat"><b>${totalStars(p)}</b><span>stars</span></div><div class="stat"><b>${feathers(p)}/8</b><span>feathers</span></div></div></div>
    <button class="btn w100 mt8" id="pprog">📈 Full progress report</button>
+   ${(fs=>fs.length?`<div class="card mt"><b>✍️ Full-sentence answers</b><p class="small muted">First tries from the weekly reading, newest first.</p>${fs.map(([w,f])=>`<div class="mt8"><small class="muted b">${wkLabel(w)} · ${escH(PS(YEAR[w-1].passage).title)} · ${f.first}/${f.n} correct</small>${f.a.map((a,i)=>`<p class="fsans">${escH(a)||'<i>(nothing)</i>'}</p>${f.f&&f.f[i]&&f.f[i]!==a?`<p class="fsans fixed">✏️ Fixed: ${escH(f.f[i])}</p>`:''}`).join('')}</div>`).join('')}</div>`:'')(Object.entries(p.yr||{}).filter(([k,v])=>v&&v.fs).map(([k,v])=>[+k.slice(1),v.fs]).sort((a,b)=>b[0]-a[0]).slice(0,4))}
    <div class="card mt"><b>🔤 Spelling tests</b><div class="pool l mt8">${Object.keys(p.spellTests).length?Object.entries(p.spellTests).sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).map(([k,v])=>`<span class="chip static">Wk ${YEAR[+k.slice(1)-1].tw} T${YEAR[+k.slice(1)-1].term}: <b>${v}/${SPELL_N(+k.slice(1))}</b></span>`).join(''):'<span class="muted">No tests yet.</span>'}</div></div>
    <div class="card mt"><label class="toggle"><span class="grow"><b>🔊 Reader</b><br><small class="muted">For learners who need a reader. Plume reads every text and question aloud automatically, sentence by sentence, including in big tests. Learners without a reader cannot use read-aloud in big tests (except for the spelling words).</small></span><input type="checkbox" id="rdr" ${p.reader?'checked':''}><i></i></label></div>
    ${masteryDetailHTML(p)}
