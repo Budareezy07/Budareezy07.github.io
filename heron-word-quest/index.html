@@ -3629,7 +3629,7 @@ const PIC = {
  heronpoem:['Grey heron (Ardea cinerea) flying 02.jpg','Alexis Lours','CC BY 4.0','A grey heron flying low over a river'],
  lunchbox:['Laptop Lunches Kindergarten lunch with sandwich "ravioli", cucumbers & hummus, fruit (8575273574).jpg','Melissa','CC BY 2.0','A packed lunchbox with sandwiches, cucumber and fruit'],
  baobab:['Baobab Tree (5386925510).jpg','David Siu','CC BY 2.0','A huge baobab tree with bare branches under a blue sky'],
- matchday:['Basketball hoop and sky.jpg','Rpperini','CC BY-SA 4.0','A goal ring and net seen from below against the sky'],
+ matchday:['Netball-edit2.svg','Robert Merkel and User A1','CC BY-SA 3.0','A diagram of a netball court showing the thirds, the circles and the goal rings'],
  birdfeeder:['Bird feeder (Private garden).jpg','Llewee','CC BY-SA 4.0','A bird feeder in a leafy garden'],
  tortoise:['Leopard Tortoise (stigmochelys pardalis).jpg','Mathdrquinn','CC0','A leopard tortoise walking on red sand'],
  jukskei:['South Africa-Johannesburg-Jukskei river-001.jpg','NJR ZA','CC BY-SA 3.0','The Jukskei River flowing over rocks in Johannesburg'],
@@ -3642,10 +3642,10 @@ const PIC = {
  lights:['Candle flame closeup.jpg','domdomegg','CC BY 4.0','A candle flame glowing in the dark'],
  watercycle:['The Water Cycle (SVS30580).png','NASA Scientific Visualization Studio','Public domain','A diagram of the water cycle'],
  homework:['Wikipedia notebook pencil puzzles.jpg','Anntinomy','CC0','An open spiral notebook with blank pages'],
- storm:['Lightning Pritzerbe 01 (MK).jpg','Mathias Krumbholz','CC BY-SA 3.0','Lightning striking during a night storm'],
+ storm:['Lightning over Johannesburg (4304712492).jpg','Andy Mitchell','CC BY-SA 2.0','Lightning over Johannesburg at night'],
  jackal:['Canis mesomelas.jpg','Hans Hillewaert','CC BY-SA 4.0','A black-backed jackal standing in dry grass'],
  bigfive:['Kruger National Park (ZA), Elefant -- 2024 -- 0106.jpg','Dietmar Rabich','CC BY-SA 4.0','An elephant crossing a road in the Kruger National Park'],
- gogo:['Vetkoek and fish curry.jpg','Stasia007','CC BY-SA 4.0','Home-cooked vetkoek and curry on a plate'],
+ gogo:['Chakalaka.jpg','philipp from cape town','CC BY 2.0','A pot of chakalaka cooking on the stove, with a wooden spoon'],
  solar:['Solar Panels on Church Roof full.jpg','Bastique','CC BY 4.0','Solar panels on a roof'],
  heart:['Heart diagram with arrows.jpg','Rachel Sanchez Thwing','CC BY 4.0','A diagram of the human heart'],
  garden:['Kitchen garden at Los Poblanos.jpg','PralineCoffee','CC0','Rows of vegetable beds in a garden'],
@@ -3666,14 +3666,17 @@ const PIC = {
  postcard:['Drakensbergen Amphitheater 04.jpg','Ad Meskens','CC BY-SA 4.0','The Amphitheatre cliffs in the Drakensberg'],
  moonglow:['Full Moon Luc Viatour.jpg','Luc Viatour','CC BY-SA 3.0','The full moon'],
  phones:['Smartphone di varie marche.png','The Tech Cheat','CC BY-SA 4.0','Three smartphones lying on a table'],
- crossing:['Crosswalk of Market at Third, San Francisco.jpg','Dllu','CC BY-SA 4.0','A zebra crossing seen from above'],
+ crossing:['BN road sign - School Crossing Patrol.svg','Fry1989','Public domain','A round STOP sign used by school crossing guards'],
  weather1:['Frost fog.jpg','W.carter','CC BY-SA 4.0','A frosty, foggy morning in an open field'],
  weather2:['Kruger National Park (ZA), Landschaft -- 2024 -- 0031.jpg','Dietmar Rabich','CC BY-SA 4.0','Bushveld under a cloudy sky in the Kruger National Park'],
  snare:['Impala (Aepyceros melampus) female with red-billed oxpecker Kruger.jpg','Charles J. Sharp','CC BY-SA 4.0','An impala in the bush with an oxpecker on its back'],
  camp:['Camping tent on tarp.jpg','Eden Aviv','CC0','A tent pitched among trees'],
  adverts:['Blank Lamar Bulletin Board.jpg','Kevin Payravi','CC BY-SA 4.0','An empty billboard in a field, waiting for an advert'],
+ mayor:['A pothole in Dilova Street in Kyiv.jpg','Роман Рябенко','CC0','A deep pothole in a tarred road'],
+ robot:['Japan- Painting Robot.jpg','Gary Todd','CC0','A robot arm built for painting, on show in a museum'],
+ heritageday:['Flag of South Africa.svg','Frederick Brownell (design)','Public domain','The flag of South Africa'],
 };
-const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean']);   /* diagrams: show whole, never crop */
+const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday']);   /* diagrams: show whole, never crop */
 const picsOn = () => DB.pics!==false;
 const picURL = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width='+(w||960);
 const picPage = f => 'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(f.replace(/ /g,'_'));
