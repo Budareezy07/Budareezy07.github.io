@@ -45,7 +45,7 @@ weather1	Frost fog.jpg
 weather2	Kruger National Park (ZA), Landschaft -- 2024 -- 0031.jpg
 snare	Impala (Aepyceros melampus) female with red-billed oxpecker Kruger.jpg
 camp	Camping tent on tarp.jpg
-adverts	Blank Lamar Bulletin Board.jpg
+billboard	Blank Lamar Bulletin Board.jpg
 mayor	A pothole in Dilova Street in Kyiv.jpg
 robot	Japan- Painting Robot.jpg
 heritageday	Flag of South Africa.svg

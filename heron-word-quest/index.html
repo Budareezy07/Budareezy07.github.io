@@ -3687,7 +3687,8 @@ const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','c
 const picsOn = () => DB.pics!==false;
 const picURL = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width='+(w||960);
 /* Copies of the pictures live in pics/ on this site (fetched by a GitHub workflow). If a copy is missing, try Wikimedia once, then hide. */
-const picLocal = (id, thumb) => 'pics/'+(thumb?'t/':'')+id+'.jpg';
+const PIC_NAME = {adverts:'billboard'};   /* ad blockers hide images with "advert" in the name */
+const picLocal = (id, thumb) => 'pics/'+(thumb?'t/':'')+(PIC_NAME[id]||id)+'.jpg';
 const picErr = (id, w, hide) => `if(!this.dataset.f&&PIC['${id}']){this.dataset.f=1;this.src=picURL(PIC['${id}'][0],${w});}else{${hide}}`;
 const picPage = f => 'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(f.replace(/ /g,'_'));
 function licURL(l){ if (/^CC0/.test(l)) return 'https://creativecommons.org/publicdomain/zero/1.0/';
