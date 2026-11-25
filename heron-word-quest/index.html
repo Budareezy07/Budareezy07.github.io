@@ -3686,18 +3686,21 @@ const PIC = {
 const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday']);   /* diagrams: show whole, never crop */
 const picsOn = () => DB.pics!==false;
 const picURL = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width='+(w||960);
+/* Copies of the pictures live in pics/ on this site (fetched by a GitHub workflow). If a copy is missing, try Wikimedia once, then hide. */
+const picLocal = (id, thumb) => 'pics/'+(thumb?'t/':'')+id+'.jpg';
+const picErr = (id, w, hide) => `if(!this.dataset.f&&PIC['${id}']){this.dataset.f=1;this.src=picURL(PIC['${id}'][0],${w});}else{${hide}}`;
 const picPage = f => 'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(f.replace(/ /g,'_'));
 function licURL(l){ if (/^CC0/.test(l)) return 'https://creativecommons.org/publicdomain/zero/1.0/';
   const m=String(l).match(/^CC (BY(?:-SA)?) ([\d.]+)(?: ([a-z]{2}))?$/i); return m?`https://creativecommons.org/licenses/${m[1].toLowerCase()}/${m[2]}/${m[3]?m[3].toLowerCase()+'/':''}`:''; }
 const picCredit = p => `Picture: ${p[1]} · ${p[2]} · Wikimedia Commons`;
 /* Picture at the top of a reading text. Plain-text credit here (no links for children to tap); full links on the Picture credits screen. */
 function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
-  return `<figure class="pic${PIC_FIT.has(id)?' fit':''}${cls?' '+cls:''}"><img src="${picURL(p[0])}" alt="${escH(p[3])}" loading="lazy" decoding="async" onerror="this.parentNode.remove()"><figcaption>${escH(picCredit(p))}</figcaption></figure>`; }
+  return `<figure class="pic${PIC_FIT.has(id)?' fit':''}${cls?' '+cls:''}"><img src="${picLocal(id)}" alt="${escH(p[3])}" loading="lazy" decoding="async" onerror="${picErr(id,960,'this.parentNode.remove()')}"><figcaption>${escH(picCredit(p))}</figcaption></figure>`; }
 function screenPicCredits(back){
   stopTimers(); back=back||(()=>screenStart());
   const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
   const rows=Object.entries(PIC).map(([id,p])=>{ const ps=PS(id)||TP(id);
-    return `<div class="pcred"><img src="${picURL(p[0],250)}" alt="${escH(p[3])}" loading="lazy" onerror="this.style.visibility='hidden'"><div class="grow"><b>${escH(ps?ps.title:id)}</b>${TP(id)?' <small class="muted">· Test</small>':''}<br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
+    return `<div class="pcred"><img src="${picLocal(id,true)}" alt="${escH(p[3])}" loading="lazy" onerror="${picErr(id,330,'this.style.visibility=&quot;hidden&quot;')}"><div class="grow"><b>${escH(ps?ps.title:id)}</b>${TP(id)?' <small class="muted">· Test</small>':''}<br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
   app.innerHTML = backTitle('🖼️ Picture credits')+`
    <div class="card"><p class="small">The pictures with our reading texts come from <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>. Every one is free to use under the licence shown. Thank you to the photographers and artists who share their work.</p>
    <p class="small muted mt8">Tap a name to see the original picture, or a licence to read it. Pictures need the internet. Without it, the texts simply show without them.</p></div>
@@ -9166,7 +9169,7 @@ const pBlk = (sec, html) => `<div class="pblk" data-sec="${sec}">${html}</div>`;
 const pSec = (t, right) => `<div class="psec"><span>${t}</span>${right?`<span>${right}</span>`:''}</div>`;
 function pPassage(ps){
   const line = l => { if (isHeadLine(l)) return `<b>${pE(l)}</b>`; const sp=l.match(/^([A-Z][A-Z0-9 .']{1,30}):\s+(.*)$/); return sp?`<b>${pE(sp[1])}:</b> ${pE(sp[2])}`:pE(l); };
-  const pc=PIC[ps.id]&&picsOn()?PIC[ps.id]:null, fig=pc?`<figure class="ppic${PIC_FIT.has(ps.id)?' fit':''}"><img src="${picURL(pc[0],500)}" alt="" onerror="this.parentNode.remove()"><figcaption>${pE(picCredit(pc))}</figcaption></figure>`:'';
+  const pc=PIC[ps.id]&&picsOn()?PIC[ps.id]:null, fig=pc?`<figure class="ppic${PIC_FIT.has(ps.id)?' fit':''}"><img src="${picLocal(ps.id)}" alt="" onerror="${picErr(ps.id,960,'this.parentNode.remove()')}"><figcaption>${pE(picCredit(pc))}</figcaption></figure>`:'';
   return `<div class="ppsg ${ps.type==='poem'?'poem':''}"><div class="ppsgh"><b>${pE(ps.title)}</b><span>${pE(ps.type||'')}</span></div>${fig}${ps.text.map(x=>`<p>${x.split('\n').map(line).join('<br>')}</p>`).join('')}</div>`;
 }
 /* One question on paper, and its answer for the memo */
