@@ -1,0 +1,25 @@
+name: Fetch Heron Word Quest pictures
+on:
+  push:
+    paths:
+      - 'heron-word-quest/pics/manifest.txt'
+      - '.github/fetch_pics.py'
+      - '.github/workflows/fetch-pics.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow
+      - name: Download pictures
+        run: python3 .github/fetch_pics.py
+      - name: Save them to the site
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add heron-word-quest/pics
+          git diff --cached --quiet || (git commit -m "Heron Word Quest: store picture copies" && git push)

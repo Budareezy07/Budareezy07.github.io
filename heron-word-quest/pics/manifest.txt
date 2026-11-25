@@ -1,0 +1,57 @@
+# id<TAB>Wikimedia Commons file name. Copies are fetched by .github/workflows/fetch-pics.yml
+heron	Grey Heron, Ardea cinerea, at Pilanesberg National Park, Northwest Province, South Africa (28462959392).jpg
+heronpoem	Grey heron (Ardea cinerea) flying 02.jpg
+lunchbox	Laptop Lunches Kindergarten lunch with sandwich "ravioli", cucumbers & hummus, fruit (8575273574).jpg
+baobab	Baobab Tree (5386925510).jpg
+matchday	Netball-edit2.svg
+birdfeeder	Bird feeder (Private garden).jpg
+tortoise	Leopard Tortoise (stigmochelys pardalis).jpg
+jukskei	South Africa-Johannesburg-Jukskei river-001.jpg
+sportsday	Running Track on the Mill Lane Playing Fields - geograph.org.uk - 4080149.jpg
+penguins	Simon’s Town (ZA), Boulders Beach, Penguin Colony -- 2024 -- 3415.jpg
+spellingbee	Latin dictionary.jpg
+mandela	Table mountain view from Robben Island (1).jpg
+splash	Streitberg Freibad water slide 7023685.jpg
+bean	Navy Bean Seed to Seedling Germination.jpg
+lights	Candle flame closeup.jpg
+watercycle	The Water Cycle (SVS30580).png
+homework	Wikipedia notebook pencil puzzles.jpg
+storm	Lightning over Johannesburg (4304712492).jpg
+jackal	Canis mesomelas.jpg
+bigfive	Kruger National Park (ZA), Elefant -- 2024 -- 0106.jpg
+gogo	Chakalaka.jpg
+solar	Solar Panels on Church Roof full.jpg
+heart	Heart diagram with arrows.jpg
+garden	Kitchen garden at Los Poblanos.jpg
+cradle	Sterkfontein Caves 46.jpg
+gran	Knitting needles and yarn (Unsplash).jpg
+recycle	Waseda University recycling bins 20080625.jpg
+treasure	Top view of a compass on a map (Unsplash).jpg
+kebabs	Fruit Kebabs".jpg
+readathon	Bookshelves in Faculty of Arts Library, Chulalongkorn University.jpg
+dragonreview	A pile of English grammar books.png
+glow	Lupines and Fireflies No. 4 (14505155544).jpg
+lastday	HK 292 Tai Po Road SCAD Hong Kong classroom interior high table chairs April-2012.JPG
+solarsystem	Solar System graphic by NASA (wide).png
+newgirl	Empty classroom 2020.jpg
+marimba	Marimba-Antonko-AMC12.jpg
+sainventions	Dolos.jpg
+rockpools	Tide pool - Cape Enrage.jpg
+postcard	Drakensbergen Amphitheater 04.jpg
+moonglow	Full Moon Luc Viatour.jpg
+phones	Smartphone di varie marche.png
+crossing	BN road sign - School Crossing Patrol.svg
+weather1	Frost fog.jpg
+weather2	Kruger National Park (ZA), Landschaft -- 2024 -- 0031.jpg
+snare	Impala (Aepyceros melampus) female with red-billed oxpecker Kruger.jpg
+camp	Camping tent on tarp.jpg
+adverts	Blank Lamar Bulletin Board.jpg
+mayor	A pothole in Dilova Street in Kyiv.jpg
+robot	Japan- Painting Robot.jpg
+heritageday	Flag of South Africa.svg
+test1a	DeltaKite.JPG
+test1b	Hippo - Hiding (5342476606).jpg
+test2a	Microphone 1.jpg
+test2b	Close-up of a beehive frame with honey and bees (48461522792).jpg
+test3a	Cape Agulhas Lighthouse.jpg
+test3b	Beach plastic pollution.jpg
