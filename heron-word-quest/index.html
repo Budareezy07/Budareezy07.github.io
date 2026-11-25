@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Heron Word Quest</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1f2756">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Word Quest">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Lexend:wght@400;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1f2756;--sky:#2f80ed;--gold:#f5b700;--cream:#fff8ec;--ink:#1d2433;--muted:#5b6478;--good:#1fa65a;--bad:#e5484d;
@@ -811,6 +819,10 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .wphoto{flex:none;width:86px;height:86px;border-radius:50%;background:#fff center/cover;border:4px solid rgba(255,255,255,.9);position:relative;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .emo{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;background:center/contain no-repeat;color:transparent!important;-webkit-text-fill-color:transparent;overflow:hidden;white-space:nowrap;line-height:1.2em;text-shadow:none!important;text-align:left;text-indent:0;letter-spacing:0}
 @media print{.emo{color:inherit!important;-webkit-text-fill-color:currentColor;background:none!important;width:auto;height:auto;overflow:visible}}
+body.is-offline:after{content:'Offline · your work is saved on this device';position:fixed;left:50%;bottom:12px;transform:translateX(-50%);background:var(--navy);color:#fff;font:700 12px Nunito,system-ui,sans-serif;padding:7px 14px;border-radius:20px;z-index:9000;opacity:.93;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.offbar{height:10px;border-radius:6px;background:#e8edf3;overflow:hidden;margin-top:6px}.offbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--good),#5fd38d);transition:width .4s}
+.inststeps li{margin:4px 0}
+@media print{body.is-offline:after{display:none}}
 </style>
 </head>
 <body>
@@ -6274,7 +6286,7 @@ function screenSettings(){
      <label class="toggle"><span class="grow"><b>Sound effects</b><br><small class="muted">For everyone on this device.</small></span><input type="checkbox" id="sndt" ${DB.sound?'checked':''}><i></i></label>
      <label class="toggle"><span class="grow"><b>Music in games</b><br><small class="muted">Plays during Heron Race and boss battles. For everyone on this device.</small></span><input type="checkbox" id="must" ${DB.music!==false?'checked':''}><i></i></label>
      <label class="toggle"><span class="grow"><b>Pictures with reading texts</b><br><small class="muted">Free pictures from Wikimedia Commons. Turn off to save data. For everyone on this device.</small></span><input type="checkbox" id="pict" ${DB.pics!==false?'checked':''}><i></i></label>
-     <p class="small"><button class="link small" id="pcred">🖼️ Picture credits</button></p>
+     <p class="small"><button class="link small" id="pcred">🖼️ Picture credits</button> · <button class="link small" id="pinst">📲 Install and use offline</button></p>
      <div class="volrow"><b>Volume</b><span>🔈</span><input type="range" id="volr" min="0.1" max="1" step="0.05" value="${DB.vol==null?.8:DB.vol}" aria-label="Volume"><span>🔊</span></div>
      ${DB.classSound==='off'?'<p class="small muted">🔇 Your teacher has turned sound off for the class.</p>':DB.classSound==='quiet'?'<p class="small muted">🤫 Your teacher has set the class to quiet sound.</p>':''}</div>
    ${canSpeak?`<div class="card mt"><b>🗣️ Reading voice</b><p class="small muted">Voices come from this phone, tablet or computer, so the choice is different on each device. Try a few and pick the clearest one. This applies to everyone on this device.</p>
@@ -6290,7 +6302,7 @@ function screenSettings(){
   $('#must').onchange=e=>{ DB.music=e.target.checked; save(); };
   $('#volr').onchange=e=>{ DB.vol=+e.target.value; save(); sfx.good(); };
   $('#pict').onchange=e=>{ DB.pics=e.target.checked; save(); };
-  $('#pcred').onclick=()=>screenPicCredits(()=>screenSettings());
+  $('#pcred').onclick=()=>screenPicCredits(()=>screenSettings()); $('#pinst').onclick=()=>screenInstall(()=>screenSettings());
   if ($('#vsel')){ fillVoices();
     $('#vsel').onchange=()=>{ DB.voice=$('#vsel').value||null; save(); speak(VOICE_SAMPLE); };
     $('#vtest').onclick=()=>speak(VOICE_SAMPLE); }
@@ -9717,7 +9729,8 @@ function screenTeacher(){
      <button class="tool" id="tquiz"><span>✏️</span><b>My quizzes</b><small>Write your own questions for all your classes</small></button>
      <button class="tool" id="tleague"><span>🏆</span><b>Class league</b><small>This week's points for each of your classes</small></button>
      <button class="tool" id="ttrack"><span>📊</span><b>Marks for tracker</b><small>Term marks to paste into your spreadsheet</small></button>
-     <button class="tool" id="tpics"><span>🖼️</span><b>Picture credits</b><small>Where every picture comes from, and its free licence</small></button></div></details>
+     <button class="tool" id="tpics"><span>🖼️</span><b>Picture credits</b><small>Where every picture comes from, and its free licence</small></button>
+     <button class="tool" id="tinst"><span>📲</span><b>Install on tablets</b><small>Use the app offline when the Wi-Fi is down</small></button></div></details>
    <div class="card mt scrollx"><div class="row"><b class="grow">${isCloudTeacher()?"Class progress (online class)":"Class progress on this device"}</b><button class="btn small ghost" id="csv">📋 Copy report</button></div>
      <p class="muted small"><b>This week (Term ${YEAR[curWeek()-1].term}, Week ${YEAR[curWeek()-1].tw}: ${escH(YEAR[curWeek()-1].theme)})</b>: 🔤 spelling test, 📖 reading score, 🧩 quiz, tasks done. Test column shows the latest big test (official mark). Accuracy per world. Green 80%+, amber 60–79%, red below 60%. Tap a name for detail and writing. "Copy report" pastes straight into Excel or Google Sheets.</p>
      <table><tr><th>Player</th><th>Lvl</th><th>★</th><th>🪶</th>${WORLDS.map(w=>`<th title="${w.name}">${w.icon}</th>`).join('')}<th>Needs work</th><th>Wk ${YEAR[curWeek()-1].tw}</th><th>Test</th></tr>
@@ -9760,7 +9773,7 @@ function screenTeacher(){
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#mtools').ontoggle=()=>{ DB.toolsOpen=$('#mtools').open; save(); };
-  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre(); $('#tpics').onclick=()=>screenPicCredits(()=>screenTeacher());
+  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre(); $('#tpics').onclick=()=>screenPicCredits(()=>screenTeacher()); $('#tinst').onclick=()=>screenInstall(()=>screenTeacher());
   if ($('#tw-pp')) $('#tw-pp').onclick=()=>openDoc(pWeekDoc(curWeek())); if ($('#tw-wp')) $('#tw-wp').onclick=()=>openDoc({title:`Week ${YEAR[curWeek()-1].tw} plan`, sheets:[pWeekPlanSheet(curWeek())]});
   if ($('#tw-wr')) $('#tw-wr').onclick=()=>screenWritingInbox(); if ($('#tw-st')) $('#tw-st').onclick=()=>screenMarkHub();
   if ($('#tw-bk')) $('#tw-bk').onclick=()=>screenBooksTeacher(); if ($('#tw-pr')) $('#tw-pr').onclick=()=>screenProgressTeacher();
@@ -9999,6 +10012,7 @@ function cloudAfterSave(){ if (isCloudLearner()) schedulePush(); else if (isClou
 function schedulePush(){ clearTimeout(CL.pushT); const wait=Math.max(1500, PUSH_GAP-(Date.now()-CL.lastPush)); CL.pushT=setTimeout(()=>cloudPush(), wait); }
 async function cloudPush(force){
   if (!isCloudLearner()) return; const p=DB.profiles[DB.cloud.name]; if (!p) return;
+  if (!navigator.onLine) return setSync('off');   // saved on this device; sent when the internet is back
   try { await cloudInit(); if (!CL.user || CL.user.uid!==DB.cloud.uid) return setSync('off');
     const clean=Object.assign({}, p); delete clean._uid; delete clean._code;
     const json=JSON.stringify(clean); if (!force && json===CL.lastJson) return;
@@ -10761,6 +10775,54 @@ function fxHome(a, entered){
 
 boot();
 
+
+/* ---------- Offline app: installs on tablets, keeps working without Wi-Fi (sw.js), install help and an offline notice ---------- */
+const OFF = {reg:null, prompt:null, progress:null};
+const isInstalled = () => { try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone===true; } catch(e){ return false; } };
+function offlineSave(onProgress){
+  const c=navigator.connection; if (!onProgress && c && c.saveData) return false;
+  const sw=(navigator.serviceWorker && navigator.serviceWorker.controller) || (OFF.reg && OFF.reg.active); if (!sw) return false;
+  const ch=new MessageChannel(); ch.port1.onmessage=e=>{ OFF.progress=e.data; if (onProgress) onProgress(e.data); }; sw.postMessage('save-all',[ch.port2]); return true;
+}
+if ('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1')){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').then(reg=>{ OFF.reg=reg; return navigator.serviceWorker.ready; })
+    .then(reg=>{ OFF.reg=reg; setTimeout(()=>offlineSave(), 4000); }).catch(()=>{}); });
+}
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); OFF.prompt=e; const b=document.getElementById('instnow'); if (b) b.hidden=false; });
+window.addEventListener('appinstalled', ()=>{ OFF.prompt=null; toast('📲 Installed! Open Heron Word Quest from the home screen.'); });
+function offlineNote(){ document.body.classList.toggle('is-offline', !navigator.onLine); }
+window.addEventListener('online', ()=>{ offlineNote(); try { if (isCloudLearner()) cloudPush(true); else if (isCloudTeacher()) scheduleTeacherPush(); } catch(e){} });
+window.addEventListener('offline', offlineNote); offlineNote();
+async function offlineCount(){ try { const l=await fetch('offline.json').then(r=>r.json()), c=await caches.open('hwq-media-v1'), keys=await c.keys();
+  const have=new Set(keys.map(k=>new URL(k.url).pathname.split('/heron-word-quest/').pop())); const all=Object.keys(l.files);
+  return {have:all.filter(f=>have.has(f)).length, total:all.length}; } catch(e){ return null; } }
+function screenInstall(back){
+  stopTimers(); back=back||(()=>screenStart());
+  const ua=navigator.userAgent, ios=/iPad|iPhone|iPod/.test(ua)||(ua.includes('Mac')&&'ontouchend' in document), android=/Android/.test(ua);
+  const steps = ios ? ['Open this page in <b>Safari</b>.','Tap the <b>Share</b> button (the square with an arrow).','Choose <b>Add to Home Screen</b>, then <b>Add</b>.']
+    : android ? ['Open this page in <b>Chrome</b>.','Tap the <b>⋮</b> menu at the top right.','Choose <b>Install app</b> (or <b>Add to Home screen</b>).']
+    : ['Open this page in <b>Chrome</b> or <b>Edge</b>.','Click the <b>install</b> icon at the right of the address bar (a screen with a down arrow).','Click <b>Install</b>.'];
+  app.innerHTML = backTitle('📲 Install and use offline')+`
+   <div class="card"><b>${isInstalled()?'✅ This device is using the installed app.':'Install Heron Word Quest on this device'}</b>
+    <p class="small">Installed, it opens from its own icon like a normal app, and it keeps working when the Wi-Fi is down. Work is saved on the device and sent to the class online when the internet is back.</p>
+    ${isInstalled()?'':`<button class="btn gold w100 mt8" id="instnow" ${OFF.prompt?'':'hidden'}>📲 Install now</button>
+    <ol class="small mt8 inststeps">${steps.map(x=>`<li>${x}</li>`).join('')}</ol>`}</div>
+   <div class="card mt"><b>Save everything for offline use</b>
+    <p class="small">Every picture, icon and sound is saved on this device (about 21 MB). This happens by itself the first time the app is opened online; use the button to check or finish it.</p>
+    <div class="offbar"><i id="offfill"></i></div><p class="small muted" id="offmsg">Checking…</p>
+    <button class="btn ghost w100 mt8" id="offsave">⬇️ Save everything now</button></div>
+   <div class="card mt"><b>Good to know</b><ul class="small">
+    <li>Install the app <b>before</b> learners start using it on that tablet. On iPads, work done in Safari is kept separately from the installed app.</li>
+    <li>Learners using class logins can log in again in the installed app; their progress comes back from the cloud.</li>
+    <li>Open the app online now and then, so it picks up new work and updates.</li></ul></div>`;
+  $('#bk').onclick=back;
+  const ib=$('#instnow'); if (ib) ib.onclick=async()=>{ if (!OFF.prompt) return; OFF.prompt.prompt(); try { await OFF.prompt.userChoice; } catch(e){} OFF.prompt=null; ib.hidden=true; };
+  const show=r=>{ const m=$('#offmsg'), f=$('#offfill'); if (!m||!r) return; const pc=r.total?Math.round(100*r.have/r.total):0; f.style.width=pc+'%';
+    m.textContent = r.total&&r.have>=r.total ? `✅ Ready for offline use: all ${r.total} files are saved on this device.` : `${r.have} of ${r.total} files saved (${pc}%).`; };
+  offlineCount().then(r=>{ if (r) show(r); else $('#offmsg').textContent='Offline saving needs the app to be opened from its web address (not a downloaded file).'; });
+  $('#offsave').onclick=()=>{ if (!navigator.onLine) return toast('Connect to the internet first.'); const ok=offlineSave(d=>{ show({have:d.have||0,total:d.total||0}); if (d.done) offlineCount().then(show); });
+    if (!ok) toast('Please reload the page once, then try again.'); else $('#offmsg').textContent='Saving…'; };
+}
 /* ---------- Icons: Microsoft Fluent Emoji (MIT licence), in emoji/. Emoji in the app are shown as these pictures so they look the same
    on every tablet, phone and laptop. The emoji character stays in the text (for reading aloud, copying and printing). ---------- */
 const EMO_KEYS = new Set(["1f195","1f1ff-1f1e6","1f305","1f308","1f309","1f30a","1f30b","1f311","1f315","1f319","1f31f","1f324","1f326","1f327","1f331","1f333","1f338","1f33e","1f33f","1f34e","1f353","1f372","1f382","1f388","1f389","1f392","1f393","1f397","1f399","1f39b","1f3a4","1f3a7","1f3a8","1f3ad","1f3af","1f3b2","1f3b5","1f3c1","1f3c3","1f3c5","1f3c6","1f3ca","1f3cf","1f3d6","1f3da","1f3de","1f3e0","1f3eb","1f3f3","1f406","1f407","1f408","1f409","1f40a","1f40d","1f415","1f418","1f419","1f41d","1f422","1f423","1f424","1f426","1f427","1f42d","1f436","1f438","1f440","1f441","1f442","1f443","1f445","1f447","1f449","1f44b","1f44d","1f44e","1f44f","1f451","1f465","1f466","1f468-200d-1f469-200d-1f467-200d-1f466","1f46a","1f46b","1f475","1f47b","1f48e","1f494","1f4a1","1f4a5","1f4a6","1f4a7","1f4a8","1f4ac","1f4ad","1f4af","1f4bb","1f4be","1f4c4","1f4c5","1f4c8","1f4ca","1f4cb","1f4cc","1f4cd","1f4d0","1f4d2","1f4d4","1f4d6","1f4d8","1f4da","1f4dc","1f4dd","1f4e1","1f4e2","1f4e3","1f4e4","1f4e5","1f4e6","1f4f0","1f4f1","1f4fd","1f500","1f501","1f504","1f506","1f507","1f508","1f50a","1f50d","1f50e","1f510","1f512","1f514","1f520","1f522","1f524","1f525","1f527","1f528","1f52c","1f52d","1f54a","1f56f","1f575","1f576","1f590","1f5a8","1f5bc","1f5d1","1f5d3","1f5e3","1f5fa","1f603","1f60e","1f631","1f634","1f642","1f648","1f64b","1f680","1f682","1f68c","1f6a2","1f6aa","1f6cd","1f6e0","1f7e2","1f7f0","1f90d","1f914","1f916","1f91d","1f929","1f92b","1f941","1f945","1f947","1f948","1f949","1f957","1f977","1f978","1f981","1f982","1f987","1f989","1f98a","1f98b","1f98f","1f992","1f99f","1f9a4","1f9a9","1f9b4","1f9b8","1f9ba","1f9cc","1f9cd","1f9d9","1f9e0","1f9e5","1f9e9","1f9ed","1f9f0","1f9f1","1fa79","1fa84","1fa99","1fa9e","1fab6","1faba","1fae7","2194","21a9","23e9","23ea","23f0","23f1","23f3","23f8","23f9","25b6","25c0","2600","2601","2614","2620","267b","2694","2696","2699","26a0","26a1","26aa","26bd","26c8","26f0","2705","2709","270b","270d","270f","2728","274c","2753","2764","2795","27a1","2b07","2b1c","2b50","2b55"]);
