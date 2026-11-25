@@ -83,3 +83,12 @@ t_keep_it_clean	Nature’s Silent Struggle.jpg
 t_fun_run_notice	Forgotten children's sneakers in Rågårdsdal 2.jpg
 t_lost_dog_poster	Jack Russell Terrier Puppy - Eddi.jpg
 t_swimming_gala_programme	Swimming Pool lanes and starting blocks at AIS.jpg
+hero	Flying Grey Heron above the sea, Maldives.jpg
+w_nest	Black-headed weaver (Ploceus cucullatus bohndorffi) male nest building.jpg
+w_vlei	Wetland Reserve ... (46767449621).jpg
+w_dunes	006 Dune 45 in Sossusvlei at sunrise Photo by Giles Laurent.jpg
+w_bridge	South Africa-Johannesburg-Nelson Mandela Bridge001.jpg
+w_pond	Lily Pads, Swan Pond Culzean Country Park - geograph.org.uk - 6532781.jpg
+w_swamp	OkavangoDelta Flip666.jpg
+w_fall	Howick Waterfall 01.JPG
+w_reeds	River Canard after sunrise, Essex County, Ontario, 2025-06-01 03.jpg
