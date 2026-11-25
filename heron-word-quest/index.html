@@ -3719,7 +3719,10 @@ const PIC = {
  t_lost_dog_poster:['Jack Russell Terrier Puppy - Eddi.jpg','Steve-65','CC BY-SA 3.0','A white Jack Russell puppy with brown ears'],
  t_swimming_gala_programme:['Swimming Pool lanes and starting blocks at AIS.jpg','KeepActive Australia','CC BY-SA 4.0','Swimming pool lanes and starting blocks'],
 };
-const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday']);
+const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday','t_save_water','t_lost_dog_poster']);
+/* Where to aim the crop for tall pictures shown in a wide frame */
+const PIC_POS = {pp_giraffe:'50% 10%', pp_lion:'50% 30%', pp_rocket:'50% 35%', birdfeeder:'50% 25%'};
+const picPos = id => PIC_POS[id] ? ` style="object-position:${PIC_POS[id]}"` : '';
 /* One extra question about the picture on each poster, asked only when pictures are on */
 function setPicQ(id, q){ const p=[...SCAN,...VISUAL].find(x=>x.id===id), a=q.split('|'); if (p) p.picQ=[a[0], a[1], [a[1], ...a.slice(2,-1)], a[a.length-1]]; }
 const withPicQ = p => p.picQ && picsOn() && PIC[p.id] ? [...p.qs, p.picQ] : p.qs;
@@ -3743,7 +3746,7 @@ function licURL(l){ if (/^CC0/.test(l)) return 'https://creativecommons.org/publ
 const picCredit = p => `Picture: ${p[1]} · ${p[2]} · Wikimedia Commons`;
 /* Picture at the top of a reading text. Plain-text credit here (no links for children to tap); full links on the Picture credits screen. */
 function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
-  return `<figure class="pic${PIC_FIT.has(id)?' fit':''}${cls?' '+cls:''}"><img src="${picLocal(id)}" alt="${escH(p[3])}" loading="lazy" decoding="async" onerror="${picErr(id,960,'this.parentNode.remove()')}"><figcaption>${escH(picCredit(p))}</figcaption></figure>`; }
+  return `<figure class="pic${PIC_FIT.has(id)?' fit':''}${cls?' '+cls:''}"><img src="${picLocal(id)}"${picPos(id)} alt="${escH(p[3])}" loading="lazy" decoding="async" onerror="${picErr(id,960,'this.parentNode.remove()')}"><figcaption>${escH(picCredit(p))}</figcaption></figure>`; }
 function screenPicCredits(back){
   stopTimers(); back=back||(()=>screenStart());
   const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
@@ -9218,7 +9221,7 @@ const pBlk = (sec, html) => `<div class="pblk" data-sec="${sec}">${html}</div>`;
 const pSec = (t, right) => `<div class="psec"><span>${t}</span>${right?`<span>${right}</span>`:''}</div>`;
 function pPassage(ps){
   const line = l => { if (isHeadLine(l)) return `<b>${pE(l)}</b>`; const sp=l.match(/^([A-Z][A-Z0-9 .']{1,30}):\s+(.*)$/); return sp?`<b>${pE(sp[1])}:</b> ${pE(sp[2])}`:pE(l); };
-  const pc=PIC[ps.id]&&picsOn()?PIC[ps.id]:null, fig=pc?`<figure class="ppic${PIC_FIT.has(ps.id)?' fit':''}"><img src="${picLocal(ps.id)}" alt="" onerror="${picErr(ps.id,960,'this.parentNode.remove()')}"><figcaption>${pE(picCredit(pc))}</figcaption></figure>`:'';
+  const pc=PIC[ps.id]&&picsOn()?PIC[ps.id]:null, fig=pc?`<figure class="ppic${PIC_FIT.has(ps.id)?' fit':''}"><img src="${picLocal(ps.id)}"${picPos(ps.id)} alt="" onerror="${picErr(ps.id,960,'this.parentNode.remove()')}"><figcaption>${pE(picCredit(pc))}</figcaption></figure>`:'';
   return `<div class="ppsg ${ps.type==='poem'?'poem':''}"><div class="ppsgh"><b>${pE(ps.title)}</b><span>${pE(ps.type||'')}</span></div>${fig}${ps.text.map(x=>`<p>${x.split('\n').map(line).join('<br>')}</p>`).join('')}</div>`;
 }
 /* One question on paper, and its answer for the memo */
@@ -9415,7 +9418,7 @@ function pModelDoc(id){ const m=MODELS.find(x=>x.id===id), qs=(m.qs||[]).map(s=>
     pSheet({kind:'Memo', key:true, title:`Answer key: ${pE(m.title)}`, body:r.k})]}; }
 function pPromptDoc(list){ list=list||PROMPTS;
   return {title: list.length>1?'Picture prompts':'Picture prompt: '+list[0].c, sheets:list.map(pr=>{ const p=PIC[pr.id];
-    const fig = p&&picsOn() ? `<figure class="pprompt${PIC_FIT.has(pr.id)?' fit':''}"><img src="${picLocal(pr.id)}" alt="" onerror="${picErr(pr.id,960,'this.parentNode.remove()')}"><figcaption>${pE(picCredit(p))}</figcaption></figure>` : `<p class="pemoji">${pr.e}</p>`;
+    const fig = p&&picsOn() ? `<figure class="pprompt${PIC_FIT.has(pr.id)?' fit':''}"><img src="${picLocal(pr.id)}"${picPos(pr.id)} alt="" onerror="${picErr(pr.id,960,'this.parentNode.remove()')}"><figcaption>${pE(picCredit(p))}</figcaption></figure>` : `<p class="pemoji">${pr.e}</p>`;
     return pSheet({kind:'Picture prompt', info:pE(pr.c), learner:true, title:`Picture prompt: ${pE(pr.c)}`, sub:'Look closely at the picture. Write one super sentence about it, then build it into a short paragraph.',
       body: fig + pSec('My super sentence') + pLines(2, true) + `<p class="pinst">Try to use: a strong verb · an adjective · a simile (like a… / as … as…) · a joining word (because, although, suddenly)</p>` + pSec('My paragraph') + pLines(7, true)}); })}; }
 function pParasDoc(){ const keys=[];
