@@ -797,6 +797,9 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .ppic.fit img{object-fit:contain;background:#fff}
 .ppic figcaption{font-size:6.4pt;line-height:1.25;color:#6b7280;margin-top:.8mm}
 .ppsg::after{content:"";display:block;clear:both}
+.promptart.photo{padding:10px}.promptart .pic{margin:0 0 8px}.promptart .pic+.pe{display:none}.pic.pp img{height:clamp(200px,52vw,340px)}
+.pprompt{margin:0 0 4mm}.pprompt img{display:block;width:100%;height:92mm;object-fit:cover;border-radius:2mm;border:.2mm solid #d5dae3}.pprompt.fit img{object-fit:contain;background:#fff}
+.pprompt figcaption{font-size:7pt;color:#6b7280;margin-top:1mm}.pemoji{font-size:48pt;text-align:center;margin:4mm 0}
 </style>
 </head>
 <body>
@@ -2296,7 +2299,7 @@ function TXT(title, lines, qs, lv){ return PSG('t_'+title.toLowerCase().replace(
 const SCAN = [
  TXT('Fun Run Notice',["SCHOOL FUN RUN","Date: Saturday 14 June","Time: 8:00 to 11:00","Place: School field","Entry: R30 per runner","Wear: comfortable shoes and your house T-shirt","Prizes for the best costume!"],
   ["What time does the fun run start?|8:00|11:00|14:00|9:30|Scan for the word 'Time'.","How much does it cost to enter?|R30|R14|R11|It is free|Scan for 'Entry'.","Where is the fun run?|On the school field|In the hall|At the mall|At the beach|Scan for 'Place'.","What can you win a prize for?|The best costume|The fastest time|The neatest shoes|The loudest cheer|The last line tells us."],1),
- TXT('Lost Dog Poster',["LOST DOG!","Name: Biscuit","Breed: small brown Jack Russell with a white patch on one ear","Last seen: Monday afternoon near the park on Oak Road","Wearing: a red collar with a bell","If you see Biscuit, please phone Ayanda on 082 555 0199","REWARD: R200"],
+ TXT('Lost Dog Poster',["LOST DOG!","Name: Biscuit","Breed: small white Jack Russell with brown ears and a brown patch around one eye","Last seen: Monday afternoon near the park on Oak Road","Wearing: a red collar with a bell","If you see Biscuit, please phone Ayanda on 082 555 0199","REWARD: R200"],
   ["What is the dog's name?|Biscuit|Ayanda|Oak|Jack|Scan for 'Name'.","What colour is the collar?|red|brown|white|blue|Scan for 'Wearing'.","Where was the dog last seen?|Near the park on Oak Road|At school|At the vet|On the beach|Scan for 'Last seen'.","How much is the reward?|R200|R555|R82|R199|Scan for 'REWARD'."],1),
  TXT('School Bus Timetable',["SCHOOL BUS TIMETABLE (MORNING)","Main Road: Bus A 6:45, Bus B 7:05","Library: Bus A 6:55, Bus B 7:15","Shopping Centre: Bus A 7:05, Bus B 7:25","School Gate: Bus A 7:20, Bus B 7:40","School starts at 7:30."],
   ["What time does Bus A reach the library?|6:55|7:15|7:05|6:45|Find the Library row and the Bus A time.","Which bus gets to school before 7:30?|Bus A|Bus B|Both buses|Neither bus|Bus B only arrives at 7:40.","You reach the Shopping Centre at 7:10. Which bus can you still catch there?|Bus B|Bus A|Neither bus|Both buses|Bus A left at 7:05, but Bus B comes at 7:25.","How long does Bus A take from Main Road to the School Gate?|35 minutes|20 minutes|45 minutes|15 minutes|6:45 to 7:20 is 35 minutes."],2),
@@ -2721,13 +2724,13 @@ const WORLDS = [
   { id:'r-skim', name:'Skimming & scanning', out:'I can scan notices, timetables, contents pages and indexes to find information quickly.', lvl:['Notices and posters','Timetables','Contents pages and indexes'],
     learn:{rule:"<b>Skimming</b> means reading quickly to get the main idea. <b>Scanning</b> means looking quickly for one detail, like a time, a price or a name, without reading every word.",
       tip:"Scanning is like a radar 📡 Decide what you're looking for (a number? a name?) and let your eyes zoom down the page until you spot it.", ex:["Looking for a time? Scan for numbers with a colon: 8:00","Looking for a page? Use the contents page or index."]},
-    round:lv=> SCAN.filter(p=>p.lv===lv).flatMap(p=>p.qs.map(([q,a,o,e])=>mc(q,a,o,e,{passage:p}))),
-    gen:lv=>{ const p=rnd(SCAN.filter(p=>p.lv===lv)), [q,a,o,e]=rnd(p.qs); return mc(q,a,o,e,{passage:p}); } },
+    round:lv=> SCAN.filter(p=>p.lv===lv).flatMap(p=>withPicQ(p).map(([q,a,o,e])=>mc(q,a,o,e,{passage:p}))),
+    gen:lv=>{ const p=rnd(SCAN.filter(p=>p.lv===lv)), [q,a,o,e]=rnd(withPicQ(p)); return mc(q,a,o,e,{passage:p}); } },
   { id:'r-visual', name:'Adverts & posters', out:'I can read visual texts and explain their purpose, audience and persuasive techniques.', lvl:['What is it about?','How does it persuade?','Message and audience'],
     learn:{rule:"<b>Visual texts</b> like adverts and posters use words, pictures and layout together. Adverts try to <b>persuade</b> you, using catchy <b>slogans</b>, exciting adjectives, special offers and opinions that sound like facts.",
       tip:"Ask the three Ws ❓ <b>Who</b> is it for? <b>What</b> does it want me to do? <b>Which</b> words are trying to convince me?", ex:["'The crunchiest breakfast in the universe!' → opinion","'Packed with whole grains' → fact"]},
-    round:lv=> ALL_VISUAL.filter(p=>p.lv===lv).flatMap(p=>p.qs.map(([q,a,o,e])=>mc(q,a,o,e,{passage:p}))),
-    gen:lv=>{ const p=rnd(ALL_VISUAL.filter(p=>p.lv===lv)), [q,a,o,e]=rnd(p.qs); return mc(q,a,o,e,{passage:p}); } },
+    round:lv=> ALL_VISUAL.filter(p=>p.lv===lv).flatMap(p=>withPicQ(p).map(([q,a,o,e])=>mc(q,a,o,e,{passage:p}))),
+    gen:lv=>{ const p=rnd(ALL_VISUAL.filter(p=>p.lv===lv)), [q,a,o,e]=rnd(withPicQ(p)); return mc(q,a,o,e,{passage:p}); } },
   { id:'r-summary', name:'Main idea & summaries', out:'I can identify the main idea of a paragraph and choose a good title and summary.', lvl:['Find the main idea','Choose the best title','Choose the best summary'],
     learn:{rule:"The <b>main idea</b> is what the whole paragraph is mostly about. A good <b>title</b> fits the main idea. A good <b>summary</b> is short and includes only the most important points, in your own words.",
       tip:"Imagine a tweet 📱 If you could only use one sentence to tell a friend what the paragraph is about, what would you say?", ex:["Not a small detail, but the big idea.","A summary is much shorter than the text."]},
@@ -3462,10 +3465,13 @@ const UPGRADES = [
  {subj:'rocket', verb:'zoomed', adj:['gleaming','enormous','silver','mighty'], adv:['upwards','loudly','swiftly','bravely'], where:['into the sky','past the moon','through the clouds','towards the stars'], sim:['like a shooting star','like a firework','as bright as the sun','like an angry dragon']}
 ];
 const PROMPTS = [
- {e:'🦒🌅', c:'A giraffe at sunset'},{e:'⛈️🏫', c:'A storm over the school'},{e:'🐶⚽', c:'A puppy playing soccer'},
- {e:'🚀🌙', c:'A rocket flying to the moon'},{e:'🦁🌾', c:'A lion in the long grass'},{e:'🏖️🌊', c:'A day at the beach'},
- {e:'🐊🛶', c:'A crocodile and a canoe'},{e:'🎂🎉', c:'A surprise birthday party'},{e:'🕷️🏚️', c:'A spooky old house'},
- {e:'🐝🌻', c:'A busy bee in the garden'},{e:'🐘💦', c:'An elephant at the waterhole'},{e:'🏉🏆', c:'Winning the big match'}
+ {id:'pp_giraffe', e:'🦒🌅', c:'A giraffe at sunset'},{id:'pp_storm', e:'⛈️', c:'A storm rolling in'},{id:'pp_rocket', e:'🚀', c:'A rocket blasting off'},
+ {id:'pp_lion', e:'🦁🌾', c:'A lioness in the long grass'},{id:'pp_beach', e:'🏖️🌊', c:'A day at the beach'},{id:'pp_croc', e:'🐊', c:'A crocodile with its jaws wide open'},
+ {id:'pp_cake', e:'🎂🕯️', c:'A birthday cake full of candles'},{id:'pp_house', e:'🏚️', c:'A spooky old house'},{id:'pp_eleph', e:'🐘💦', c:'Elephants at the waterhole'},
+ {id:'pp_dog', e:'🐶⚽', c:'A dog and its favourite ball'},{id:'pp_bee', e:'🐝🌸', c:'A busy bee on a flower'},{id:'pp_goal', e:'🥅', c:'An old goal against a wall'},
+ {id:'pp_balloon', e:'🎈', c:'A hot-air balloon over the fields'},{id:'pp_cheetah', e:'🐆💨', c:'A cheetah at full speed'},{id:'pp_tree', e:'🌳🏠', c:'A treehouse in the woods'},
+ {id:'pp_wreck', e:'🚢🌊', c:'A shipwreck on a wild coast'},{id:'pp_fall', e:'💦🌿', c:'A waterfall in the forest'},{id:'pp_meer', e:'👀', c:'Meerkats on guard'},
+ {id:'pp_volc', e:'🌋', c:'A volcano erupting'},{id:'pp_table', e:'⛰️☁️', c:'The tablecloth on Table Mountain'}
 ];
 const WOW = uniq([...WOTD.map(w=>w[0]), ...SYN.map(s=>s[1]), "gigantic","tremendous","spectacular","dazzling","gleaming","thunderous","whispered","crept","raced","dashed",
  "sprinted","glided","soared","plunged","trembled","scrambled","delighted","horrified","fierce","ferocious","gorgeous","glittering","sparkling","mysterious","towering",
@@ -3682,8 +3688,49 @@ const PIC = {
  test2b:['Close-up of a beehive frame with honey and bees (48461522792).jpg','Ivan Radic','CC BY 2.0','Honeybees at work on a frame of honeycomb'],
  test3a:['Cape Agulhas Lighthouse.jpg','Barry haynes','CC BY-SA 4.0','The Cape Agulhas lighthouse under dark storm clouds'],
  test3b:['Beach plastic pollution.jpg','David Abrahams','CC BY-SA 4.0','Plastic rubbish washed up on a beach'],
+ /* picture prompts */
+ pp_giraffe:['Masi mara sunset and giraffe - panoramio.jpg','LindaPatterson','CC BY-SA 3.0','A giraffe against a bright orange sunset'],
+ pp_storm:['Storm clouds over an old water tower in the tourist-attraction town of Buford in rural Albany County, Wyoming LCCN2015632869.tif','Carol M. Highsmith','Public domain','Dark storm clouds over a flat, open landscape'],
+ pp_rocket:['GRACE-FO Launch (NHQ201805220019).jpg','Bill Ingalls (NASA)','Public domain','A rocket blasting off in clouds of smoke'],
+ pp_lion:['Lion front view portrait.jpg','Timothy Akolamazima','CC BY-SA 4.0','A lioness lying in the long grass'],
+ pp_beach:['Camps Bay beach 4.jpg','HelenOnline','CC BY-SA 4.0','Camps Bay beach and the blue sea'],
+ pp_croc:['West African crocodile (Crocodylus suchus) with open mouth in Jos Wildlife Park 03.jpg','Kambai Akau','CC BY-SA 4.0','A crocodile with its jaws wide open'],
+ pp_cake:['Italy - birthday cake with candles 5.jpg','Francesca Cesa Bianchi','CC BY-SA 3.0 it','A birthday cake covered in lit candles'],
+ pp_house:['Abandoned House in Lawrence, Mississippi 03.jpg','Ktkvtsh','CC BY 4.0','An old abandoned house among the trees'],
+ pp_eleph:['African Elephants (Loxodonta africana) drinking at Mphafa waterhole ... (31945115170).jpg','Bernard Dupont','CC BY-SA 2.0','Elephants drinking at a waterhole'],
+ pp_dog:['Beagle with ball in her mouth.jpg','Slyronit','CC BY-SA 4.0','A beagle with a yellow ball in its mouth'],
+ pp_bee:['European honey bee extracts nectar.jpg','John Severns','Public domain','A honeybee on a purple flower'],
+ pp_goal:['Association football goal net.jpg','Hyena','Public domain','An old soccer goal against a grey wall'],
+ pp_balloon:['Hot air balloon F-GVAG over Lompret (2).jpg','Pierre André Leclercq','CC BY-SA 4.0','A blue hot-air balloon over green fields'],
+ pp_cheetah:['Cheetah Run.jpg','Mark Dumont','CC BY 2.0','A cheetah sprinting across the grass'],
+ pp_tree:['Treehouse at Balaclava School.jpg','Batcsg1','CC BY 4.0','A treehouse with a slide, high in a tree'],
+ pp_wreck:['Shipwreck in Skeleton Coast (17303355561).jpg','Domenico Convertini','CC BY-SA 2.0','A rusty shipwreck in the waves on the Skeleton Coast'],
+ pp_fall:['Magwa Falls.jpg','Ryanj93','CC BY-SA 4.0','A wide waterfall surrounded by forest'],
+ pp_meer:['Los Angeles Zoo Meerkats standing guard DSC 0529 (44807578634).jpg','Bill Abbott','CC BY-SA 2.0','Three meerkats standing on guard'],
+ pp_volc:['001 Volcano eruption of Litli-Hrútur in Iceland in 2023 Photo by Giles Laurent.jpg','Giles Laurent','CC BY-SA 4.0','Glowing lava pouring out of a volcano'],
+ pp_table:['Table Mountain (Unsplash).jpg','Bruno Wolff','CC0','Table Mountain with its tablecloth of cloud'],
+ /* posters and notices */
+ t_cake_sale:['Australian butterfly cupcakes 01.jpg','AlphaLemur','CC BY 4.0','Homemade cupcakes on a cooling rack'],
+ t_school_play:['Clune\u2019s Broadway Theatre, 528 S. Broadway, Los Angeles (51246606523).jpg','theatretalks','Public domain','An empty theatre with rows of seats facing the stage'],
+ t_supercrunch_cereal:['Bowl of cereal and milk.jpg','The Eloquent Peasant','CC BY 4.0','A full bowl of cereal and milk'],
+ t_save_water:['Dripping tap water (2013).jpg','Karthik916','CC BY-SA 4.0','Water dripping from a tap'],
+ t_keep_it_clean:['Nature\u2019s Silent Struggle.jpg','Jemir Shamir','CC BY-SA 4.0','Plastic litter dumped beside a stream'],
+ t_fun_run_notice:['Forgotten children\'s sneakers in Rågårdsdal 2.jpg','W.carter','CC BY-SA 4.0','A pair of running shoes on a rock in the grass'],
+ t_lost_dog_poster:['Jack Russell Terrier Puppy - Eddi.jpg','Steve-65','CC BY-SA 3.0','A white Jack Russell puppy with brown ears'],
+ t_swimming_gala_programme:['Swimming Pool lanes and starting blocks at AIS.jpg','KeepActive Australia','CC BY-SA 4.0','Swimming pool lanes and starting blocks'],
 };
-const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday']);   /* diagrams: show whole, never crop */
+const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday']);
+/* One extra question about the picture on each poster, asked only when pictures are on */
+function setPicQ(id, q){ const p=[...SCAN,...VISUAL].find(x=>x.id===id), a=q.split('|'); if (p) p.picQ=[a[0], a[1], [a[1], ...a.slice(2,-1)], a[a.length-1]]; }
+const withPicQ = p => p.picQ && picsOn() && PIC[p.id] ? [...p.qs, p.picQ] : p.qs;
+[['t_cake_sale',"Why does the poster show a photo of cupcakes?|To make people want to buy the cakes|To teach people how to bake|To show what the animal shelter looks like|To advertise a bakery|A tasty picture tempts people to buy."],
+ ['t_school_play',"What does the picture of a theatre tell readers?|That the event is a show on a stage|That the event is a sports match|That the event is a cake sale|That the event is a school trip|The stage and seats show it is a performance."],
+ ['t_supercrunch_cereal',"How does the photo of a full bowl of cereal help the advert?|It makes the cereal look tasty|It shows the free toy rocket|It tells you the price|It proves that 9 out of 10 kids love it|Adverts use tempting pictures to make you want the product."],
+ ['t_save_water',"Why does the poster show a dripping tap?|To remind people that leaking taps waste water|To sell new taps|To show how to take a shower|To show that it is raining|The picture matches the advice to fix leaking taps."],
+ ['t_keep_it_clean',"What does the photo on the poster show?|Litter spoiling a natural place|A clean playground|Learners playing at break|A row of new bins|The photo shows rubbish dumped beside a stream."],
+ ['t_fun_run_notice',"Why is there a picture of running shoes on the notice?|It shows at a glance that the event is a run|It is an advert for shoes|It shows the prize for the best costume|It tells you the time of the race|Pictures help readers see what a notice is about quickly."],
+ ['t_lost_dog_poster',"Why does the poster include a photo of Biscuit?|So people can recognise the dog|To make the poster longer|To show where the park is|To show how big the reward is|A photo helps people spot the missing dog."],
+ ['t_swimming_gala_programme',"What does the picture tell you about the gala?|It takes place at a swimming pool|It is a running race|It takes place in the school hall|It is held at the beach|The picture shows pool lanes and starting blocks."]].forEach(([id,q])=>setPicQ(id,q));   /* diagrams: show whole, never crop */
 const picsOn = () => DB.pics!==false;
 const picURL = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width='+(w||960);
 /* Copies of the pictures live in pics/ on this site (fetched by a GitHub workflow). If a copy is missing, try Wikimedia once, then hide. */
@@ -3700,7 +3747,7 @@ function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
 function screenPicCredits(back){
   stopTimers(); back=back||(()=>screenStart());
   const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
-  const rows=Object.entries(PIC).map(([id,p])=>{ const ps=PS(id)||TP(id);
+  const rows=Object.entries(PIC).map(([id,p])=>{ const pr=PROMPTS.find(x=>x.id===id), ps=PS(id)||TP(id)||[...SCAN,...VISUAL].find(x=>x.id===id)||(pr&&{title:'Picture prompt: '+pr.c});
     return `<div class="pcred"><img src="${picLocal(id,true)}" alt="${escH(p[3])}" loading="lazy" onerror="${picErr(id,330,'this.style.visibility=&quot;hidden&quot;')}"><div class="grow"><b>${escH(ps?ps.title:id)}</b>${TP(id)?' <small class="muted">· Test</small>':''}<br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
   app.innerHTML = backTitle('🖼️ Picture credits')+`
    <div class="card"><p class="small">The pictures with our reading texts come from <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>. Every one is free to use under the licence shown. Thank you to the photographers and artists who share their work.</p>
@@ -6537,7 +6584,7 @@ function screenFreeWrite(){
   stopTimers(); const pr=rnd(PROMPTS);
   const ideas = [...sample(WOW,8), 'like a', 'as … as', 'because', 'suddenly', 'although'];
   app.innerHTML = backTitle('🖼️ Picture Prompt')+`
-   <div class="promptart"><span>${pr.e}</span><b>${pr.c}</b></div>
+   <div class="promptart${PIC[pr.id]&&picsOn()?' photo':''}">${picHTML(pr.id,'pp')}<span class="pe">${pr.e}</span><b>${escH(pr.c)}</b></div>
    <p class="muted b">Write ONE super sentence about the picture. Can you tick every box on Plume's checklist?</p>
    <textarea id="tx" class="writebox" rows="4" placeholder="Start your sentence here…" spellcheck="false"></textarea>
    <div class="meterrow card mt8"><span class="mface" id="mf">✏️</span><div class="wowbar"><i id="wb"></i></div><b id="ml">0 / 8</b></div>
@@ -6554,6 +6601,7 @@ function screenFreeWrite(){
   tx.oninput=upd;
   $$('.chip.idea').forEach(b=>b.onclick=()=>{ const v=b.textContent.replace('…','...'); tx.value=(tx.value.trim()?tx.value.replace(/\s*$/,' '):'')+v+' '; tx.focus(); upd(); });
   $('#bk').onclick=()=>screenWorkshop(); $('#new').onclick=()=>screenFreeWrite();
+  addPrintBtn(()=>openDoc(pPromptDoc([pr])), 'Print this picture prompt');
   if ($('#say')) $('#say').onclick=()=>speak(tx.value||'Write something first!');
   $('#sv').onclick=()=>{ const n=writingChecks(tx.value).filter(c=>c.ok).length; saveWriting('Picture: '+pr.c, tx.value.trim(), n, 8); $('#sv').disabled=true; $('#sv').textContent='✅ Saved'; };
   upd();
@@ -9365,6 +9413,11 @@ function pModelDoc(id){ const m=MODELS.find(x=>x.id===id), qs=(m.qs||[]).map(s=>
   return {title:m.title, sheets:[pSheet({kind:'Model text', info:pE(m.title), learner:true, marks:qs.length, title:`Model text: ${pE(m.title)}`, sub:'Read this example. Notice how it is built, then answer the questions.',
     body:`<div class="ppsg"><div class="ppsgh"><b>${pE(m.text[0])}</b><span>${pE(m.title)}</span></div>${m.text.slice(1).map(t=>`<p>${pE(t)}</p>`).join('')}</div>`+pSec('Questions')+r.h}),
     pSheet({kind:'Memo', key:true, title:`Answer key: ${pE(m.title)}`, body:r.k})]}; }
+function pPromptDoc(list){ list=list||PROMPTS;
+  return {title: list.length>1?'Picture prompts':'Picture prompt: '+list[0].c, sheets:list.map(pr=>{ const p=PIC[pr.id];
+    const fig = p&&picsOn() ? `<figure class="pprompt${PIC_FIT.has(pr.id)?' fit':''}"><img src="${picLocal(pr.id)}" alt="" onerror="${picErr(pr.id,960,'this.parentNode.remove()')}"><figcaption>${pE(picCredit(p))}</figcaption></figure>` : `<p class="pemoji">${pr.e}</p>`;
+    return pSheet({kind:'Picture prompt', info:pE(pr.c), learner:true, title:`Picture prompt: ${pE(pr.c)}`, sub:'Look closely at the picture. Write one super sentence about it, then build it into a short paragraph.',
+      body: fig + pSec('My super sentence') + pLines(2, true) + `<p class="pinst">Try to use: a strong verb · an adjective · a simile (like a… / as … as…) · a joining word (because, although, suddenly)</p>` + pSec('My paragraph') + pLines(7, true)}); })}; }
 function pParasDoc(){ const keys=[];
   const cards=PARAS.map((p,i)=>{ const ord=shuffle(p.s.map((_,j)=>j)); keys.push(`<li><b>${pE(p.t)}:</b> ${ord.map(j=>j+1).map(String).join(', ')}<br><small>${p.s.map(pE).join(' ')}</small></li>`);
     return `<div class="pblock">${pSec(`${i+1}. ${pE(p.t)}`)}<p class="pinst">Number the sentences to build the paragraph.</p><div class="porder">${ord.map(j=>`<div><span class="pbox"></span>${pE(p.s[j])}</div>`).join('')}</div>${p.prompt?`<p class="pinst"><b>Now you:</b> ${pE(p.prompt)}</p>`:''}</div>`; });
@@ -9497,7 +9550,7 @@ function screenPrintCentre(back){
      <div class="pbtns mt8"><button class="btn ghost" id="pcsgo">Open the lesson</button><button class="btn ghost" id="pchb">📘 The whole handbook</button></div></div>
    <div class="card mt"><b>✍️ Writing</b><p class="small muted">Any writing task with its diagram, planning frame, lined pages, checklist and rubric.</p><select class="name" id="pcwt">${WRITING_TASKS.map(t=>opt(t.id, t.title)).join('')}</select>
      <div class="pbtns mt8"><button class="btn ghost" id="pcwtgo">Open the task</button></div>
-     <select class="name mt8" id="pcm">${MODELS.map(m=>opt(m.id, 'Model text: '+m.title)).join('')}</select><div class="pbtns mt8"><button class="btn ghost" id="pcmgo">Open the model text</button><button class="btn ghost" id="pcpz">Paragraph puzzles</button><button class="btn ghost" id="pcqw">Quick-write cards</button></div></div>
+     <select class="name mt8" id="pcm">${MODELS.map(m=>opt(m.id, 'Model text: '+m.title)).join('')}</select><div class="pbtns mt8"><button class="btn ghost" id="pcmgo">Open the model text</button><button class="btn ghost" id="pcpz">Paragraph puzzles</button><button class="btn ghost" id="pcpp">Picture prompts</button><button class="btn ghost" id="pcqw">Quick-write cards</button></div></div>
    ${(DB.quizzes||[]).length?`<div class="card mt"><b>✏️ My quizzes</b><div class="pbtns">${DB.quizzes.map(q=>`<button class="btn ghost" data-pq="${pE(q.id)}">${pE(q.title)}</button>`).join('')}</div></div>`:''}
    <div class="card mt"><b>📈 Reports</b><p class="small muted">Progress pages, test results and the mastery map each have a 🖨️ button at the top. It prints that page on the letterhead.</p>
      <div class="pbtns"><button class="btn ghost" id="pcr1">Class progress</button><button class="btn ghost" id="pcr2">Test results</button><button class="btn ghost" id="pcr3">Mastery map</button></div></div>`;
@@ -9509,7 +9562,7 @@ function screenPrintCentre(back){
   $$('[data-po]').forEach(b=>b.onclick=()=>openDoc(pOralDoc(+b.dataset.po)));
   $('#pcsgo').onclick=()=>openDoc(pSkillDoc($('#pcs').value)); $('#pchb').onclick=()=>openDoc(pHandbookDoc());
   $('#pcwtgo').onclick=()=>openDoc(pWritingDoc($('#pcwt').value)); $('#pcmgo').onclick=()=>openDoc(pModelDoc($('#pcm').value));
-  $('#pcpz').onclick=()=>openDoc(pParasDoc()); $('#pcqw').onclick=()=>openDoc(pQWDoc());
+  $('#pcpz').onclick=()=>openDoc(pParasDoc()); $('#pcpp').onclick=()=>openDoc(pPromptDoc()); $('#pcqw').onclick=()=>openDoc(pQWDoc());
   $$('[data-pq]').forEach(b=>b.onclick=()=>openDoc(pTQuizDoc(b.dataset.pq)));
   $('#pcr1').onclick=()=>screenProgressTeacher(); $('#pcr2').onclick=()=>screenTestResults(); $('#pcr3').onclick=()=>screenMasteryMap();
 }
