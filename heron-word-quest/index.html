@@ -800,6 +800,17 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .promptart.photo{padding:10px}.promptart .pic{margin:0 0 8px}.promptart .pic+.pe{display:none}.pic.pp img{height:clamp(200px,52vw,340px)}
 .pprompt{margin:0 0 4mm}.pprompt img{display:block;width:100%;height:92mm;object-fit:cover;border-radius:2mm;border:.2mm solid #d5dae3}.pprompt.fit img{object-fit:contain;background:#fff}
 .pprompt figcaption{font-size:7pt;color:#6b7280;margin-top:1mm}.pemoji{font-size:48pt;text-align:center;margin:4mm 0}
+.hero.photo{min-height:230px;align-items:flex-end;padding:18px;background:linear-gradient(180deg,rgba(18,24,56,.05) 0%,rgba(18,24,56,.35) 45%,rgba(18,24,56,.88) 100%),var(--bg) center 40%/cover,var(--navy)}
+.hero.photo:after{display:none}.hero.photo h1{font-size:32px;text-shadow:0 2px 10px rgba(0,0,0,.35)}.hero.photo .sub,.hero.photo .sub2{text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.herocred{position:absolute;right:12px;top:10px;font-size:10px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.25);padding:2px 7px;border-radius:9px}
+.wstrip{text-align:center}.wsh{font-weight:800;color:var(--muted);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.wsrow{display:flex;justify-content:center;flex-wrap:wrap;gap:clamp(4px,1.6vw,10px);margin-top:8px}
+.wsp{width:clamp(36px,9.4vw,56px);height:clamp(36px,9.4vw,56px);border-radius:50%;background:#e8edf3 center/cover;border:3px solid #fff;box-shadow:0 3px 8px rgba(30,40,80,.15)}
+.disc.photo{background-size:cover;background-position:center;box-shadow:0 0 0 3px var(--c),0 6px 0 rgba(0,0,0,.15)}
+.dicon{position:absolute;right:-8px;bottom:-6px;width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.wphoto{flex:none;width:86px;height:86px;border-radius:50%;background:#fff center/cover;border:4px solid rgba(255,255,255,.9);position:relative;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.emo{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;background:center/contain no-repeat;color:transparent!important;-webkit-text-fill-color:transparent;overflow:hidden;white-space:nowrap;line-height:1.2em;text-shadow:none!important;text-align:left;text-indent:0;letter-spacing:0}
+@media print{.emo{color:inherit!important;-webkit-text-fill-color:currentColor;background:none!important;width:auto;height:auto;overflow:visible}}
 </style>
 </head>
 <body>
@@ -3718,10 +3729,25 @@ const PIC = {
  t_fun_run_notice:['Forgotten children\'s sneakers in Rågårdsdal 2.jpg','W.carter','CC BY-SA 4.0','A pair of running shoes on a rock in the grass'],
  t_lost_dog_poster:['Jack Russell Terrier Puppy - Eddi.jpg','Steve-65','CC BY-SA 3.0','A white Jack Russell puppy with brown ears'],
  t_swimming_gala_programme:['Swimming Pool lanes and starting blocks at AIS.jpg','KeepActive Australia','CC BY-SA 4.0','Swimming pool lanes and starting blocks'],
+ /* Quest Map worlds and the start screen */
+ hero:['Flying Grey Heron above the sea, Maldives.jpg','Alessandro Caproni','CC BY 2.0','A grey heron flying over blue water'],
+ w_nest:['Black-headed weaver (Ploceus cucullatus bohndorffi) male nest building.jpg','Charles J. Sharp','CC BY-SA 4.0','A weaver bird building its nest'],
+ w_vlei:['Wetland Reserve ... (46767449621).jpg','Bernard Dupont','CC BY-SA 2.0','Streams winding through a grassy vlei'],
+ w_dunes:['006 Dune 45 in Sossusvlei at sunrise Photo by Giles Laurent.jpg','Giles Laurent','CC BY-SA 4.0','A red sand dune at sunrise in Sossusvlei'],
+ w_bridge:['South Africa-Johannesburg-Nelson Mandela Bridge001.jpg','NJR ZA','Public domain','The Nelson Mandela Bridge in Johannesburg'],
+ w_pond:['Lily Pads, Swan Pond Culzean Country Park - geograph.org.uk - 6532781.jpg','Billy McCrorie','CC BY-SA 2.0','Lily pads covering a pond'],
+ w_swamp:['OkavangoDelta Flip666.jpg','Philipp Schäufele','CC BY-SA 1.0','Reeds and water in the Okavango Delta'],
+ w_fall:['Howick Waterfall 01.JPG','Nicolette de Lange','CC BY-SA 4.0','Howick Falls in KwaZulu-Natal'],
+ w_reeds:['River Canard after sunrise, Essex County, Ontario, 2025-06-01 03.jpg','Crisco 1492','CC BY-SA 4.0','Reeds against a pink morning sky'],
 };
 const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday','t_save_water','t_lost_dog_poster']);
 /* Where to aim the crop for tall pictures shown in a wide frame */
 const PIC_POS = {pp_giraffe:'50% 10%', pp_lion:'50% 30%', pp_rocket:'50% 35%', birdfeeder:'50% 25%'};
+const WPIC = {nouns:'w_nest', verbs:'w_vlei', describe:'w_dunes', sentences:'w_bridge', punct:'w_pond', spelling:'w_swamp', wordplay:'w_fall', reading:'w_reeds'};
+const PIC_LABEL = {hero:'Start screen', w_nest:'Quest Map: Noun Nest', w_vlei:'Quest Map: Verb Vlei', w_dunes:'Quest Map: Describing Dunes', w_bridge:'Quest Map: Sentence Bridge',
+  w_pond:'Quest Map: Punctuation Pond', w_swamp:'Quest Map: Spelling Swamp', w_fall:'Quest Map: Wordplay Waterfall', w_reeds:'Quest Map: Reading Reeds'};
+/* A world's round photo (falls back to its emoji colour disc) */
+const worldPic = w => { const id=WPIC[w.id]; return id&&PIC[id]&&picsOn() ? id : ''; };
 const picPos = id => PIC_POS[id] ? ` style="object-position:${PIC_POS[id]}"` : '';
 /* One extra question about the picture on each poster, asked only when pictures are on */
 function setPicQ(id, q){ const p=[...SCAN,...VISUAL].find(x=>x.id===id), a=q.split('|'); if (p) p.picQ=[a[0], a[1], [a[1], ...a.slice(2,-1)], a[a.length-1]]; }
@@ -3750,12 +3776,14 @@ function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
 function screenPicCredits(back){
   stopTimers(); back=back||(()=>screenStart());
   const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
-  const rows=Object.entries(PIC).map(([id,p])=>{ const pr=PROMPTS.find(x=>x.id===id), ps=PS(id)||TP(id)||[...SCAN,...VISUAL].find(x=>x.id===id)||(pr&&{title:'Picture prompt: '+pr.c});
+  const rows=Object.entries(PIC).map(([id,p])=>{ const pr=PROMPTS.find(x=>x.id===id), ps=(PIC_LABEL[id]&&{title:PIC_LABEL[id]})||PS(id)||TP(id)||[...SCAN,...VISUAL].find(x=>x.id===id)||(pr&&{title:'Picture prompt: '+pr.c});
     return `<div class="pcred"><img src="${picLocal(id,true)}" alt="${escH(p[3])}" loading="lazy" onerror="${picErr(id,330,'this.style.visibility=&quot;hidden&quot;')}"><div class="grow"><b>${escH(ps?ps.title:id)}</b>${TP(id)?' <small class="muted">· Test</small>':''}<br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
   app.innerHTML = backTitle('🖼️ Picture credits')+`
    <div class="card"><p class="small">The pictures with our reading texts come from <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>. Every one is free to use under the licence shown. Thank you to the photographers and artists who share their work.</p>
    <p class="small muted mt8">Tap a name to see the original picture, or a licence to read it. Pictures need the internet. Without it, the texts simply show without them.</p></div>
-   <div class="card mt">${rows}</div>`;
+   <div class="card mt">${rows}</div>
+   <div class="card mt"><b>Icons and sounds</b><p class="small mt8">Icons: <a href="https://github.com/microsoft/fluentui-emoji" target="_blank" rel="noopener">Fluent Emoji</a> by Microsoft, used under the <a href="https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE" target="_blank" rel="noopener">MIT licence</a> (Copyright © Microsoft Corporation).</p>
+   <p class="small mt8">Sound effects and jingles: <a href="https://kenney.nl" target="_blank" rel="noopener">Kenney</a>, free to use under <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>.</p></div>`;
   $('#bk').onclick=back;
 }
 
@@ -5584,13 +5612,15 @@ function stopTimers(){
 function screenStart(){
   PRT.teacher=false; PRT.parent=false;
   stopTimers(); applyPrefs(); const cur=DB.current&&DB.profiles[DB.current];
+  const hp=PIC.hero&&picsOn();
   app.innerHTML = `
-   <div class="hero">${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div></div>
+   <div class="hero${hp?' photo':''}"${hp?` style="--bg:url('${picLocal('hero')}')"`:''}>${crest()}<div><div class="sub">HeronBridge English</div><h1>Heron Word Quest</h1><div class="sub2">${escH(teacherName())}'s Grade 5</div></div>${hp?`<small class="herocred">${escH(picCredit(PIC.hero))}</small>`:''}</div>
    <h2 class="center mt whoq">Who are you?</h2>
    ${cur?`<button class="contcard mt8" id="cont">${heronSVG(cur.look,'h56')}<span class="grow"><small class="muted b">Welcome back!</small><b>Continue as ${escH(cur.name)}</b></span><span class="sngo">▶</span></button>`:''}
    <button class="logincard rolec mt8" id="rlearn"><span class="mic">🎒</span><span class="grow"><b>I'm a learner</b><small>Play, learn and see your progress</small></span>▶</button>
    <button class="logincard rolec parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>I'm a parent</b><small>See your child's work and progress</small></span>▶</button>
    <button class="logincard rolec teacher mt8" id="tc"><span class="mic">🍎</span><span class="grow"><b>I'm a teacher</b><small>Classes, marking and reports</small></span>▶</button>
+   ${picsOn()?`<div class="wstrip mt"><div class="wsh">Eight worlds to explore</div><div class="wsrow">${WORLDS.map(w=>{ const id=worldPic(w); return id?`<span class="wsp" title="${escH(w.name)}" style="background-image:url('${picLocal(id,true)}')"></span>`:''; }).join('')}</div></div>`:''}
    ${storeNote()}<div class="center mt"><button class="link small" id="pcred">Picture credits</button></div>`;
   $('#rlearn').onclick=()=>screenProfiles(); if ($('#cont')) $('#cont').onclick=()=>screenHome();
   $('#plogin').onclick=()=>screenClassLogin('', 'parent');
@@ -5688,7 +5718,7 @@ function screenHome(){
    <h3 class="maph">🗺️ The Quest Map</h3>
    <div class="map">${WORLDS.map((x,i)=>{ const st=worldStars(p,x), mx=x.skills.length*3; return `
      <button class="node ${i%2?'r':'l'}" data-w="${x.id}">
-       <span class="disc" style="background:${x.color}">${x.icon}${p.bosses[x.id]?'<span class="crown">'+featherSVG(true)+'</span>':''}</span>
+       ${(id=>id?`<span class="disc photo" style="--c:${x.color};background-color:${x.color};background-image:url('${picLocal(id,true)}')"><span class="dicon">${x.icon}</span>`:`<span class="disc" style="background:${x.color}">${x.icon}`)(worldPic(x))}${p.bosses[x.id]?'<span class="crown">'+featherSVG(true)+'</span>':''}</span>
        <span class="nlabel"><b>${i+1}. ${x.name}</b><small>🏅 ${st}/${mx}${p.bosses[x.id]?' · 🪶':''}</small>
        <span class="mini"><i style="width:${st/mx*100}%;background:${x.color}"></i></span></span></button>`}).join('')}
      <button class="node finale ${fc>=8?'':'locked'}" id="finale"><span class="disc" style="background:#2a1840">${fc>=8?'🌑':'🔒'}${p.bosses.finale?'<span class="crown">🏆</span>':''}</span>
@@ -5723,7 +5753,7 @@ function screenWorld(wid){
   const p=P(), w=WD(wid), st=worldStars(p,w), mx=w.skills.length*3;
   app.innerHTML = backTitle(`${w.icon} ${w.name}`) + `
    <div class="whead" style="background:${w.color}"><div class="grow"><b>🏅 ${st} / ${mx} medals</b><div class="mini white"><i style="width:${st/mx*100}%"></i></div>
-     <small>📘 learn it, then play 🥉 Bronze, 🥈 Silver and 🥇 Gold. Score 80% (7 out of 8) to earn each medal!</small></div><span class="wbig">${w.icon}</span></div>
+     <small>📘 learn it, then play 🥉 Bronze, 🥈 Silver and 🥇 Gold. Score 80% (7 out of 8) to earn each medal!</small></div>${(id=>id?`<span class="wphoto" style="background-image:url('${picLocal(id,true)}')"><span class="dicon">${w.icon}</span></span>`:`<span class="wbig">${w.icon}</span>`)(worldPic(w))}</div>
    <div class="wstory mt"><span>${w.boss.e}</span><p>${WORLD_STORY[w.id]}</p></div>
    <div class="list mt">${w.skills.map((k,i)=>{ const s=p.stats[k.id], ul=unlockedLv(k.id), cl=curLv(k.id); return `
      <div class="item skill col"><div class="row"><span class="num" style="background:${w.color}">${i+1}</span>
@@ -10440,6 +10470,7 @@ function sndUnlock(){
   const c=sndInit(); if (!c) return;
   if (c.state!=='running') resumeCtx(c);
   if (!SND.ok){ try { const s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(c.destination); s.start(0); } catch(e){} SND.ok=true; }
+  loadSamples();
 }
 ['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev, sndUnlock, {capture:true, passive:true}));
 document.addEventListener('visibilitychange', ()=>{ const c=SND.ctx; if (!c || !c.suspend) return; try { if (document.hidden){ const r=c.suspend(); if (r&&r.catch) r.catch(()=>{}); } else resumeCtx(c); } catch(e){} });
@@ -10499,6 +10530,15 @@ Object.assign(sfx, {
   lose:   ()=>play(t=>{ [76,72,69,67].forEach((m,i)=>bell(m,t+i*.16,.08,.5)); }),
   soft:   ()=>play(t=>{ bell(76,t,.09,.5); bell(79,t+.12,.08,.6); })
 });
+/* ---------- Recorded sounds for the big moments (Kenney, CC0, in sfx/). Until they load, or if they can't, the synth sounds above play. ---------- */
+const SAMPLE_GAIN = {good:.85, bad:1.25, coin:1.05, badge:.9, unlock:1, win:.85, levelup:.75, medal:.9, lose:.85, go:.75};
+const SBUF = {}; let sampLoading=false;
+function loadSamples(){ const c=SND.ctx; if (sampLoading || !c || !window.fetch) return; sampLoading=true;
+  Object.keys(SAMPLE_GAIN).forEach(k=>{ fetch('sfx/'+k+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject(r.status))
+    .then(b=>new Promise((res,rej)=>{ const pr=c.decodeAudioData(b,res,rej); if (pr&&pr.catch) pr.catch(rej); })).then(buf=>{ SBUF[k]=buf; }).catch(()=>{}); }); }
+Object.keys(SAMPLE_GAIN).forEach(k=>{ const synth=sfx[k];
+  sfx[k]=(...a)=>{ if (!SBUF[k]) return synth(...a);
+    play(t=>{ const c=SND.ctx, src=c.createBufferSource(), g=c.createGain(); src.buffer=SBUF[k]; g.gain.value=SAMPLE_GAIN[k]; src.connect(g); g.connect(SND.fx); src.start(t); }); }; });
 
 /* ---------- Game music: a small looping tune for Heron Race and boss battles ---------- */
 const mKick=(t,b)=>osc(120,t,{type:'sine',to:42,dur:.16,vol:.32,bus:b});
@@ -10720,6 +10760,41 @@ function fxHome(a, entered){
 { const sky=document.createElement('div'); sky.className='fx-sky'; sky.setAttribute('aria-hidden','true'); sky.innerHTML='<i></i><i></i><i></i>'; document.body.prepend(sky); }
 
 boot();
+
+/* ---------- Icons: Microsoft Fluent Emoji (MIT licence), in emoji/. Emoji in the app are shown as these pictures so they look the same
+   on every tablet, phone and laptop. The emoji character stays in the text (for reading aloud, copying and printing). ---------- */
+const EMO_KEYS = new Set(["1f195","1f1ff-1f1e6","1f305","1f308","1f309","1f30a","1f30b","1f311","1f315","1f319","1f31f","1f324","1f326","1f327","1f331","1f333","1f338","1f33e","1f33f","1f34e","1f353","1f372","1f382","1f388","1f389","1f392","1f393","1f397","1f399","1f39b","1f3a4","1f3a7","1f3a8","1f3ad","1f3af","1f3b2","1f3b5","1f3c1","1f3c3","1f3c5","1f3c6","1f3ca","1f3cf","1f3d6","1f3da","1f3de","1f3e0","1f3eb","1f3f3","1f406","1f407","1f408","1f409","1f40a","1f40d","1f415","1f418","1f419","1f41d","1f422","1f423","1f424","1f426","1f427","1f42d","1f436","1f438","1f440","1f441","1f442","1f443","1f445","1f447","1f449","1f44b","1f44d","1f44e","1f44f","1f451","1f465","1f466","1f468-200d-1f469-200d-1f467-200d-1f466","1f46a","1f46b","1f475","1f47b","1f48e","1f494","1f4a1","1f4a5","1f4a6","1f4a7","1f4a8","1f4ac","1f4ad","1f4af","1f4bb","1f4be","1f4c4","1f4c5","1f4c8","1f4ca","1f4cb","1f4cc","1f4cd","1f4d0","1f4d2","1f4d4","1f4d6","1f4d8","1f4da","1f4dc","1f4dd","1f4e1","1f4e2","1f4e3","1f4e4","1f4e5","1f4e6","1f4f0","1f4f1","1f4fd","1f500","1f501","1f504","1f506","1f507","1f508","1f50a","1f50d","1f50e","1f510","1f512","1f514","1f520","1f522","1f524","1f525","1f527","1f528","1f52c","1f52d","1f54a","1f56f","1f575","1f576","1f590","1f5a8","1f5bc","1f5d1","1f5d3","1f5e3","1f5fa","1f603","1f60e","1f631","1f634","1f642","1f648","1f64b","1f680","1f682","1f68c","1f6a2","1f6aa","1f6cd","1f6e0","1f7e2","1f7f0","1f90d","1f914","1f916","1f91d","1f929","1f92b","1f941","1f945","1f947","1f948","1f949","1f957","1f977","1f978","1f981","1f982","1f987","1f989","1f98a","1f98b","1f98f","1f992","1f99f","1f9a4","1f9a9","1f9b4","1f9b8","1f9ba","1f9cc","1f9cd","1f9d9","1f9e0","1f9e5","1f9e9","1f9ed","1f9f0","1f9f1","1fa79","1fa84","1fa99","1fa9e","1fab6","1faba","1fae7","2194","21a9","23e9","23ea","23f0","23f1","23f3","23f8","23f9","25b6","25c0","2600","2601","2614","2620","267b","2694","2696","2699","26a0","26a1","26aa","26bd","26c8","26f0","2705","2709","270b","270d","270f","2728","274c","2753","2764","2795","27a1","2b07","2b1c","2b50","2b55"]);
+const EMO_RE = /\p{RI}\p{RI}|(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F)[\u{1F3FB}-\u{1F3FF}]?(?:\u200D(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F?)[\u{1F3FB}-\u{1F3FF}]?)*/gu;
+const EMO_ANY = /\p{RI}|\p{Emoji_Presentation}|\uFE0F/u;
+const emoKey = e => [...e].filter(ch=>ch!=='\uFE0F').map(ch=>ch.codePointAt(0).toString(16).padStart(4,'0')).join('-');
+const EMO_SKIP = 'script,style,textarea,input,select,option,title,svg,canvas,.emo,#pover,[contenteditable],.noemo';
+let EMO_ON = false;
+function emoText(node){
+  const t=node.nodeValue; if (!t || !EMO_ANY.test(t)) return;
+  const par=node.parentElement; if (!par || par.closest(EMO_SKIP)) return;
+  EMO_RE.lastIndex=0; let m, last=0, frag=null;
+  while ((m=EMO_RE.exec(t))){ const k=emoKey(m[0]); if (!EMO_KEYS.has(k)) continue;
+    frag=frag||document.createDocumentFragment();
+    if (m.index>last) frag.appendChild(document.createTextNode(t.slice(last,m.index)));
+    const sp=document.createElement('span'); sp.className='emo'; sp.style.backgroundImage=`url("emoji/${k}.webp")`; sp.textContent=m[0]; frag.appendChild(sp);
+    last=m.index+m[0].length; }
+  if (!frag) return;
+  if (last<t.length) frag.appendChild(document.createTextNode(t.slice(last)));
+  par.replaceChild(frag, node);
+}
+function emoScan(root){
+  if (!EMO_ON || !root) return;
+  if (root.nodeType===3) return emoText(root);
+  if (root.nodeType!==1 || root.closest(EMO_SKIP)) return;
+  const w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT), list=[]; let n;
+  while ((n=w.nextNode())) if (EMO_ANY.test(n.nodeValue)) list.push(n);
+  list.forEach(emoText);
+}
+const emoObs = window.MutationObserver ? new MutationObserver(ms=>{ for (const m of ms){
+  if (m.type==='characterData') emoText(m.target); else m.addedNodes.forEach(emoScan); } }) : null;
+(function emoStart(){ if (!emoObs || DB.nativeEmoji) return;
+  const probe=new Image(); probe.onload=()=>{ EMO_ON=true; document.body.classList.add('emo-on'); emoScan(document.body);
+    emoObs.observe(document.body,{childList:true, subtree:true, characterData:true}); }; probe.src='emoji/2b50.webp'; })();
 </script>
 </body>
 </html>
