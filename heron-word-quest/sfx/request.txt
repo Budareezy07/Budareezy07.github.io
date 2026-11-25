@@ -1,0 +1,3 @@
+# Free (CC0) sound packs by Kenney, from OpenGameArt. Fetched by .github/workflows/fetch-sfx.yml
+interface	https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip
+jingles	https://opengameart.org/sites/default/files/jingleSounds_Kenney.zip

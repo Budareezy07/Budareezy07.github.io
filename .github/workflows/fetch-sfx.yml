@@ -1,0 +1,42 @@
+name: Fetch Heron Word Quest sounds
+on:
+  push:
+    paths:
+      - 'heron-word-quest/sfx/request.txt'
+      - '.github/workflows/fetch-sfx.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg unzip
+      - name: Download and convert
+        run: |
+          set -e
+          OUT=heron-word-quest/sfx/_all
+          mkdir -p "$OUT" /tmp/z
+          : > heron-word-quest/sfx/catalog.txt
+          grep -v '^#' heron-word-quest/sfx/request.txt | while IFS=$'\t' read -r pack url; do
+            [ -z "$pack" ] && continue
+            curl -sSL -A "HeronWordQuest/1.0 (school reading app)" -o "/tmp/z/$pack.zip" "$url"
+            mkdir -p "/tmp/z/$pack" "$OUT/$pack"
+            unzip -q -o "/tmp/z/$pack.zip" -d "/tmp/z/$pack"
+            find "/tmp/z/$pack" -type f \( -iname '*.ogg' -o -iname '*.wav' \) | sort | while read -r f; do
+              n=$(basename "${f%.*}")
+              ffmpeg -nostdin -loglevel error -y -i "$f" -ac 1 -ar 44100 -b:a 64k "$OUT/$pack/$n.mp3"
+              d=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$OUT/$pack/$n.mp3")
+              echo -e "$pack\t$n\t$d" >> heron-word-quest/sfx/catalog.txt
+            done
+            find "/tmp/z/$pack" -iname '*licen*' -o -iname '*.txt' | head -3 | xargs -r -I{} cp {} "$OUT/$pack/"
+          done
+          wc -l heron-word-quest/sfx/catalog.txt
+      - name: Save them to the site
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add heron-word-quest/sfx
+          git diff --cached --quiet || (git commit -m "Heron Word Quest: fetch sound packs" && git push)
