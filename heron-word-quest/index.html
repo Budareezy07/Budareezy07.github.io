@@ -384,6 +384,12 @@ textarea.writebox{min-height:120px}
 .rtip{margin:2px 0 8px}
 .rs{border-radius:5px;transition:background .15s;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rs.on{background:#ffe58a;box-shadow:0 0 0 2px #ffe58a}
+.gw{font-weight:inherit;border-bottom:2px dotted #2f80ed;cursor:pointer;border-radius:3px;-webkit-tap-highlight-color:transparent}.gw.on,.gw:focus-visible{background:#dbeafe;outline:none}
+.gbub{position:absolute;z-index:80;background:#fff;border:2px solid #2f80ed;border-radius:14px;padding:9px 12px;box-shadow:0 8px 24px rgba(15,23,42,.18);font-size:16px;line-height:1.35;animation:fxPop .25s cubic-bezier(.2,1.5,.4,1)}
+.gbub::before{content:'';position:absolute;top:-9px;left:var(--ax,50%);width:14px;height:14px;background:#fff;border-left:2px solid #2f80ed;border-top:2px solid #2f80ed;transform:translateX(-50%) rotate(45deg)}
+.gbub b{color:#1e40af}.gbub .gsay{border:0;background:#eef4ff;border-radius:9px;margin-left:6px;padding:2px 7px;font-size:15px;cursor:pointer;vertical-align:middle}
+.gtip{margin:2px 0 6px}
+@media print{.gw{border-bottom:0}.gtip,.gbub{display:none!important}}
 
 /* spelling keyboard */
 .kbd{margin-top:10px;user-select:none;-webkit-user-select:none}
@@ -804,6 +810,20 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .pic.wk{margin:0 0 10px}.pic.wk img{height:clamp(110px,28vw,170px)}
 .pcred{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid #eef2f6}
 .pcred:last-child{border-bottom:0}
+.gchip{display:inline-flex;align-items:center;gap:2px}.gx{border:0;background:none;color:var(--muted);font-size:14px;cursor:pointer;padding:4px}
+.tscore{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.tpill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--c);border-radius:999px;padding:4px 6px 4px 12px;font-size:18px}
+.tpill i{font-style:normal;font-family:var(--head);font-weight:800;background:var(--c);color:#fff;border-radius:999px;min-width:42px;text-align:center;padding:2px 8px}
+.tlive{background:#eef4ff;border-radius:12px;padding:8px 12px;margin:6px 0;font-size:18px}.tbars{display:flex;gap:6px;margin-top:6px}.tbars i{flex:1;height:8px;border-radius:9px;background:linear-gradient(90deg,var(--c) var(--w),#dde5f0 var(--w))}
+.taward{margin-top:10px}.tbtn{border:3px solid var(--c);background:#fff;border-radius:14px;padding:10px 14px;font:inherit;font-weight:800;font-size:18px;cursor:pointer;flex:1}.tbtn.on{background:var(--c);color:#fff}
+.tres{display:flex;align-items:center;gap:10px;border-left:8px solid var(--c);background:#fff;border-radius:10px;padding:8px 12px;margin:6px 0;font-size:18px}.tres span{flex:1;color:var(--muted)}.tres i{font-style:normal;font-family:var(--head);font-weight:800;color:var(--c);font-size:22px}
+.tres.big{font-size:24px;justify-content:space-between}.tres.big i{font-size:30px}.tfinal{max-width:560px;margin:10px auto}
+.tsplit{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.tcol{border-top:6px solid var(--c);background:#f8fafc;border-radius:10px;padding:8px}.tcol small{display:block;color:var(--muted);margin-top:4px}
+.livebar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:70;background:var(--navy,#1b2a4e);color:#fff;border-radius:16px;padding:10px 12px 10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:94vw}
+.livebar b{font-size:16px}.lvteam{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--c);color:#fff;font-weight:800}
+.lvopts{display:grid;gap:10px;margin-top:12px}.lvopt{border:3px solid #dbe3ef;background:#fff;border-radius:16px;padding:16px;font:inherit;font-size:20px;font-weight:700;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center}
+.lvopt .letter{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#eef2f7;font-family:var(--head)}.lvopt.mine{border-color:#2f80ed;background:#eef4ff}.lvopt.right{border-color:var(--good);background:#e8f7ee}.lvopt.wrong{border-color:var(--bad);background:#fdecec}
+.lvopt:disabled{cursor:default;opacity:1;color:inherit}.lvopt:disabled:not(.right):not(.mine):not(.wrong){opacity:.55}
+.privsec h3{margin:0 0 6px}.privl{margin:6px 0 0;padding-left:20px}.privl li{margin:5px 0}
 .pcred img{width:88px;height:62px;object-fit:cover;border-radius:9px;flex:none;background:#e8edf3}
 .pcred a{color:var(--sky);font-weight:700}
 .ppic{float:right;width:42%;margin:.4mm 0 2mm 4.5mm;break-inside:avoid}
@@ -3658,6 +3678,15 @@ const ALL_PASSAGES = [...PASSAGES, POEM, ...NEW_PASSAGES, ...NEW_PASSAGES2, ...P
 const TP = id => TEST_PASSAGES.find(p=>p.id===id);
 const ALL_VISUAL = [...VISUAL, NEW_PASSAGES.find(p=>p.id==='splash')];
 const PS = id => ALL_PASSAGES.find(p=>p.id===id);
+/* ----- Word help: tricky words in the reading texts, with a simple meaning. Never in tests, and never a word that a question asks about. ----- */
+const GLOSS = {"heron":{"vleis":"shallow wetlands, often full of reeds","wading":"walking through shallow water","clamped":"held tight and shut","wingspan":"the distance from the tip of one wing to the tip of the other","deliberate":"slow and careful, done on purpose","precision":"being exact and careful","widespread":"found in many places","polluted":"made dirty and harmful"},"lunchbox":{"noticeboard":"a board on a wall where notices are pinned up","plait":"hair twisted together in one long braid","dreading":"feeling scared about something that is going to happen","instinct":"the first thing you feel like doing, without thinking","jacaranda":"a tree with purple flowers, seen all over Gauteng","diagrams":"simple drawings that explain something"},"baobab":{"swollen":"bigger and rounder than usual","pollinated":"given pollen so that it can make fruit and seeds","spongy":"soft and able to soak up water, like a sponge","velvety":"soft and smooth, like velvet cloth","chalky":"dry and powdery, like chalk","fibres":"long, thin threads","hollow":"empty inside"},"matchday":{"trooped":"walked together in a group","groaned":"made a low, unhappy sound","lunge":"move forward suddenly to grab something","intercepting":"catching a pass meant for someone else","hesitated":"stopped for a moment because she was unsure","faked":"pretended to move one way","clipboard":"a board with a clip that holds papers","frowning":"pulling a face that shows worry or crossness"},"camp":{"dormitory":"a big room where many people sleep","rusks":"hard, dry biscuits that are good for dunking in tea","eerie":"strange and a little bit scary","instructor":"a person who teaches a skill","raided":"broke in and took things","troop":"a group of baboons or monkeys","glittering":"shining with lots of little flashes of light"},"birdfeeder":{"mouldy":"covered in mould, a furry growth on old food","spatula":"a flat tool for spreading or lifting food","bulbuls":"noisy brown garden birds with a dark crest","weavers":"small yellow birds that weave nests from grass","blunt":"not sharp","choke":"get stuck in the throat so that you cannot breathe","tablespoons":"big spoons used for measuring"},"heronpoem":{"wades":"walks slowly through water","minnows":"tiny fish","deceiver":"someone who tricks others","gleams":"shines softly","swift":"very quick"},"tortoise":{"slunk":"walked away quietly because he was ashamed","sprinted":"ran as fast as he could","muttered":"spoke quietly and crossly","staggered":"walked unsteadily, nearly falling over","soundly":"deeply and peacefully","outrun":"run faster than","collapsed":"fell down because he was so tired","gasping":"breathing in hard, short breaths"},"jukskei":{"polystyrene":"light white plastic foam, used for take-away boxes","grabbers":"long tools for picking up litter without touching it","chairperson":"the leader of a group or meeting","conservation":"protecting nature and wildlife","volunteers":"people who help without being paid","trolley":"a cart on wheels for carrying shopping","habits":"things you do again and again"},"sportsday":{"heats":"early races to choose who goes through to the final","overtook":"passed someone who was ahead","catapult":"a Y-shaped stick with elastic, used to shoot small stones","wheezing":"breathing noisily with a whistling sound","ridiculously":"so much that it seems silly","athletics":"running, jumping and throwing sports"},"penguins":{"granite":"a very hard grey or pink rock","sunbathers":"people lying in the sun","anchovies":"small silver fish that swim in big groups","overfishing":"catching so many fish that too few are left","extinction":"when a kind of animal dies out forever","spills":"times when something pours out by accident","camouflage":"colours that help an animal hide","vanish":"disappear completely"},"spellingbee":{"rippled":"spread out like small waves","silhouette":"a dark outline against a light background","bureaucracy":"a system with lots of rules and forms","mischievous":"naughty in a playful way","hesitation":"a pause because you are unsure","sympathetic":"showing that you feel sorry for someone","accommodate":"have enough space for"},"mandela":{"regent":"a person who rules for someone else","queued":"stood in a line waiting their turn","inaugurated":"officially sworn in to a new job","democratically":"by a vote in which everyone can take part","jointly":"together, shared by both","troublemaker":"someone who causes trouble","protest":"people showing together that they disagree with something"},"bean":{"seedling":"a very young plant","softens":"makes softer","nutrients":"the food that living things need to grow","observations":"things you notice and write down","labelled":"with the names of the parts written on","unfold":"open out"},"lights":{"load-shedding":"planned power cuts to save electricity","crocheted":"made by looping wool with a hooked needle","flickered":"flashed on and off","paraffin":"a fuel that is burnt in lamps and stoves","huddled":"pressed close together to keep warm","faintly":"only a little, not strongly","lavender":"a purple flower with a sweet smell"},"watercycle":{"glacier":"a huge, slow-moving river of ice","groundwater":"water stored under the ground","sleet":"rain mixed with snow or ice","moist":"slightly wet","drought":"a long time with no rain","dramatically":"by a very large amount","continuous":"going on without stopping"},"homework":{"bleats":"makes the sound a goat or sheep makes","flustered":"worried and in a rush","soggy":"wet and soft","creativity":"using your imagination to make new things","examining":"looking at very carefully","rebuild":"build again"},"mayor":{"petition":"a letter that many people sign to ask for a change","reflective":"shining back when light falls on it","estimated":"made a careful guess","installed":"put in place, ready to use","markings":"lines and signs painted on a road"},"storm":{"grumbled":"made a low, rumbling sound","lashed":"hit hard again and again","jagged":"with sharp, uneven points","drenched":"soaked right through","hammered":"hit hard and noisily","crept":"moved slowly and quietly","drone":"a low, humming sound that goes on and on"},"jackal":{"eland":"a very large antelope with twisted horns","purred":"said in a soft, pleased voice","bristling":"with the hair standing up in anger","bared":"uncovered and showed","pounce":"a sudden jump to catch something","impostor":"someone pretending to be someone else","glaring":"staring angrily","humiliated":"feeling foolish and ashamed in front of others"},"bigfive":{"rosettes":"spots shaped like little roses","dappled":"with patches of light and shade","grazes":"eats grass","browse":"eat leaves and twigs from bushes","carcass":"the body of a dead animal","wildebeest":"a large antelope with a beard, also called a gnu","poachers":"people who hunt animals illegally","ambush":"attack by surprise from a hiding place"},"gogo":{"sizzled":"made a hissing sound while frying","springy":"bouncing back when you press it","kneading":"pressing and folding dough with your hands","lopsided":"higher on one side than the other","enamel":"a hard, shiny coating on metal","apron":"a cloth you tie on to keep your clothes clean","conductor":"the person who leads an orchestra"},"solar":{"appliances":"machines in the home, such as fridges and kettles","silicon":"a material found in sand, used to make solar cells","electrons":"tiny parts of atoms that carry electricity","particles":"very tiny pieces","generator":"a machine that makes electricity","reliable":"something you can trust to work","plains":"large areas of flat land"},"heart":{"ribcage":"the curved bones that protect your chest","atria":"the two top rooms of the heart","ventricles":"the two bottom rooms of the heart","capillaries":"the tiniest blood vessels","pacemaker":"the part that sets how fast the heart beats","throbbing":"beating strongly","tilted":"leaning to one side","nutrients":"the food your body needs to grow and stay healthy"},"robot":{"nozzle":"the narrow end of a pipe where paint or water comes out","conveyor":"a moving belt that carries things in a factory","reprogrammed":"given new instructions","flicker":"a quick, small movement","smear":"a small, messy mark","scrap":"a small leftover piece","rusty":"covered in rust, the brown coating on old metal"},"garden":{"compost":"rotted plants and food scraps used to feed soil","roster":"a list that shows whose turn it is","pollinating":"carrying pollen from flower to flower","rotating":"taking turns in order","harvests":"the crops that are picked","scraps":"leftover bits","beetroot":"a dark red root vegetable"},"cradle":{"ledges":"narrow shelves of rock","grassland":"a large area covered in grass","mound":"a small hill or heap","burial":"putting a dead body in the ground","exhibition":"a show of things for people to look at","skeleton":"all the bones of a body","divers":"people who swim underwater"},"gran":{"mielies":"maize, or corn","plaited":"twisted together into braids","stroked":"gently moved a hand over","tremble":"shake a little","slack":"loose, not tight","stirred":"mixed with a spoon"},"recycle":{"refillable":"can be filled again and again","trolleys":"carts on wheels","endlessly":"again and again, without stopping","seedlings":"very young plants","materials":"what things are made from, such as paper, glass or metal"},"treasure":{"oilskin":"cloth made waterproof with oil","yellowed":"turned yellow because it is old","solstice":"the longest or shortest day of the year","puzzled":"thought hard about something that was hard to understand","outline":"a line that shows the shape of something","faded":"lighter in colour because it is old","elegant":"neat and graceful"},"kebabs":{"naartjies":"small, easy-to-peel citrus fruit, like tangerines","segments":"the separate pieces inside an orange","optional":"you can choose whether to use it","rinse":"wash with clean water","chunks":"thick pieces","infections":"illnesses caused by germs"},"readathon":{"beanbags":"big, soft seats filled with little balls","recommendations":"suggestions of something good to try","librarian":"the person who runs a library","rural":"in the countryside, far from cities","sponsored":"paid money to support","astonishing":"very surprising"},"dragonreview":{"chillies":"small, very hot peppers","beachfront":"the area along the beach","alarmingly":"in a worrying way","township":"a neighbourhood on the edge of a city, first built under apartheid","uncontrollable":"impossible to control","memorable":"easy to remember because it is special","appetite":"how much you want to eat","temper":"a tendency to get angry quickly"},"glow":{"phenomenon":"something that happens and can be seen","luciferin":"a chemical in animals that glow","enzyme":"a substance in living things that speeds up a change","dinoflagellates":"tiny living things that float in the sea","organisms":"living things","dangles":"hangs loosely and swings","firefly":"a small beetle that flashes light"},"lastday":{"rectangles":"shapes with four straight sides and four square corners","envelopes":"paper covers for letters","initials":"the first letters of your names","uncertain":"not sure","carved":"cut into wood"},"solarsystem":{"hemisphere":"half of the Earth","optical":"using light that we can see","galaxies":"huge groups of billions of stars","fragments":"small broken pieces","telescope":"a tube with lenses that makes faraway things look closer","countless":"too many to count"},"newgirl":{"obrigado":"\"thank you\" in Portuguese","sketchbook":"a book of blank pages for drawing","patched":"mended with pieces of cloth","pointy":"with a sharp point","remarkably":"in a way that is surprising and impressive"},"marimba":{"eisteddfod":"a festival where schools compete in music and drama","ensemble":"a group playing music together","diploma":"a certificate that shows an award","muffled":"quiet and unclear, as if covered","regional":"for a whole area, not just one town","stuffy":"warm, with no fresh air","outstanding":"excellent"},"sainventions":{"dolosse":"big concrete blocks that protect harbours from waves","coastlines":"the edges of the land next to the sea","surgical":"to do with operations in hospital","transplant":"an operation to put a new organ into someone","concrete":"a strong building material made from cement, sand and stones","experimenting":"trying new things to see what works"},"rockpools":{"mottled":"covered in patches of different colours","anemones":"sea animals that look like flowers","anxiously":"in a worried way","boulder":"a very large rock","jagged":"with sharp, uneven edges","slippery":"smooth and wet, so you might slip","vanished":"disappeared suddenly"},"heritageday":{"monuments":"statues or buildings that remind us of people or events","communities":"groups of people who live together or share things","traditions":"customs passed down in a family or culture","founder":"the person who started something","cultures":"the ways of life of different groups of people","beliefs":"things people believe are true","democratic":"where people choose their leaders by voting"},"postcard":{"ochre":"a red, yellow or brown earth used to make paint","carsick":"feeling ill from riding in a car","icicles":"hanging spikes of ice","gorge":"a deep, narrow valley with steep sides","healer":"a person who helps sick people get better","trance":"a dreamlike state","charcoal":"black burnt wood, used for drawing"},"moonglow":{"plunged":"suddenly thrown","fades":"slowly becomes less bright","elders":"the older, wise people of a community","travellers":"people on a journey","glowed":"gave off a soft light"},"phones":{"wellbeing":"being healthy and happy","restrict":"limit or control","pouch":"a small bag","distraction":"something that takes your attention away","responsibly":"in a sensible, careful way","fairness":"treating everyone equally"},"weather1":{"frosty":"with a thin layer of ice on the ground","beanie":"a warm knitted hat","south-westerly":"blowing from the south-west"},"weather2":{"gusts":"sudden strong blasts of wind","patrols":"groups who walk or drive around to guard an area","ranger":"a person who looks after a game reserve"},"snare":{"limps":"walks unevenly because a leg is hurt","binoculars":"a tool you look through to see faraway things","cutters":"a tool for cutting wire","scanning":"looking carefully over an area"},"adverts":{"billboards":"huge signs next to roads","irresistible":"too good to say no to","consumer":"a person who buys things","aisle":"a passage between shelves in a shop","experts":"people who know a lot about something","phrase":"a small group of words"}};
+const glossOn = () => { const p=typeof P==='function'&&P(); if (p && p.prefs && p.prefs.gloss===false) return false; return !(typeof R!=='undefined' && R && R.mode==='test'); };
+function glossFor(ps){
+  const g=ps && GLOSS[ps.id]; if (!g || !glossOn()) return null;
+  const q=JSON.stringify(ps.qs||[]).toLowerCase(), out={};
+  Object.keys(g).forEach(w=>{ if (!new RegExp('(^|[^a-z])'+w.replace(/[-]/g,'\\-')+'([^a-z]|$)').test(q)) out[w]=g[w]; });
+  return Object.keys(out).length ? out : null;
+}
 /* Pictures for the reading texts. All from Wikimedia Commons, free licences only (CC0, public domain, CC BY, CC BY-SA).
    [file name on Commons, author, licence, alt text]. Shown with a credit line, and listed on the Picture credits screen. */
 const PIC = {
@@ -3792,6 +3821,30 @@ const picCredit = p => `Picture: ${p[1]} · ${p[2]} · Wikimedia Commons`;
 /* Picture at the top of a reading text. Plain-text credit here (no links for children to tap); full links on the Picture credits screen. */
 function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
   return `<figure class="pic${PIC_FIT.has(id)?' fit':''}${cls?' '+cls:''}"><img src="${picLocal(id)}"${picPos(id)} alt="${escH(p[3])}" loading="lazy" decoding="async" onerror="${picErr(id,960,'this.parentNode.remove()')}"><figcaption>${escH(picCredit(p))}</figcaption></figure>`; }
+/* ================= PRIVACY: what the app keeps, where, who sees it, for how long ================= */
+function screenPrivacy(back){
+  stopTimers(); back=back||(()=>screenStart()); const T=escH(teacherName());
+  const sec=(ic,h,body)=>`<div class="card mt privsec"><h3>${ic} ${h}</h3>${body}</div>`;
+  app.innerHTML = backTitle('🔒 Privacy: what we keep and why')+`
+   <div class="card"><p>Heron Word Quest is a practice app for ${T}'s Grade 5 English classes at HeronBridge. It keeps only what it needs to help children practise, and to show their teacher and parents how they are doing.</p>
+     <p class="small muted mt8">This page explains how the app follows South Africa's Protection of Personal Information Act (POPIA). The school's own privacy policy also applies.</p></div>
+   ${sec('📱','On this device',`<p>The app saves each player's <b>first name</b>, chosen heron and outfit, settings, scores, medals, coins, writing, and answers to quizzes and tests.</p>
+     <p class="mt8">This stays in the web browser on this phone, tablet or computer. If the class does not log in, <b>nothing leaves the device</b>. Clearing the browser's data removes it.</p>`)}
+   ${sec('☁️','When the class logs in',`<p>If ${T} sets up a class login, the same progress is also saved online so it is safe and the teacher can see it. The app uses <b>Google Firebase</b>, an online storage service, for this.</p>
+     <ul class="privl"><li>Children log in with a class code, their first name and a 4-digit PIN. <b>Children never need an email address.</b></li>
+     <li>The login screen lists first names, so anyone with the 6-character class code can see the names in the class. Please keep the code private.</li>
+     <li><b>Voice recordings</b> (reading aloud and speaking tasks) are saved so the teacher can listen and give marks. Recordings are saved online only when a parent has said yes on the consent form. Old recordings are deleted automatically: once marked, only the newest 2 are kept, and never more than 6 of each kind.</li>
+     <li>The class league compares whole classes, never single children.</li></ul>`)}
+   ${sec('👀','Who can see it',`<ul class="privl"><li><b>Your child</b> sees their own work.</li><li><b>${T}</b> sees the work of the children in their classes.</li>
+     <li><b>A parent</b> with the 6-digit parent PIN sees only their own child, and only what the teacher shares.</li><li>Writing appears in the class magazine only if the teacher chooses to publish it.</li></ul>`)}
+   ${sec('🚫','What the app never does',`<ul class="privl"><li>No adverts, and no selling or sharing of children's information.</li><li>No tracking, no analytics and no location.</li>
+     <li>No chat or messages between children.</li><li>No photos or videos of children.</li></ul>
+     <p class="small muted mt8">To work, the app loads its fonts from Google Fonts and its online saving from Google Firebase. Read-aloud voices come from the device itself.</p>`)}
+   ${sec('🗓️','How long it is kept',`<p>Work is kept for the school year. ${T} can remove a child at any time, which deletes their progress, recordings and login. At the end of the year the class is closed and its information deleted.</p>`)}
+   ${sec('✋','Your choices',`<p>Parents can ask to <b>see, correct or delete</b> their child's information, or to stop voice recordings, at any time. Speak to ${T} or the school office. Children can still use the app without being recorded.</p>`)}
+   <p class="center small muted mt">Updated November 2026</p>`;
+  $('#bk').onclick=back;
+}
 function screenPicCredits(back){
   stopTimers(); back=back||(()=>screenStart());
   const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
@@ -5534,6 +5587,25 @@ function wireReader(){
 }
 if (canSpeak) { loadVoices(); try { speechSynthesis.onvoiceschanged = () => { loadVoices(); if (typeof fillVoices==='function' && document.querySelector('#vsel')) fillVoices(); }; } catch(e){} }
 /* confetti() lives in fx.js */
+function glossClose(){ $$('.gbub').forEach(x=>x.remove()); $$('.gw.on').forEach(x=>x.classList.remove('on')); }
+function glossShow(el){
+  const box=el.closest('[data-ps]'), ps=box&&(PS(box.dataset.ps)||TP(box.dataset.ps)), k=el.dataset.gw, m=ps&&GLOSS[ps.id]&&GLOSS[ps.id][k];
+  const was=el.classList.contains('on'); glossClose(); if (!m || was) return;
+  el.classList.add('on'); sfx.tap();
+  const b=document.createElement('div'); b.className='gbub'; b.setAttribute('role','dialog');
+  b.innerHTML=`<b>${escH(el.textContent)}</b> <span>${escH(m)}</span>${canSpeak?'<button class="gsay" aria-label="Say it">🔊</button>':''}`;
+  b.dataset.y=scrollY; document.body.appendChild(b);
+  const r=el.getBoundingClientRect(), w=Math.min(300, innerWidth-20), x=Math.max(10, Math.min(innerWidth-w-10, r.left+r.width/2-w/2));
+  b.style.width=w+'px'; b.style.left=(x+scrollX)+'px'; b.style.top=(r.bottom+scrollY+8)+'px';
+  b.style.setProperty('--ax', Math.max(14, Math.min(w-14, r.left+r.width/2-x))+'px');
+  const sb=b.querySelector('.gsay'); if (sb) sb.onclick=e=>{ e.stopPropagation(); speak(el.textContent+'. '+m); };
+  const p=P(); if (p){ p.wl=p.wl||{}; p.wl[k]=(p.wl[k]||0)+1; save(); }
+}
+document.addEventListener('click', e=>{ const g=e.target.closest&&e.target.closest('.gw');
+  if (g){ e.stopPropagation(); e.preventDefault(); glossShow(g); return; }
+  if (!(e.target.closest&&e.target.closest('.gbub'))) glossClose(); }, true);
+document.addEventListener('keydown', e=>{ const g=e.target.closest&&e.target.closest('.gw'); if (g && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); glossShow(g); } if (e.key==='Escape') glossClose(); });
+window.addEventListener('scroll', ()=>{ const b=$('.gbub'); if (b && Math.abs(scrollY-(+b.dataset.y||0))>60) glossClose(); }, {passive:true});
 function toast(msg){ $$('.toast').forEach(x=>{ if (x.innerHTML===msg) x.remove(); }); const t=document.createElement('div'); t.className='toast'; t.innerHTML=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
 const starStr = n => n==null ? '<span class="dim">☆☆☆</span>' : '★'.repeat(n)+'<span class="dim">'+'★'.repeat(3-n)+'</span>';
 const medalStr = n => LVI.map((m,i)=>`<span class="${(n||0)>i?'':'dimmed'}">${m}</span>`).join('');
@@ -5640,10 +5712,10 @@ function screenStart(){
    <button class="logincard rolec parent mt8" id="plogin"><span class="mic">👪</span><span class="grow"><b>I'm a parent</b><small>See your child's work and progress</small></span>▶</button>
    <button class="logincard rolec teacher mt8" id="tc"><span class="mic">🍎</span><span class="grow"><b>I'm a teacher</b><small>Classes, marking and reports</small></span>▶</button>
    ${picsOn()?`<div class="wstrip mt"><div class="wsh">Eight worlds to explore</div><div class="wsrow">${WORLDS.map(w=>{ const id=worldPic(w); return id?`<span class="wsp" title="${escH(w.name)}" style="background-image:url('${picLocal(id,true)}')"></span>`:''; }).join('')}</div></div>`:''}
-   ${storeNote()}<div class="center mt"><button class="link small" id="pcred">Picture credits</button></div>`;
+   ${storeNote()}<div class="center mt"><button class="link small" id="pcred">Picture credits</button> · <button class="link small" id="priv">Privacy</button></div>`;
   $('#rlearn').onclick=()=>screenProfiles(); if ($('#cont')) $('#cont').onclick=()=>screenHome();
   $('#plogin').onclick=()=>screenClassLogin('', 'parent');
-  $('#tc').onclick=()=>screenTeacherGate(); $('#pcred').onclick=()=>screenPicCredits(()=>screenStart());
+  $('#tc').onclick=()=>screenTeacherGate(); $('#pcred').onclick=()=>screenPicCredits(()=>screenStart()); $('#priv').onclick=()=>screenPrivacy(()=>screenStart());
 }
 function screenProfiles(){
   stopTimers(); applyPrefs();
@@ -5820,8 +5892,10 @@ const psLine = l => (/^(You will need:|Method|Tips for success)$/.test(l) || /^[
 const isHeadLine = l => /^(You will need:|Method|Tips for success)$/.test(l) || /^[A-Z0-9 ,'’:–-]{8,}$/.test(l) || /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) \d/.test(l);
 function passageHTML(ps, open){
   if (RD.title!==ps.title){ RD.tok++; RD.playing=false; RD.idx=-1; RD.after=null; try{ if (canSpeak) speechSynthesis.cancel(); }catch(e){} }
-  let n=0; const sents=[ps.title+'.'];
-  const span = s => { sents.push(s); return `<span class="rs" data-rs="${++n}">${escH(s)}</span>`; };
+  let n=0; const sents=[ps.title+'.'], gl=glossFor(ps), used=new Set();
+  const glRe = gl ? new RegExp('(^|[^A-Za-z])('+Object.keys(gl).sort((a,b)=>b.length-a.length).map(w=>w.replace(/[-]/g,'\\-')).join('|')+')(?![A-Za-z])','gi') : null;
+  const mark = h => !glRe ? h : h.replace(glRe, (m,pre,w)=>{ const k=w.toLowerCase(); if (used.has(k)) return m; used.add(k); return `${pre}<b class="gw" data-gw="${k}" role="button" tabindex="0">${w}</b>`; });
+  const span = s => { sents.push(s); return `<span class="rs" data-rs="${++n}">${mark(escH(s))}</span>`; };
   const line = l => { if (isHeadLine(l)) return `<b>${span(l)}</b>`;
     const sp=l.match(/^([A-Z][A-Z0-9 .']{1,30}):\s+(.*)$/); if (sp) return `<b>${span(sp[1]+':')}</b> `+sentSplit(sp[2]).map(span).join(' ');
     return sentSplit(l).map(span).join(' '); };
@@ -5830,7 +5904,8 @@ function passageHTML(ps, open){
   const slow = P() && P().prefs.slow;
   const ctrl = readOK() ? `<div class="readbar"><button class="btn small" id="rp-go">🔊 Read it to me</button><button class="btn small ghost" id="rp-slow">${slow?'🐢 Slow':'🐇 Normal speed'}</button></div><p class="small muted rtip">Tip: tap any sentence to hear it from there.</p>`
     : !canSpeak ? `<p class="small muted">🔇 Read-aloud doesn't work in this viewer. Open Heron Word Quest in Chrome or Safari to have texts read to you.</p>` : '';
-  return `<details class="passage" ${open?'open':''}><summary>📖 ${escH(ps.title)} <small class="muted">(tap to show/hide)</small></summary>${picHTML(ps.id)}${ctrl}${body}</details>`;
+  const gtip = used.size ? `<p class="small muted gtip">📘 Words with a dotted line have a meaning. Tap one to see it.</p>` : '';
+  return `<details class="passage" ${open?'open':''} data-ps="${escH(ps.id)}"><summary>📖 ${escH(ps.title)} <small class="muted">(tap to show/hide)</small></summary>${picHTML(ps.id)}${ctrl}${gtip}${body}</details>`;
 }
 function qSpeech(q){
   let t = stripTags(q.prompt).replace(/([^.!?:])$/,'$1.')+' ';
@@ -6288,12 +6363,13 @@ function screenSettings(){
      ${row('big','Bigger text','Makes everything larger.')}
      ${row('autoRead','Read questions aloud','Plume reads every question to you automatically. On any reading text, tap 🔊 Read it to me.')}
      ${row('slow','Slower reading voice','Plume reads more slowly so it is easier to follow.')}
+     <label class="toggle"><span class="grow"><b>Word help</b><br><small class="muted">Tricky words in reading texts have a dotted line. Tap one to see what it means. Always off in tests.</small></span><input type="checkbox" id="glt" ${p.prefs.gloss!==false?'checked':''}><i></i></label>
      ${row('calm','Fewer animations','Turns off confetti, sliding screens and other moving extras. Helpful if movement is distracting.')}
      ${!canSpeak?'<p class="small muted">🔇 Read-aloud does not work in this viewer. Open Heron Word Quest in Chrome or Safari.</p>':''}
      <label class="toggle"><span class="grow"><b>Sound effects</b><br><small class="muted">For everyone on this device.</small></span><input type="checkbox" id="sndt" ${DB.sound?'checked':''}><i></i></label>
      <label class="toggle"><span class="grow"><b>Music in games</b><br><small class="muted">Plays during Heron Race and boss battles. For everyone on this device.</small></span><input type="checkbox" id="must" ${DB.music!==false?'checked':''}><i></i></label>
      <label class="toggle"><span class="grow"><b>Pictures with reading texts</b><br><small class="muted">Free pictures from Wikimedia Commons. Turn off to save data. For everyone on this device.</small></span><input type="checkbox" id="pict" ${DB.pics!==false?'checked':''}><i></i></label>
-     <p class="small"><button class="link small" id="pcred">🖼️ Picture credits</button> · <button class="link small" id="pinst">📲 Install and use offline</button></p>
+     <p class="small"><button class="link small" id="pcred">🖼️ Picture credits</button> · <button class="link small" id="pinst">📲 Install and use offline</button> · <button class="link small" id="ppriv">🔒 Privacy</button></p>
      <div class="volrow"><b>Volume</b><span>🔈</span><input type="range" id="volr" min="0.1" max="1" step="0.05" value="${DB.vol==null?.8:DB.vol}" aria-label="Volume"><span>🔊</span></div>
      ${DB.classSound==='off'?'<p class="small muted">🔇 Your teacher has turned sound off for the class.</p>':DB.classSound==='quiet'?'<p class="small muted">🤫 Your teacher has set the class to quiet sound.</p>':''}</div>
    ${canSpeak?`<div class="card mt"><b>🗣️ Reading voice</b><p class="small muted">Voices come from this phone, tablet or computer, so the choice is different on each device. Try a few and pick the clearest one. This applies to everyone on this device.</p>
@@ -6310,6 +6386,7 @@ function screenSettings(){
   $('#volr').onchange=e=>{ DB.vol=+e.target.value; save(); sfx.good(); };
   $('#pict').onchange=e=>{ DB.pics=e.target.checked; save(); };
   $('#pcred').onclick=()=>screenPicCredits(()=>screenSettings()); $('#pinst').onclick=()=>screenInstall(()=>screenSettings());
+  $('#glt').onchange=e=>{ p.prefs.gloss=e.target.checked; save(); }; $('#ppriv').onclick=()=>screenPrivacy(()=>screenSettings());
   if ($('#vsel')){ fillVoices();
     $('#vsel').onchange=()=>{ DB.voice=$('#vsel').value||null; save(); speak(VOICE_SAMPLE); };
     $('#vtest').onclick=()=>speak(VOICE_SAMPLE); }
@@ -6893,6 +6970,9 @@ function screenSharedWriting(){
 
 /* ================= SET WORK ================= */
 const asgKey = p => p._uid || p.name;
+/* Saved groups (for example a reading group) so set work can go to the same learners again. Kept per class on the teacher's device. */
+const grpKey = () => (DB.cloud && DB.cloud.role==='teacher' && DB.cloud.code) || 'local';
+const myGroups = () => { DB.groups=DB.groups||{}; return DB.groups[grpKey()]=(DB.groups[grpKey()]||[]); };
 function mySetWork(p){ return (DB.assign||[]).filter(a=>(a.who||[]).includes(asgKey(p)) && SK(a.sk)); }
 function setWorkHTML(p){
   const list=mySetWork(p); if (!list.length) return '';
@@ -6907,7 +6987,7 @@ function screenSetWork(){
    <button class="btn gold w100" id="new">➕ Set new work</button>
    <div class="list mt">${list.map(a=>{ const k=SK(a.sk), who=ps.filter(p=>(a.who||[]).includes(asgKey(p))), done=who.filter(p=>p.asg[a.id]);
      return `<div class="card mt8"><div class="row"><b class="grow">${k?escH(k.name):'(skill removed)'} · ${LVI[a.lv-1]} ${LVN[a.lv-1]}</b><button class="btn small ghost" data-del="${a.id}">✕</button></div>
-       <small class="muted">Set ${escH(a.d)}${a.due?` · due ${escH(a.due)}`:''}${a.note?` · ${escH(a.note)}`:''}</small>
+       <small class="muted">${a.grp?`👥 ${escH(a.grp)} · `:''}Set ${escH(a.d)}${a.due?` · due ${escH(a.due)}`:''}${a.note?` · ${escH(a.note)}`:''}</small>
        <p class="b mt8">${done.length} of ${who.length} done</p>
        <div class="pool l">${who.map(p=>`<span class="chip static">${p.asg[a.id]?'✅':'⏳'} ${escH(p.name)}${p.asg[a.id]?` ${p.asg[a.id].pc}%`:''}</span>`).join('')}</div></div>`; }).join('')||'<p class="muted">No set work yet.</p>'}</div>`;
   $('#bk').onclick=()=>screenTeacher();
@@ -6923,9 +7003,20 @@ function screenSetWorkNew(){
      <label class="lbl">Note for learners (optional)</label><input class="name" id="note" maxlength="80" placeholder="e.g. Do this before Friday's test">
      <label class="lbl">Due date (optional)</label><input class="name" id="due" type="date"></div>
    <div class="card mt"><div class="row"><b class="grow">Who?</b><button class="btn small ghost" id="all">All</button><button class="btn small ghost" id="none">None</button></div>
+     <div class="pool l mt8" id="grps"></div>
      <button class="btn small mt8" id="weak">🎯 Choose learners who find this skill hard</button><p class="small muted" id="weakmsg"></p>
-     <div class="mt8">${ps.map(p=>`<label class="chk"><input type="checkbox" value="${escH(asgKey(p))}" data-n="${escH(p.name)}"><span class="grow">${escH(p.name)}</span><small class="muted" data-acc="${escH(p.name)}"></small></label>`).join('')}</div></div>
+     <div class="mt8">${ps.map(p=>`<label class="chk"><input type="checkbox" value="${escH(asgKey(p))}" data-n="${escH(p.name)}"><span class="grow">${escH(p.name)}</span><small class="muted" data-acc="${escH(p.name)}"></small></label>`).join('')}</div>
+     <div class="row mt8"><input class="name grow" id="gname" maxlength="30" placeholder="Name these learners as a group, e.g. Reading group B"><button class="btn small" id="gsave">💾 Save group</button></div></div>
    <button class="btn gold w100 mt" id="sv">📌 Set this work</button>`;
+  const picked=()=>$$('.chk input').filter(c=>c.checked).map(c=>c.value);
+  const drawGroups=()=>{ const gs=myGroups(); $('#grps').innerHTML=gs.length?`<small class="muted b" style="width:100%">Groups:</small>`+gs.map(g=>`<span class="gchip"><button class="chip" data-g="${g.id}">👥 ${escH(g.name)} (${g.who.length})</button><button class="gx" data-gx="${g.id}" aria-label="Delete group ${escH(g.name)}">✕</button></span>`).join(''):'';
+    $$('[data-g]').forEach(b=>b.onclick=()=>{ const g=myGroups().find(x=>x.id===b.dataset.g); if (!g) return; $$('.chk input').forEach(c=>c.checked=g.who.includes(c.value)); $('#gname').value=g.name; toast(`👥 ${escH(g.name)} chosen`); });
+    $$('[data-gx]').forEach(b=>b.onclick=()=>confirmBox('Delete this group? Work already set stays.', 'Delete', ()=>{ DB.groups[grpKey()]=myGroups().filter(x=>x.id!==b.dataset.gx); save(); drawGroups(); })); };
+  drawGroups();
+  $('#gsave').onclick=()=>{ const name=$('#gname').value.trim(), who=picked(); if (!who.length) return toast('Tick the learners first'); if (!name) return toast('Give the group a name');
+    const gs=myGroups(), old=gs.find(g=>g.name.toLowerCase()===name.toLowerCase());
+    if (old) old.who=who; else gs.push({id:'g'+Date.now().toString(36), name, who});
+    save(); drawGroups(); toast(`💾 Saved ${escH(name)} (${who.length})`); };
   const acc=()=>{ const sk=$('#sk').value; $$('[data-acc]').forEach(el=>{ const p=DB.profiles[el.dataset.acc], st=p&&p.stats[sk], m=p&&mastery(p,sk); el.textContent=st&&st.t?`${Math.round(st.c/st.t*100)}% right`+(m!=null?` · mastery ${m}`:''):'not tried'; }); };
   $('#sk').onchange=acc; acc();
   $('#bk').onclick=()=>screenSetWork();
@@ -6933,7 +7024,8 @@ function screenSetWorkNew(){
   $('#weak').onclick=()=>{ const sk=$('#sk').value; let n=0; $$('.chk input').forEach(c=>{ const p=DB.profiles[c.dataset.n], st=p.stats[sk], m=mastery(p,sk), weak=(st&&st.t>=3&&st.c/st.t<.6)||(m!=null&&m<60); c.checked=weak; if (weak) n++; });
     $('#weakmsg').textContent=n?`${n} learner${n===1?'':'s'} scored below 60% on this skill.`:'Nobody is below 60% on this skill yet (or nobody has tried it).'; };
   $('#sv').onclick=()=>{ const who=$$('.chk input').filter(c=>c.checked).map(c=>c.value); if (!who.length) return toast('Choose at least one learner');
-    const a={id:'a'+Date.now().toString(36), sk:$('#sk').value, lv:+$('#lv').value, who, note:$('#note').value.trim(), due:$('#due').value||'', d:today()};
+    const g=myGroups().find(x=>x.who.length===who.length && x.who.every(k=>who.includes(k)));
+    const a={id:'a'+Date.now().toString(36), sk:$('#sk').value, lv:+$('#lv').value, who, note:$('#note').value.trim(), due:$('#due').value||'', d:today()}; if (g) a.grp=g.name;
     DB.assign=(DB.assign||[]).concat([a]).slice(-40); save(); toast(`📌 Set for ${who.length} learner${who.length===1?'':'s'}`); screenSetWork(); };
 }
 
@@ -7223,8 +7315,10 @@ function wireRecorder(max, onDone){
   };
 }
 const blobToData = b => new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(b); });
+const needConsent = () => isCloudLearner() && DB.recConsent!==false && !((DB.consent||{})[DB.cloud.uid]);
 async function saveAudio(kind, rec){
-  if (!isCloudLearner()) return null;
+  CL.noConsent=false; if (!isCloudLearner()) return null;
+  if (needConsent()){ CL.noConsent=true; return null; }   // POPIA: recordings go online only with a parent's yes
   const data=await blobToData(rec.blob);
   if (data.length>950000) throw new Error('That recording is too big to save. Please keep it a bit shorter.');
   const aid=`${DB.cloud.uid}_${kind}_${uid36()}`;
@@ -7284,7 +7378,7 @@ function screenReadAloud(w){
   wireRecorder(REC_MAX, r=>{ rec=r; const wpm=r.capped?null:Math.round(ex.words/(r.secs/60));
     $('#rres').innerHTML=`<div class="fb ${wpm!=null?'good':''} mt8">${wpm!=null?`<h3>${wpm} words a minute</h3><p>${wpmBand(wpm)}</p>`:`<h3>Time's up!</h3><p>You can still send it, or try again a little faster.</p>`}<button class="btn gold w100" id="rsend">📤 Send to ${escH(teacherName())}</button></div>`;
     $('#rsend').onclick=async()=>{ $('#rsend').disabled=true; busy('Sending…');
-      try { const aid=await saveAudio('read', rec); p.fluency.unshift({id:uid36(), w, term:y.term, d:today(), secs:rec.secs, words:ex.words, wpm, aid}); p.xp+=15; save(); await pruneAudio(p.fluency); save(); busy(); toast(aid?'📤 Sent! +15 XP':'Saved on this device. +15 XP'); screenReadAloud(w); }
+      try { const aid=await saveAudio('read', rec); p.fluency.unshift({id:uid36(), w, term:y.term, d:today(), secs:rec.secs, words:ex.words, wpm, aid}); p.xp+=15; save(); await pruneAudio(p.fluency); save(); busy(); toast(aid?'📤 Sent! +15 XP':CL.noConsent?'🎙️ Practice only: recordings are sent to your teacher once your consent form is back. +15 XP':'Saved on this device. +15 XP'); screenReadAloud(w); }
       catch(e){ busy(); $('#rsend').disabled=false; toast(e.message||cloudErr(e)); } }; });
 }
 
@@ -7330,7 +7424,7 @@ function screenOral(tid){
     $('#ores').innerHTML=`<div class="fb mt8"><p>Listen back. Happy with it?</p><button class="btn gold w100" id="osend">📤 Send to ${escH(teacherName())}</button></div>`;
     $('#osend').onclick=async()=>{ keep(); if (r.secs<15) return toast('That was very short. Try to speak for about a minute.');
       $('#osend').disabled=true; busy('Sending…');
-      try { const aid=await saveAudio('oral', rec); p.orals.unshift({id:uid36(), task:tid, term:termNow(), d:today(), secs:rec.secs, plan:p.oralPlans[tid], aid}); p.xp+=25; save(); await pruneAudio(p.orals); save(); busy(); toast(aid?'📤 Sent! +25 XP':'Saved on this device. +25 XP'); screenOral(tid); }
+      try { const aid=await saveAudio('oral', rec); p.orals.unshift({id:uid36(), task:tid, term:termNow(), d:today(), secs:rec.secs, plan:p.oralPlans[tid], aid}); p.xp+=25; save(); await pruneAudio(p.orals); save(); busy(); toast(aid?'📤 Sent! +25 XP':CL.noConsent?'🎙️ Practice only: recordings are sent to your teacher once your consent form is back. +25 XP':'Saved on this device. +25 XP'); screenOral(tid); }
       catch(e){ busy(); $('#osend').disabled=false; toast(e.message||cloudErr(e)); } }; });
 }
 
@@ -9737,7 +9831,8 @@ function screenTeacher(){
      <button class="tool" id="tleague"><span>🏆</span><b>Class league</b><small>This week's points for each of your classes</small></button>
      <button class="tool" id="ttrack"><span>📊</span><b>Marks for tracker</b><small>Term marks to paste into your spreadsheet</small></button>
      <button class="tool" id="tpics"><span>🖼️</span><b>Picture credits</b><small>Where every picture comes from, and its free licence</small></button>
-     <button class="tool" id="tinst"><span>📲</span><b>Install on tablets</b><small>Use the app offline when the Wi-Fi is down</small></button></div></details>
+     <button class="tool" id="tinst"><span>📲</span><b>Install on tablets</b><small>Use the app offline when the Wi-Fi is down</small></button>
+     <button class="tool" id="tpriv"><span>🔒</span><b>Privacy</b><small>What the app keeps, who sees it and for how long</small></button></div></details>
    <div class="card mt scrollx"><div class="row"><b class="grow">${isCloudTeacher()?"Class progress (online class)":"Class progress on this device"}</b><button class="btn small ghost" id="csv">📋 Copy report</button></div>
      <p class="muted small"><b>This week (Term ${YEAR[curWeek()-1].term}, Week ${YEAR[curWeek()-1].tw}: ${escH(YEAR[curWeek()-1].theme)})</b>: 🔤 spelling test, 📖 reading score, 🧩 quiz, tasks done. Test column shows the latest big test (official mark). Accuracy per world. Green 80%+, amber 60–79%, red below 60%. Tap a name for detail and writing. "Copy report" pastes straight into Excel or Google Sheets.</p>
      <table><tr><th>Player</th><th>Lvl</th><th>★</th><th>🪶</th>${WORLDS.map(w=>`<th title="${w.name}">${w.icon}</th>`).join('')}<th>Needs work</th><th>Wk ${YEAR[curWeek()-1].tw}</th><th>Test</th></tr>
@@ -9780,7 +9875,7 @@ function screenTeacher(){
   $('#csv').onclick=()=>copyText(classCSV(),'Class report copied. Paste it into a spreadsheet');
   $$('[data-d]').forEach(b=>b.onclick=()=>screenPlayerDetail(b.dataset.d));
   $('#mtools').ontoggle=()=>{ DB.toolsOpen=$('#mtools').open; save(); };
-  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre(); $('#tpics').onclick=()=>screenPicCredits(()=>screenTeacher()); $('#tinst').onclick=()=>screenInstall(()=>screenTeacher());
+  wirePlannerCard(); if ($('#tp-pc')) $('#tp-pc').onclick=()=>screenPrintCentre(); $('#tprint').onclick=()=>screenPrintCentre(); $('#tpics').onclick=()=>screenPicCredits(()=>screenTeacher()); $('#tpriv').onclick=()=>screenPrivacy(()=>screenTeacher()); $('#tinst').onclick=()=>screenInstall(()=>screenTeacher());
   if ($('#tw-pp')) $('#tw-pp').onclick=()=>openDoc(pWeekDoc(curWeek())); if ($('#tw-wp')) $('#tw-wp').onclick=()=>openDoc({title:`Week ${YEAR[curWeek()-1].tw} plan`, sheets:[pWeekPlanSheet(curWeek())]});
   if ($('#tw-wr')) $('#tw-wr').onclick=()=>screenWritingInbox(); if ($('#tw-st')) $('#tw-st').onclick=()=>screenMarkHub();
   if ($('#tw-bk')) $('#tw-bk').onclick=()=>screenBooksTeacher(); if ($('#tw-pr')) $('#tw-pr').onclick=()=>screenProgressTeacher();
@@ -9799,6 +9894,7 @@ function screenPlayerDetail(n){
    <button class="btn w100 mt8" id="pprog">📈 Full progress report</button>
    ${mapsTeacherHTML(p)}${qmakeTeacherHTML(p, n)}
    ${(fs=>fs.length?`<div class="card mt"><b>✍️ Full-sentence answers</b><p class="small muted">First tries from the weekly reading, newest first.</p>${fs.map(([w,f])=>`<div class="mt8"><small class="muted b">${wkLabel(w)} · ${escH(PS(YEAR[w-1].passage).title)} · ${f.first}/${f.n} correct</small>${f.a.map((a,i)=>`<p class="fsans">${escH(a)||'<i>(nothing)</i>'}</p>${f.f&&f.f[i]&&f.f[i]!==a?`<p class="fsans fixed">✏️ Fixed: ${escH(f.f[i])}</p>`:''}`).join('')}</div>`).join('')}</div>`:'')(Object.entries(p.yr||{}).filter(([k,v])=>v&&v.fs).map(([k,v])=>[+k.slice(1),v.fs]).sort((a,b)=>b[0]-a[0]).slice(0,4))}
+   ${(wl=>wl.length?`<div class="card mt"><b>📘 Words looked up</b><p class="small muted">Tricky words ${escH(p.name)} tapped for a meaning in reading texts. Good ones to teach again.</p><div class="pool l mt8">${wl.map(([w,c])=>`<span class="chip static">${escH(w)}${c>1?` ×${c}`:''}</span>`).join('')}</div></div>`:'')(Object.entries(p.wl||{}).sort((a,b)=>b[1]-a[1]).slice(0,30))}
    <div class="card mt"><b>🔤 Spelling tests</b><div class="pool l mt8">${Object.keys(p.spellTests).length?Object.entries(p.spellTests).sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).map(([k,v])=>`<span class="chip static">Wk ${YEAR[+k.slice(1)-1].tw} T${YEAR[+k.slice(1)-1].term}: <b>${v}/${SPELL_N(+k.slice(1))}</b></span>`).join(''):'<span class="muted">No tests yet.</span>'}</div></div>
    <div class="card mt"><label class="toggle"><span class="grow"><b>🔊 Reader</b><br><small class="muted">For learners who need a reader. Plume reads every text and question aloud automatically, sentence by sentence, including in big tests. Learners without a reader cannot use read-aloud in big tests (except for the spelling words).</small></span><input type="checkbox" id="rdr" ${p.reader?'checked':''}><i></i></label></div>
    ${masteryDetailHTML(p)}
@@ -9821,8 +9917,11 @@ function screenPlayerDetail(n){
 
 /* ---------- Class Starter (projector) ---------- */
 let S=null;
+const TEAMS=[{name:'Red Herons',col:'#e5484d',ico:'🔴'},{name:'Blue Kingfishers',col:'#2f80ed',ico:'🔵'},{name:'Green Weavers',col:'#1fa65a',ico:'🟢'},{name:'Gold Hornbills',col:'#e0a800',ico:'🟡'}];
+function splitTeams(nt){ const ls=Object.entries((CL.cls&&CL.cls.learners)||{}).map(([uid,x])=>({uid, name:x.name})), out={};
+  shuffle(ls).forEach((x,i)=>{ out[x.uid]=i%nt; }); return out; }
 function screenStarterSetup(){
-  stopTimers(); let src='mixed', n=5, timer=20, lv=0;
+  stopTimers(); let src='mixed', n=5, timer=20, lv=0, nt=0, how='board', split=null;
   const render=()=>{
     app.innerHTML = backTitle('📽️ Class Starter')+`
      <p class="muted">A quick-fire quiz for the projector. The class answers on mini-whiteboards or with hands up, then you reveal. Works with a presentation clicker or the arrow keys.</p>
@@ -9831,21 +9930,31 @@ function screenStarterSetup(){
        <b class="mt db">Level</b><div class="pool l mt8">${[[0,'🎲 Mixed'],[1,'🥉 Bronze'],[2,'🥈 Silver'],[3,'🥇 Gold']].map(([v,l])=>`<button class="chip ${lv===v?'on':''}" data-lvs="${v}">${l}</button>`).join('')}</div>
        <b class="mt db">How many?</b><div class="pool l mt8">${[5,10,15].map(x=>`<button class="chip ${n===x?'on':''}" data-n="${x}">${x}</button>`).join('')}</div>
        <b class="mt db">Thinking time</b><div class="pool l mt8">${[[0,'No timer'],[15,'15 s'],[20,'20 s'],[30,'30 s'],[60,'1 min']].map(([v,l])=>`<button class="chip ${timer===v?'on':''}" data-t="${v}">${l}</button>`).join('')}</div>
+       <b class="mt db">Teams</b><div class="pool l mt8">${[[0,'No teams'],[2,'2 teams'],[3,'3 teams'],[4,'4 teams']].map(([v,l])=>`<button class="chip ${nt===v?'on':''}" data-nt="${v}">${l}</button>`).join('')}</div>
+       ${nt?`<b class="mt db">How do teams answer?</b><div class="pool l mt8"><button class="chip ${how==='board'?'on':''}" data-how="board">✋ Hands up or whiteboards</button><button class="chip ${how==='tablet'?'on':''}" data-how="tablet" ${isCloudTeacher()?'':'disabled'}>📱 On tablets</button></div>
+         <p class="small muted mt8">${how==='board'?'After each reveal, tap the teams that got it right. Each one scores 10 points.':'Learners log in to the class on their tablets and answer there. Each team scores up to 10 points a question, by the share of its players who got it right. Only multiple-choice questions are used.'}${isCloudTeacher()?'':' Tablet answers need the class login (Teacher corner → Classes online).'}</p>
+         ${how==='tablet'&&isCloudTeacher()?`<div class="tsplit mt8">${TEAMS.slice(0,nt).map((tm,k)=>`<div class="tcol" style="--c:${tm.col}"><b>${tm.ico} ${tm.name}</b><small>${Object.entries(split||{}).filter(([,v])=>v===k).map(([u])=>escH(((CL.cls.learners||{})[u]||{}).name||'')).sort().join(', ')||'nobody yet'}</small></div>`).join('')}</div>
+           <button class="btn small ghost mt8" id="shuf">🔀 Shuffle teams</button>`:''}`:''}
        <button class="btn gold w100 mt" id="go">▶ Start</button></div>`;
     $('#bk').onclick=()=>screenTeacher();
     $$('[data-src]').forEach(b=>b.onclick=()=>{ src=b.dataset.src; render(); });
     $$('[data-n]').forEach(b=>b.onclick=()=>{ n=+b.dataset.n; render(); });
     $$('[data-t]').forEach(b=>b.onclick=()=>{ timer=+b.dataset.t; render(); });
     $$('[data-lvs]').forEach(b=>b.onclick=()=>{ lv=+b.dataset.lvs; render(); });
-    $('#go').onclick=()=>startStarter(src,n,timer,lv);
+    $$('[data-nt]').forEach(b=>b.onclick=()=>{ nt=+b.dataset.nt; split=nt&&isCloudTeacher()?splitTeams(nt):null; render(); });
+    $$('[data-how]').forEach(b=>b.onclick=()=>{ if (b.disabled) return; how=b.dataset.how; render(); });
+    if ($('#shuf')) $('#shuf').onclick=()=>{ split=splitTeams(nt); render(); };
+    $('#go').onclick=()=>startStarter(src,n,timer,lv,{nt, how:nt&&how==='tablet'&&isCloudTeacher()?'tablet':'board', split});
   };
   render();
 }
-function startStarter(src,n,timer,lv){
-  stopTimers(); lv=lv||0;
+function startStarter(src,n,timer,lv,opt){
+  stopTimers(); lv=lv||0; opt=opt||{nt:0}; const tab=opt.nt && opt.how==='tablet';
   const pool = (src==='mixed' ? ALLSKILLS : WD(src).skills).filter(k=>k.id!=='w-edit'), qs=[], seen=new Set(); let g=0;
-  while (qs.length<n && g++<400){ const k=rnd(pool), q=makeQ(k.id, lv||1+Math.floor(Math.random()*3)), key=qKey(q); if (seen.has(key)) continue; seen.add(key); qs.push(q); }
-  S={qs, i:0, revealed:false, timer, src, n, lv};
+  while (qs.length<n && g++<600){ const k=rnd(pool), q=makeQ(k.id, lv||1+Math.floor(Math.random()*3)), key=qKey(q); if (seen.has(key) || (tab && q.type!=='mc')) continue; seen.add(key); qs.push(q); }
+  S={qs, i:0, revealed:false, timer, src, n, lv, opt};
+  if (opt.nt){ S.teams=TEAMS.slice(0,opt.nt).map(x=>Object.assign({pts:0}, x)); S.aw={}; S.won={}; }
+  if (tab) liveStart();
   R={mode:'starter', lastPassage:null};
   window.onkeydown=e=>{ if (!S||S.done) return;
     if (['ArrowRight','PageDown',' ','Enter'].includes(e.key)){ e.preventDefault(); S.revealed?starterGo(1):starterReveal(); }
@@ -9869,16 +9978,19 @@ function renderStarter(){
   app.innerHTML = `<div class="proj">
     <div class="projtop"><button class="x" id="quit" aria-label="Exit">✕</button><b>Question ${S.i+1} of ${S.qs.length}</b><span class="tag" style="background:${w.color}">${w.icon} ${k.name}</span>
       <span class="grow"></span>${S.timer?`<span class="ptimer" id="pt">${S.timer}</span>`:''}${document.fullscreenEnabled?'<button class="btn small ghost" id="fs" aria-label="Full screen">⛶</button>':''}</div>
+    ${S.teams?`<div class="tscore">${S.teams.map((tm,k)=>`<span class="tpill" style="--c:${tm.col}"><b>${tm.ico} ${escH(tm.name)}</b><i id="tp${k}">${tm.pts}</i></span>`).join('')}</div>`:''}
+    ${S.live?`<div class="tlive" id="tlive">📱 Waiting for answers…</div>`:''}
     ${body}
     <div class="preveal" id="rv"></div>
     <div class="row mt"><button class="btn ghost" id="prev" ${S.i?'':'disabled'}>◀</button><button class="btn gold grow" id="rev">👀 Reveal answer</button><button class="btn grow" id="next">${S.i+1<S.qs.length?'Next ▶':'Finish 🎉'}</button></div>
     <p class="muted small center">Clicker or arrow keys: first press reveals, second press moves on.${document.fullscreenEnabled?'':' For full screen, press F11 (Windows) or Ctrl+Cmd+F (Mac).'}</p></div>`;
-  $('#quit').onclick=()=>{ S=null; screenTeacher(); };
+  $('#quit').onclick=()=>{ if (S) liveEnd(); S=null; screenTeacher(); };
   if ($('#fs')) $('#fs').onclick=()=>{ const fail=()=>toast('Full screen is blocked here. Press F11 (Windows) or Ctrl+Cmd+F (Mac) instead.');
     try { const pr=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); if (pr&&pr.catch) pr.catch(fail); } catch(e){ fail(); } };
   const pj=$('.proj'); if (pj){ pj.tabIndex=-1; try { pj.focus({preventScroll:true}); } catch(e){} }
   $('#rev').onclick=()=>starterReveal(); $('#next').onclick=()=>starterGo(1); $('#prev').onclick=()=>starterGo(-1);
   if ($('#psay')) $('#psay').onclick=()=>speak(q.speak);
+  if (S.live){ liveSend({i:S.i, n:S.qs.length, open:true, ans:null, q:{p:stripTags(q.prompt), c:q.clue?stripTags(q.clue):'', o:q.options.slice()}}); liveCount(); }
   if (S.timer) starterTimer=setInterval(()=>{ if (!S||S.revealed) return; S.left--; const el=$('#pt'); if (!el) return; el.textContent=Math.max(0,S.left);
     if (S.left<=5&&S.left>0){ el.classList.add('urgent'); tone([660],'sine',.06,.06); }
     if (S.left<=0){ el.textContent='⏰'; tone([523,392],'triangle',.18,.12); clearInterval(starterTimer); } },1000);
@@ -9890,14 +10002,103 @@ function starterReveal(){
   const showAns=!['sort','order','match'].includes(q.type);
   $('#rv').innerHTML=`<div class="fb good">${showAns?`<h3>✅ ${escH(q.answer)}</h3>`:''}<p>${q.explain}</p></div>`;
   $('#rev').disabled=true; sfx.good();
+  if (S.teams) teamReveal();
 }
+/* ----- Team game: points on the board, or answers from tablets ----- */
+function teamTotals(){ S.teams.forEach((tm,k)=>{ tm.pts = S.live ? Object.values(S.won).reduce((s,a)=>s+(a[k]||0),0) : Object.keys(S.aw).filter(x=>S.aw[x] && +x.split(':')[1]===k).length*10; });
+  S.teams.forEach((tm,k)=>{ const el=$('#tp'+k); if (el && +el.textContent!==tm.pts){ el.textContent=tm.pts; fxBump(el); } }); }
+function teamReveal(){
+  const q=S.qs[S.i], rv=$('#rv'); if (!rv) return;
+  if (!S.live){
+    rv.insertAdjacentHTML('beforeend', `<div class="taward"><b>Which teams got it right?</b><div class="row mt8">${S.teams.map((tm,k)=>`<button class="tbtn ${S.aw[S.i+':'+k]?'on':''}" style="--c:${tm.col}" data-aw="${k}">${tm.ico} ${escH(tm.name)}</button>`).join('')}</div></div>`);
+    $$('[data-aw]').forEach(b=>b.onclick=()=>{ const key=S.i+':'+b.dataset.aw; S.aw[key]=!S.aw[key]; b.classList.toggle('on', S.aw[key]); if (S.aw[key]){ sfx.coin(); const [x,y]=fxCenter(b); fxBurst(x,y,{n:10}); } teamTotals(); });
+    return; }
+  const res=S.teams.map((tm,k)=>{ const mine=Object.keys(S.live.tm).filter(u=>S.live.tm[u]===k && S.live.joined.has(u)), right=mine.filter(u=>(S.live.ans[u]||{})[S.i]===q.answer).length;
+    return {right, of:mine.length, pts:mine.length?Math.round(10*right/mine.length):0}; });
+  S.won[S.i]=res.map(r=>r.pts); teamTotals();
+  rv.insertAdjacentHTML('beforeend', `<div class="taward">${res.map((r,k)=>`<div class="tres" style="--c:${S.teams[k].col}"><b>${S.teams[k].ico} ${escH(S.teams[k].name)}</b><span>${r.right} of ${r.of} right</span><i>+${r.pts}</i></div>`).join('')}</div>`);
+  if (res.some(r=>r.pts)) sfx.coin();
+  liveSend({open:false, ans:q.answer, sc:S.teams.map(tm=>tm.pts)});
+}
+function liveStart(){
+  const code=DB.cloud.code; S.live={g:'g'+Date.now().toString(36), tm:Object.assign({}, S.opt.split||{}), ans:{}, joined:new Set(), unsub:null};
+  const fresh={g:S.live.g, at:Date.now(), teams:S.teams.map(({name,col,ico})=>({name,col,ico})), tm:S.live.tm, i:0, n:S.qs.length, open:false, done:false, ans:null};
+  liveQ=liveQ.then(()=>cloudInit()).then(()=>CL.db.doc(`classes/${code}`).update({live:fresh})).catch(()=>toast('The tablets could not be reached. Check the internet connection.'));
+  try { S.live.unsub=CL.db.collection(`classes/${code}/learners`).onSnapshot(qs=>{ if (!S||!S.live) return;
+    qs.forEach(d=>{ const l=(d.data()||{}).live; if (!l || l.g!==S.live.g) return; S.live.joined.add(d.id); if (l.i>=0){ S.live.ans[d.id]=S.live.ans[d.id]||{}; S.live.ans[d.id][l.i]=l.a; } });
+    liveCount(); }, ()=>{}); } catch(e){}
+}
+function liveCount(){
+  const el=$('#tlive'); if (!el || !S || !S.live) return; const L=S.live, i=S.i;
+  const per=S.teams.map((tm,k)=>{ const mine=Object.keys(L.tm).filter(u=>L.tm[u]===k && L.joined.has(u)); return [mine.filter(u=>(L.ans[u]||{})[i]!=null).length, mine.length]; });
+  const done=per.reduce((s,x)=>s+x[0],0), all=per.reduce((s,x)=>s+x[1],0);
+  el.innerHTML=`📱 <b>${done} of ${all}</b> answered${all?'':' (waiting for learners to join on their tablets)'}<span class="tbars">${per.map(([a,b],k)=>`<i style="--c:${S.teams[k].col};--w:${b?Math.round(a/b*100):0}%"></i>`).join('')}</span>`;
+}
+let liveQ=Promise.resolve();
+function liveSend(part){ if (!S || !S.live || !isCloudTeacher()) return; const code=DB.cloud.code, up={};
+  Object.entries(part).forEach(([k,v])=>{ up['live.'+k]=v; });
+  liveQ=liveQ.then(()=>cloudInit()).then(()=>CL.db.doc(`classes/${code}`).update(up)).catch(()=>toast('The tablets could not be updated. Check the internet connection.')); }
+function liveEnd(keep){ if (!S || !S.live) return; try { S.live.unsub&&S.live.unsub(); } catch(e){}
+  const code=DB.cloud.code; if (!keep) liveQ=liveQ.then(()=>CL.db.doc(`classes/${code}`).update({live:FV().delete()})).catch(()=>{}); }
 function starterGo(d){
   if (!S) return; const ni=S.i+d; if (ni<0) return;
   if (ni>=S.qs.length){ clearInterval(starterTimer); S.done=true;
-    app.innerHTML=`<div class="proj center">${PLUME('h170 bounce')}<h1 class="ptitle">That's a wrap, Grade 5!</h1><p class="f20">${S.qs.length} questions done. Give yourselves a round of applause! 👏</p>
+    if (S.teams && !S.revealed && S.live){ starterReveal(); }
+    const rank=S.teams?S.teams.map((tm,k)=>Object.assign({k},tm)).sort((a,b)=>b.pts-a.pts):null, top=rank&&rank[0].pts, winners=rank?rank.filter(x=>x.pts===top):[];
+    const head=rank ? (top ? `<h1 class="ptitle">${winners.length>1?'It\'s a draw!':`${winners[0].ico} ${escH(winners[0].name)} win!`}</h1>` : `<h1 class="ptitle">That's a wrap, Grade 5!</h1>`)
+                    : `<h1 class="ptitle">That's a wrap, Grade 5!</h1>`;
+    app.innerHTML=`<div class="proj center">${PLUME('h170 bounce')}${head}
+      ${rank?`<div class="tfinal">${rank.map((tm,i)=>`<div class="tres big" style="--c:${tm.col}"><b>${i+1}. ${tm.ico} ${escH(tm.name)}</b><i>${tm.pts}</i></div>`).join('')}</div>`:`<p class="f20">${S.qs.length} questions done. Give yourselves a round of applause! 👏</p>`}
       <div class="row mt"><button class="btn ghost grow" id="tb">🍎 Teacher corner</button><button class="btn gold grow" id="again">Another round ▶</button></div></div>`;
-    confetti(); sfx.win(); const {src,n,timer,lv}=S; $('#tb').onclick=()=>{ S=null; screenTeacher(); }; $('#again').onclick=()=>startStarter(src,n,timer,lv); return; }
+    if (S.live){ liveSend({done:true, sc:S.teams.map(tm=>tm.pts), open:false}); liveEnd(true); }
+    confetti(); sfx.win(); const {src,n,timer,lv,opt}=S; const wasLive=!!S.live;
+    $('#tb').onclick=()=>{ if (wasLive) liveEnd(); S=null; screenTeacher(); };
+    $('#again').onclick=()=>{ const o=Object.assign({}, opt); startStarter(src,n,timer,lv,o); }; return; }
   S.i=ni; renderStarter();
+}
+
+/* ---------- Class game on a learner's tablet: join your team and answer what is on the board ---------- */
+const LV={on:false, g:null, ans:{}, paid:{}, cheered:null, dismissed:null};
+function liveMine(){ const L=DB.live; if (!isCloudLearner() || !L || !L.g || !L.tm) return null;
+  if (L.at && Date.now()-L.at>3*3600e3) return null; const k=L.tm[DB.cloud.uid]; if (k==null) return null;
+  return {L, k, tm:(L.teams||[])[k]||{name:'Your team', col:'#2f80ed', ico:'⭐'}}; }
+function liveTick(){
+  const m=liveMine();
+  if (LV.on){ if (m) screenLive(); else { LV.on=false; toast('The class game has ended'); screenHome(); } return; }
+  $$('.livebar').forEach(x=>x.remove());
+  if (!m || m.L.done || LV.dismissed===m.L.g) return;
+  const b=document.createElement('div'); b.className='livebar'; b.setAttribute('role','status');
+  b.innerHTML=`<span>🎮</span><b class="grow">Class game! You are in <span class="lvteam" style="--c:${m.tm.col}">${m.tm.ico} ${escH(m.tm.name)}</span></b><button class="btn small gold" id="lvjoin">Join ▶</button><button class="x" id="lvno" aria-label="Not now">✕</button>`;
+  document.body.appendChild(b); sfx.go&&sfx.go();
+  b.querySelector('#lvjoin').onclick=()=>{ b.remove(); screenLive(); };
+  b.querySelector('#lvno').onclick=()=>{ LV.dismissed=m.L.g; b.remove(); };
+}
+function liveWrite(i, a){ const code=DB.cloud.code, uid=DB.cloud.uid;
+  return cloudInit().then(()=>CL.db.doc(`classes/${code}/learners/${uid}`).set({live:{g:LV.g, i, a, t:Date.now()}}, {merge:true})).catch(()=>toast('Your answer could not be sent. Check the Wi-Fi.')); }
+function screenLive(){
+  const m=liveMine(); if (!m){ LV.on=false; return screenHome(); }
+  const {L, k, tm}=m, i=L.i||0, letters='ABCDEF', p=P();
+  if (!LV.on) stopTimers(); LV.on=true; PRT.teacher=false; PRT.parent=false; $$('.livebar').forEach(x=>x.remove());
+  if (LV.g!==L.g){ LV.g=L.g; LV.ans={}; liveWrite(-1, null); }
+  const mine=LV.ans[i], opts=(L.q&&L.q.o)||[], shown=!L.open && L.ans;
+  if (shown && mine===L.ans && !LV.paid[L.g+':'+i] && p){ LV.paid[L.g+':'+i]=1; p.coins+=2; save(); }
+  const sc=(L.sc||[]), teams=L.teams||[];
+  let body;
+  if (L.done){ const rank=teams.map((x,j)=>Object.assign({j, pts:sc[j]||0}, x)).sort((a,b)=>b.pts-a.pts), top=rank.length?rank[0].pts:0, won=top>0 && (sc[k]||0)===top;
+    body=`<div class="card center"><div class="f60">${won?'🏆':'👏'}</div><h2>${won?'Your team won!':'Game over'}</h2><p class="muted">Well played, ${escH(DB.cloud.name)}!</p>
+      <div class="tfinal">${rank.map((x,r)=>`<div class="tres ${x.j===k?'big':''}" style="--c:${x.col}"><b>${r+1}. ${x.ico} ${escH(x.name)}</b><i>${x.pts}</i></div>`).join('')}</div>
+      <button class="btn gold w100 mt" id="lvhome">🏠 Back home</button></div>`;
+    if (won && LV.cheered!==L.g){ LV.cheered=L.g; setTimeout(()=>{ confetti(); sfx.win(); }, 300); } }
+  else if (!L.q){ body=`<div class="card center"><div class="f60">👀</div><h2>Get ready!</h2><p>Watch the board. The first question is coming.</p></div>`; }
+  else { body=`<div class="card"><small class="muted b">QUESTION ${i+1} OF ${L.n||'?'}</small><p class="b mt8">${escH(L.q.p||'')}</p>${L.q.c?`<p class="pclue small">${escH(L.q.c)}</p>`:''}
+      <div class="lvopts">${opts.map((o,j)=>{ const cls=shown?(o===L.ans?'right':(o===mine?'wrong':'')):(o===mine?'mine':''); return `<button class="lvopt ${cls}" data-o="${j}" ${mine!=null||!L.open?'disabled':''}><span class="letter">${letters[j]}</span><span>${escH(o)}</span></button>`; }).join('')}</div>
+      <p class="center mt b">${shown?(mine===L.ans?'✅ Right! +2 coins':mine!=null?'Not this time. Look at the board to see why.':'You did not answer this one.'):mine!=null?'🔒 Answer locked in. Look at the board!':L.open?'Tap your answer.':'Watch the board.'}</p></div>`; }
+  app.innerHTML = backTitle('🎮 Class game', `<span class="lvteam" style="--c:${tm.col}">${tm.ico} ${escH(tm.name)}</span>`)+
+    (teams.length&&!L.done?`<div class="tscore">${teams.map((x,j)=>`<span class="tpill" style="--c:${x.col}"><b>${x.ico}</b><i>${sc[j]||0}</i></span>`).join('')}</div>`:'')+body;
+  $('#bk').onclick=()=>{ LV.on=false; LV.dismissed=L.g; screenHome(); };
+  if ($('#lvhome')) $('#lvhome').onclick=()=>{ LV.on=false; LV.dismissed=L.g; screenHome(); };
+  $$('[data-o]').forEach(b=>b.onclick=()=>{ if (LV.ans[i]!=null || !L.open) return; LV.ans[i]=opts[+b.dataset.o]; sfx.tap(); liveWrite(i, LV.ans[i]); screenLive(); });
+  if (shown && mine!=null && LV.lastFx!==L.g+':'+i){ LV.lastFx=L.g+':'+i; mine===L.ans ? sfx.good() : sfx.bad(); }
 }
 
 /* ---------- Name Picker ---------- */
@@ -10008,7 +10209,7 @@ function applyTeacherFields(p, d){
 }
 function applyClassSettings(c){
   if (!c) return; const s=c.settings||{};
-  ['week','startLv','kbd','openAll','classSound'].forEach(k=>{ if (s[k]!==undefined && s[k]!==null) DB[k]=s[k]; });
+  ['week','startLv','kbd','openAll','classSound','recConsent'].forEach(k=>{ if (s[k]!==undefined && s[k]!==null) DB[k]=s[k]; }); DB.consent=(c.consent&&typeof c.consent==='object')?c.consent:{}; DB.live=(c.live&&typeof c.live==='object')?c.live:null;
   DB.features=(s.features && typeof s.features==='object')?s.features:{};
   DB.assign=Array.isArray(c.assign)?c.assign:[]; DB.peerItems=Array.isArray(c.peer)?c.peer:[]; DB.listenAudio=(c.listenAudio&&typeof c.listenAudio==='object')?c.listenAudio:{}; DB.quizzes=Array.isArray(c.quizzes)?c.quizzes:(DB.quizzes||[]); DB.league=c.league||null;
   if (c.teacherName) DB.teacher=c.teacherName;
@@ -10161,7 +10362,7 @@ function learnerListen(){
   const {code, uid, name}=DB.cloud;
   CL.unsubs.push(CL.db.doc(`classes/${code}/learners/${uid}`).onSnapshot(s=>{ const p=DB.profiles[name]; if (!p || !s.exists) return;
     const n=applyTeacherFields(p, s.data()); if (n){ save(); toast(`📝 ${teacherName()} has marked your writing! Look in your Writing Book.`); } }, ()=>{}));
-  CL.unsubs.push(CL.db.doc(`classes/${code}`).onSnapshot(s=>{ if (s.exists){ applyClassSettings(s.data()); save(); } }, ()=>{}));
+  CL.unsubs.push(CL.db.doc(`classes/${code}`).onSnapshot(s=>{ if (s.exists){ applyClassSettings(s.data()); save(); liveTick(); } }, ()=>{}));
 }
 async function cloudResume(){
   if (!cloudOn()) return;
@@ -10254,7 +10455,7 @@ const magId = (uid, key) => `${uid}_${key}`;
 const magDoc = (name, s) => ({name, kind:s.kind||'', prompt:s.prompt||'', text:s.text||'', d:s.d||'', at:s.at||''});
 function magWanted(){ const out={}; Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>(p.writing||[]).forEach(w=>{ if (w.pub && w.pub.mag) out[magId(p._uid, pieceKey(w))]=magDoc(p.name, w.pub); })); return out; }
 function pubSnap(w, par, mag){ return {par:!!par, mag:!!mag, at:today(), kind:w.kind||'', prompt:w.prompt||'', text:w.text||'', d:w.d||'', v:w.v||1, tm:w.tm||null}; }
-const settingsSig = () => JSON.stringify({f:DB.features||{}, week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
+const settingsSig = () => JSON.stringify({rc:DB.recConsent!==false, f:DB.features||{}, week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', t:teacherName(), a:DB.assign||[], pr:DB.peerItems||[]});
 async function teacherPull(){
   const code=DB.cloud.code;
   await teacherPush();
@@ -10279,7 +10480,7 @@ async function teacherPush(){
   Object.values(DB.profiles).filter(p=>p._uid).forEach(p=>{ const sig=teacherSigOf(p), js=JSON.stringify(sig);
     if (CL.pushed[p._uid]!==js){ const ref=CL.db.doc(`classes/${code}/learners/${p._uid}`);
       batch.set(ref, {marks:sig.marks, teacher:sig.teacher}, {merge:true}); batch.set(ref, {published:sig.published}, {mergeFields:['published']}); CL.pushed[p._uid]=js; n++; } });
-  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', features:DB.features||{}}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
+  const ss=settingsSig(); if (CL.pushed._s!==ss){ batch.update(CL.db.doc(`classes/${code}`), {settings:{week:DB.week||'auto', startLv:DB.startLv||2, kbd:DB.kbd||'auto', openAll:!!DB.openAll, classSound:DB.classSound||'on', recConsent:DB.recConsent!==false, features:DB.features||{}}, teacherName:teacherName(), assign:DB.assign||[], peer:DB.peerItems||[]}); CL.pushed._s=ss; n++; }
   if (n){ setSync('busy'); await batch.commit(); setSync('ok'); }
   await magazinePush(); await familyPush();
 }
@@ -10400,6 +10601,10 @@ async function screenCloudClass(isNew){
      <div class="list mt8">${list.map(([uid,x])=>`<div class="item"><span class="grow"><b>${escH(x.name)}</b><br><small class="muted">PIN: <span class="mono pinshow" data-pin="${pins[uid]||'????'}">••••</span> · Parent PIN: ${x.plogin?`<span class="mono pinshow" data-pin="${pins['p_'+uid]||'??????'}">••••</span>`:'none yet'}</small></span>
        <button class="btn small ghost" data-np="${uid}">New PIN</button><button class="btn small ghost" data-pp="${uid}">${x.plogin?'New parent PIN':'Parent PIN'}</button><button class="btn small ghost" data-rm="${uid}">✕</button></div>`).join('')||'<p class="muted small">No learners yet.</p>'}</div>
      ${list.length?'<button class="link mt8" id="showpins">👁️ Show all PINs</button>':''}</div>
+   <div class="card mt"><b>🎙️ Voice recordings and consent</b>
+     <label class="toggle mt8"><span class="grow"><b>Only save recordings with a parent's yes</b><br><small class="muted">Recommended (POPIA). Learners without consent can still practise, but their recordings stay on the device.</small></span><input type="checkbox" id="rcon" ${DB.recConsent!==false?'checked':''}><i></i></label>
+     ${list.length?`<p class="small muted mt8">Tick each learner whose consent form has come back (${list.filter(([u])=>(c.consent||{})[u]).length} of ${list.length}):</p>
+     <div class="mt8">${list.map(([uid,x])=>`<label class="chk"><input type="checkbox" data-con="${uid}" ${(c.consent||{})[uid]?'checked':''}><span class="grow">${escH(x.name)}</span></label>`).join('')}</div>`:''}</div>
    <div class="card mt"><b>Add learners</b><p class="small muted">One name per line. Use first names, adding a surname initial if two learners share a name (for example: Liam M).</p>
      <textarea class="name" id="nl" rows="5" placeholder="Ayanda&#10;Ben&#10;Chloe"></textarea>
      ${locals.length?`<button class="link mt8" id="uselocal">➕ Add the ${locals.length} player${locals.length>1?'s':''} already on this device (with their progress)</button>`:''}
@@ -10417,6 +10622,9 @@ async function screenCloudClass(isNew){
     catch(e){ busy(); toast(cloudErr(e)); $('#add').disabled=false; } };
   $$('[data-np]').forEach(b=>b.onclick=async()=>{ busy('Making a new PIN…'); try { const pin=await teacherNewPin(b.dataset.np); await teacherPull(); busy(); toast('New PIN: '+pin); screenCloudClass(); } catch(e){ busy(); toast(cloudErr(e)); } });
   $$('[data-rm]').forEach(b=>b.onclick=()=>{ const x=c.learners[b.dataset.rm]; confirmBox(`Remove ${x.name} from the class? Their progress will be deleted.`, 'Remove', async()=>{ busy('Removing…'); try { await teacherRemoveLearner(b.dataset.rm); await teacherPull(); busy(); screenCloudClass(); } catch(e){ busy(); toast(cloudErr(e)); } }); });
+  $('#rcon').onchange=e=>{ DB.recConsent=e.target.checked; save(); toast(DB.recConsent?'🎙️ Recordings need a parent\'s yes':'Recordings are saved for everyone'); };
+  $$('[data-con]').forEach(b=>b.onchange=async()=>{ const uid=b.dataset.con, v=b.checked; try { await cloudInit(); await CL.db.doc(`classes/${code}`).update({[`consent.${uid}`]:v?true:FV().delete()});
+      c.consent=Object.assign({}, c.consent||{}); if (v) c.consent[uid]=true; else delete c.consent[uid]; } catch(e){ b.checked=!v; toast(cloudErr(e)); } });
   $('#cards').onclick=()=>printCards(list, pins, code);
   $('#pcards').onclick=()=>{ if (noParent.length) toast(`${noParent.length} learner${noParent.length===1?' has':'s have'} no parent PIN yet. Make them first.`); printCards(list.filter(([,x])=>x.plogin), pins, code, true); };
   if ($('#mkpar')) $('#mkpar').onclick=async()=>{ let i=0; try { for (const [uid,x] of noParent){ busy(`Making parent PIN for ${x.name} (${++i} of ${noParent.length})…`); await teacherAddParent(uid); } await teacherPull(); busy(); toast('✅ Parent PINs made'); screenCloudClass(); } catch(e){ busy(); toast(cloudErr(e)); } };
