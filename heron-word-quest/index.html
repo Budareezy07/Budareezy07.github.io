@@ -3675,6 +3675,13 @@ const PIC = {
  mayor:['A pothole in Dilova Street in Kyiv.jpg','Роман Рябенко','CC0','A deep pothole in a tarred road'],
  robot:['Japan- Painting Robot.jpg','Gary Todd','CC0','A robot arm built for painting, on show in a museum'],
  heritageday:['Flag of South Africa.svg','Frederick Brownell (design)','Public domain','The flag of South Africa'],
+ /* test texts */
+ test1a:['DeltaKite.JPG','Jonathunder','CC BY-SA 3.0','A bright, many-coloured kite flying in the sky'],
+ test1b:['Hippo - Hiding (5342476606).jpg','Vaughan Leiberum','CC BY 2.0','A hippo lying low in the water'],
+ test2a:['Microphone 1.jpg','freestocks.org','CC0','A microphone on a stand, waiting on a lit stage'],
+ test2b:['Close-up of a beehive frame with honey and bees (48461522792).jpg','Ivan Radic','CC BY 2.0','Honeybees at work on a frame of honeycomb'],
+ test3a:['Cape Agulhas Lighthouse.jpg','Barry haynes','CC BY-SA 4.0','The Cape Agulhas lighthouse under dark storm clouds'],
+ test3b:['Beach plastic pollution.jpg','David Abrahams','CC BY-SA 4.0','Plastic rubbish washed up on a beach'],
 };
 const PIC_FIT = new Set(['watercycle','heart','solarsystem','bean','matchday','crossing','heritageday']);   /* diagrams: show whole, never crop */
 const picsOn = () => DB.pics!==false;
@@ -3689,8 +3696,8 @@ function picHTML(id, cls){ const p=PIC[id]; if (!p || !picsOn()) return '';
 function screenPicCredits(back){
   stopTimers(); back=back||(()=>screenStart());
   const lk=(u,t)=>u?`<a href="${u}" target="_blank" rel="noopener">${escH(t)}</a>`:escH(t);
-  const rows=Object.entries(PIC).map(([id,p])=>{ const ps=PS(id);
-    return `<div class="pcred"><img src="${picURL(p[0],250)}" alt="${escH(p[3])}" loading="lazy" onerror="this.style.visibility='hidden'"><div class="grow"><b>${escH(ps?ps.title:id)}</b><br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
+  const rows=Object.entries(PIC).map(([id,p])=>{ const ps=PS(id)||TP(id);
+    return `<div class="pcred"><img src="${picURL(p[0],250)}" alt="${escH(p[3])}" loading="lazy" onerror="this.style.visibility='hidden'"><div class="grow"><b>${escH(ps?ps.title:id)}</b>${TP(id)?' <small class="muted">· Test</small>':''}<br><small>${escH(p[3])}</small><br><small class="muted">${lk(picPage(p[0]),p[1])} · ${lk(licURL(p[2]),p[2])}</small></div></div>`; }).join('');
   app.innerHTML = backTitle('🖼️ Picture credits')+`
    <div class="card"><p class="small">The pictures with our reading texts come from <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>. Every one is free to use under the licence shown. Thank you to the photographers and artists who share their work.</p>
    <p class="small muted mt8">Tap a name to see the original picture, or a licence to read it. Pictures need the internet. Without it, the texts simply show without them.</p></div>
