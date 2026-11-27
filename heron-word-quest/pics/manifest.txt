@@ -92,3 +92,54 @@ w_pond	Lily Pads, Swan Pond Culzean Country Park - geograph.org.uk - 6532781.jpg
 w_swamp	OkavangoDelta Flip666.jpg
 w_fall	Howick Waterfall 01.JPG
 w_reeds	River Canard after sunrise, Essex County, Ontario, 2025-06-01 03.jpg
+m_cat_yawn	Cat Yawning 2.jpg
+m_cat_sofa	Cyprus Cat Yawning.jpg
+m_cat_peek	Kotetsu the Ginger cat in a box 2012-08-05.jpg
+m_cat_box	Cat in a box 3.jpg
+m_cat_basket	Cat in a box.jpg
+m_kitten_grumpy	SFL kitten (5467794010).jpg
+m_dog_tongue	Cocker Spaniel Joya with Tongue out.jpg
+m_dog_stand	Fawn and white Welsh Corgi puppy standing on rear legs and sticking out the tongue.jpg
+m_dog_tilt	Boss, prawie owczarek belgijski Malinois (2007-11-04) 1.jpg
+m_puppies_sleep	Sleeping Pups.jpg
+m_dog_ball	German Shepherd with ball in mouth.jpg
+m_goat_kennel	Goat on roof - geograph.org.uk - 3833280.jpg
+m_goat_stare	Mountain Goat in Winter Coat (b1046fd9-1dd8-b71b-0b0c-775ae3275d34).jpg
+m_meerkats	Suricata suricatta -Auckland Zoo -group-8c.jpg
+m_baboons	Chacma Baboons (Papio ursinus) (52746434561).jpg
+m_gorilla	Gorilla Scratching Head.jpg
+m_hippo_mouth	Hippo (Hippopotamus amphibius) yawning ... (32787378093).jpg
+m_hippo_heron	Grey Heron (Ardea cinerea) standing on yawning Hippo (Hippopotamus amphibius) ... (52495680243).jpg
+m_warthog	Warthog Face 001.jpg
+m_dassie	Dassie or rock hyrax near Cape Town.jpg
+m_penguin_walk	African Penguin (Spheniscus demersus) hurrying to the water ... (52672159677).jpg
+m_penguin_gang	African Penguins Spheniscus demersus.jpg
+m_sloth_smile	Sloth Hanging and Curious (19537184135).jpg
+m_sloth_upside	Two-toed sloth hanging from tree close up - DPLA - 83690a5b5f0b582fc6225d70b3a76fa4.jpg
+m_owl_stare	Spotted owlet curiously staring at the camera.jpg
+m_toad	Frog calling sitting on a lotus leaf.JPG
+m_chameleon	Oustalet's chameleon (Furcifer oustaleti) male feeding Anja Community Reserve 2e.jpg
+m_chameleon_eye	Chameleon Eye (2252931518).jpg
+m_squirrel_nut	Black squirrel carrying a walnut in its mouth, close view.jpg
+m_lemur_sun	Sitting Lemur, Naples Zoo, US (6897177996).jpg
+m_otter_float	Sea Otter 3.jpg
+m_seal_flop	Seals and Sea Lions--St. Paul - DPLA - ce829a131e8b7c3a949c227e76030ea3.JPG
+m_puffin_fish	Puffin (Fratercula arctica) with lesser sand eels (Ammodytes tobianus).jpg
+m_ostrich_beak	Ostrich In The Eye (30631199).jpeg
+m_giraffe_tongue	Giraffe animal head.jpg
+m_zebras	Ngorongoro zebra in a defensive position.jpg
+m_panda_eat	Mei Xiang Female Panda Eating Bamboo While Lying Down 33.jpg
+m_koala_sleep	Sleeping Koala (6730983867).jpg
+m_ducklings	Baby Ducks on a log (7419277238).jpg
+m_rooster	Head of chicken (DSCF6317).jpg
+m_cow_face	Cows at Eisenhower National Historic Site (4feb0692-04e5-456b-aeaf-8f9357c9b9e8).jpg
+m_honey_badger	Mellivora capensis ssp. capensis.jpg
+m_tortoise	Desert tortoise walking in the Pinto Basin (29803471006).jpg
+m_pelican_mouth	Pelican-Gaping-Aruba.JPG
+m_flamingo	Greater Flamingo sub adult standing on one leg, Pulicat Lake.jpg
+m_parrot_upside	Psittacus erithacus - adult hanging upside down on clothesline.jpg
+m_baby_elephant	African Elephant (Loxodonta africana) young having a mud bath ... (46522266994).jpg
+m_lion_yawn	Iblis the Yawning Lion at Chester Zoo - geograph.org.uk - 4010841.jpg
+m_cheetah_cub	Cheetah cub (22389343016).jpg
+m_otter_eat	018 Giant otter eating a fish in Encontro das Águas State Park Photo by Giles Laurent.jpg
+m_otter_shock	Otter eating a fish.jpg
